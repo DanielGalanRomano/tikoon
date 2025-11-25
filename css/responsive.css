@@ -1237,6 +1237,7 @@
 	.slider-img img {
 
 		width: 100%;
+		margin-top: 20px;
 
 	}
 
@@ -1473,6 +1474,7 @@
 /* SM Device :480px. */
 
 @media only screen and (min-width: 550px) and (max-width: 767px) {
+
 
 
 
