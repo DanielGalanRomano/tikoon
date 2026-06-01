@@ -678,7 +678,7 @@ html, body { font-family: var(--f-b); background: var(--c-bg); color: var(--c-te
       </div>
     </div>
 
-    <div class="offer-card" onclick="showCompare()">
+    <div class="offer-card" onclick="window.location.href='detalle-oferta.html'">
       <div class="card-row">
         <div class="card-img">📱</div>
         <div class="card-body">
@@ -840,132 +840,7 @@ html, body { font-family: var(--f-b); background: var(--c-bg); color: var(--c-te
 
   </div>
 
-  <!-- Comparativa de precios -->
-  <div class="sec-hdr" id="compare-section">
-    <div class="sec-title">
-      📊 Comparativa de precios
-      <span class="pill" style="background:var(--c-blue);">5 tiendas</span>
-    </div>
-    <div class="sec-link">Cambiar producto →</div>
-  </div>
-
-  <div class="compare-wrap">
-    <!-- Producto que se está comparando -->
-    <div class="compare-product-banner">
-      <div class="compare-prod-img">📱</div>
-      <div>
-        <div class="compare-prod-name">Samsung Galaxy A55 5G 128GB</div>
-        <div class="compare-prod-sub">Comparando precio final con envío · Actualizado hace 18 min</div>
-      </div>
-      <div class="compare-update">
-        <div style="font-size:11px; color:var(--c-t3);">Última actualización</div>
-        <div style="font-size:13px; font-weight:700; font-family:var(--f-d); color:var(--c-t2);">Hoy 14:32</div>
-      </div>
-    </div>
-
-    <!-- Header tabla -->
-    <div class="compare-hdr">
-      <div class="compare-hdr-cell">Tienda</div>
-      <div class="compare-hdr-cell">Precio</div>
-      <div class="compare-hdr-cell">Envío</div>
-      <div class="compare-hdr-cell">Cuotas</div>
-      <div class="compare-hdr-cell">Acción</div>
-    </div>
-
-    <!-- Fila 1: MercadoLibre — MEJOR PRECIO -->
-    <div class="compare-row best">
-      <div class="store-cell">
-        <div class="store-icon" style="background:#FFF8E7;">🛒</div>
-        <div>
-          <div class="store-name">MercadoLibre</div>
-          <div class="store-sub">
-            <span class="stars">★★★★★</span> 4.9 · Vendedor oficial
-          </div>
-          <div><span style="background:var(--c-green);color:white;font-size:9px;font-weight:800;font-family:var(--f-d);padding:1px 7px;border-radius:100px;">✓ MEJOR PRECIO</span></div>
-        </div>
-      </div>
-      <div>
-        <div class="compare-price">$479.999</div>
-        <div style="font-size:11px;color:var(--c-green);font-weight:600;">Ahorrás $80.000</div>
-      </div>
-      <div class="compare-ship free">✓ Gratis</div>
-      <div class="compare-installments">12x $39.999<br><span style="color:var(--c-green);font-size:11px;">Sin interés</span></div>
-      <div><button class="compare-btn primary">Ver oferta →</button></div>
-    </div>
-
-    <!-- Fila 2: Frávega -->
-    <div class="compare-row">
-      <div class="store-cell">
-        <div class="store-icon" style="background:#EEF2FF;">🏪</div>
-        <div>
-          <div class="store-name">Frávega</div>
-          <div class="store-sub"><span class="stars">★★★★</span>4.6 · Tienda oficial</div>
-        </div>
-      </div>
-      <div>
-        <div class="compare-price">$499.999</div>
-        <div style="font-size:11px;color:var(--c-t3);">+$20.000</div>
-      </div>
-      <div class="compare-ship free">✓ Gratis</div>
-      <div class="compare-installments">18x $27.777<br><span style="font-size:11px;color:var(--c-t3);">CFT 12%</span></div>
-      <div><button class="compare-btn secondary">Ver →</button></div>
-    </div>
-
-    <!-- Fila 3: Garbarino -->
-    <div class="compare-row">
-      <div class="store-cell">
-        <div class="store-icon" style="background:#FFF0F0;">🔴</div>
-        <div>
-          <div class="store-name">Garbarino</div>
-          <div class="store-sub"><span class="stars">★★★★</span>4.4 · Envío express</div>
-        </div>
-      </div>
-      <div>
-        <div class="compare-price">$509.999</div>
-        <div style="font-size:11px;color:var(--c-t3);">+$30.000</div>
-      </div>
-      <div class="compare-ship">$2.500</div>
-      <div class="compare-installments">12x $42.499<br><span style="font-size:11px;color:var(--c-t3);">Sin interés</span></div>
-      <div><button class="compare-btn secondary">Ver →</button></div>
-    </div>
-
-    <!-- Fila 4: Samsung Tienda Oficial -->
-    <div class="compare-row">
-      <div class="store-cell">
-        <div class="store-icon" style="background:#EEF4FF;">📱</div>
-        <div>
-          <div class="store-name">Samsung Argentina</div>
-          <div class="store-sub"><span class="stars">★★★★★</span>4.8 · Marca oficial</div>
-        </div>
-      </div>
-      <div>
-        <div class="compare-price">$519.999</div>
-        <div style="font-size:11px;color:var(--c-t3);">+$40.000</div>
-      </div>
-      <div class="compare-ship free">✓ Gratis</div>
-      <div class="compare-installments">24x $21.666<br><span style="font-size:11px;color:var(--c-t3);">CFT 18%</span></div>
-      <div><button class="compare-btn secondary">Ver →</button></div>
-    </div>
-
-    <!-- Fila 5: Musimundo -->
-    <div class="compare-row">
-      <div class="store-cell">
-        <div class="store-icon" style="background:#F5F0FF;">🎵</div>
-        <div>
-          <div class="store-name">Musimundo</div>
-          <div class="store-sub"><span class="stars">★★★</span>3.9 · Retiro en local</div>
-        </div>
-      </div>
-      <div>
-        <div class="compare-price">$529.999</div>
-        <div style="font-size:11px;color:var(--c-t3);">+$50.000</div>
-      </div>
-      <div class="compare-ship">$3.200</div>
-      <div class="compare-installments">6x $88.333<br><span style="font-size:11px;color:var(--c-t3);">Sin interés</span></div>
-      <div><button class="compare-btn secondary">Ver →</button></div>
-    </div>
-
-  </div>
+  
 
 </main>
 
