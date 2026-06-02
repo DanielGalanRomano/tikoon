@@ -6,157 +6,509 @@
 <title>DescuentosApp — Mejores Ofertas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
-/* ============================================
-   ESTILOS COMPLETOS
-   ============================================ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#F5F2EC;--surface:#FFF;--s2:#F0EDE6;--s3:#E8E2D9;
-  --border:#E0DAD0;--border2:#C6BFB3;
-  --text:#18150F;--t2:#6B6358;--t3:#A89F94;
-  --acc:#E8441A;--acc2:#C03610;--acc-bg:#FEF0EC;
-  --blue:#1B4FD8;--blue-bg:#EDF2FF;--blue-b:#A5BCFB;
-  --green:#0B7A48;--green-bg:#EDFAF3;--green-b:#6DDAA0;
-  --star:#F59E0B;--purple:#7C3AED;
-  --r:12px;--rl:18px;--rx:24px;
-  --fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
-  --sh:0 2px 8px rgba(0,0,0,.06);
-  --safe:env(safe-area-inset-bottom,0px);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-html,body{font-family:var(--fb);background:var(--bg);color:var(--text);height:100%;overflow:hidden}
-#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #F5F2EC;
+  color: #18150F;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
 
 /* Header */
-.sponsor{background:var(--purple);color:#fff;text-align:center;padding:6px 16px;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0}
-.topbar{background:var(--surface);border-bottom:1.5px solid var(--border);flex-shrink:0}
-.topbar-inner{padding:0 16px;height:54px;display:flex;align-items:center;gap:12px}
-.logo{display:flex;flex-direction:column;gap:1px;cursor:pointer}
-.logo-pow{font-size:8px;font-weight:500;color:var(--t3)}
-.logo-main{display:flex;align-items:center;gap:7px}
-.logo-icon{width:28px;height:28px;background:var(--acc);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.logo-name{font-family:var(--fd);font-size:17px;font-weight:800;color:var(--text)}
-.logo-name em{color:var(--acc);font-style:normal}
-.search-wrap{flex:1}
-.search-box{display:flex;align-items:center;gap:8px;background:var(--s2);border:1.5px solid var(--border);border-radius:100px;padding:8px 14px}
-.search-input{border:none;background:transparent;font-size:13px;width:100%;outline:none}
-.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;position:relative}
-.badge{position:absolute;top:2px;right:2px;width:14px;height:14px;background:var(--acc);color:#fff;border-radius:50%;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
+.header {
+  background: #1B4FD8;
+  color: white;
+  text-align: center;
+  padding: 6px 16px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
 
-/* Navegación inferior */
-.bnav{background:var(--surface);border-top:1.5px solid var(--border);display:flex;padding-bottom:var(--safe);flex-shrink:0}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;gap:3px}
-.bni .ico{font-size:22px}
-.bni .lbl{font-family:var(--fd);font-size:10px;font-weight:600;color:var(--t3)}
-.bni.active .lbl{color:var(--acc)}
+.topbar {
+  background: white;
+  border-bottom: 1px solid #E0DAD0;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.logo em {
+  color: #E8441A;
+  font-style: normal;
+}
+
+.search-box {
+  flex: 1;
+  background: #F0EDE6;
+  border-radius: 100px;
+  padding: 8px 14px;
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  width: 100%;
+  outline: none;
+  font-size: 13px;
+}
+
+.icon-btn {
+  background: #F0EDE6;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #E8441A;
+  color: white;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 50%;
+}
+
+/* Navegación */
+.nav {
+  background: white;
+  border-top: 1px solid #E0DAD0;
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  flex-shrink: 0;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0 8px;
+  cursor: pointer;
+  gap: 3px;
+  font-family: 'Syne', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #A89F94;
+}
+
+.nav-item.active {
+  color: #E8441A;
+}
+
+.nav-item .ico {
+  font-size: 22px;
+}
 
 /* Pantallas */
-.screens{flex:1;overflow:hidden;position:relative}
-.screen{position:absolute;inset:0;overflow-y:auto;background:var(--bg);display:none;flex-direction:column}
-.screen.active{display:flex}
+.screens {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
 
-/* Botones y headers */
-.back-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1.5px solid var(--border)}
-.back-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
-.back-title{font-family:var(--fd);font-size:16px;font-weight:700;flex:1}
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  background: #F5F2EC;
+  display: none;
+  flex-direction: column;
+}
 
-/* Cards */
-.screen-body{padding:16px;flex:1}
-.hero{background:linear-gradient(135deg,var(--acc) 0%,var(--acc2) 100%);border-radius:18px;padding:16px;color:#fff;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
-.hero-title{font-family:var(--fd);font-size:20px;font-weight:800}
-.hero-sub{font-size:13px;opacity:.85;margin-bottom:12px}
-.hero-btn{background:#fff;color:var(--acc);font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;cursor:pointer;display:inline-block}
-.hero-emoji{font-size:56px}
+.screen.active {
+  display: flex;
+}
 
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.stat{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px;text-align:center}
-.stat-num{font-family:var(--fd);font-size:20px;font-weight:800;color:var(--acc)}
-.stat-lbl{font-size:10px;color:var(--t2)}
+.screen-body {
+  padding: 16px;
+  flex: 1;
+}
 
-.sec-hdr{display:flex;justify-content:space-between;margin-bottom:12px}
-.sec-title{font-family:var(--fd);font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px}
-.pill{background:var(--acc);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px}
-.live{background:var(--green-bg);border:1px solid var(--green-b);border-radius:100px;padding:3px 9px;font-size:10px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:5px}
-.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #E8441A 0%, #C03610 100%);
+  border-radius: 18px;
+  padding: 16px;
+  color: white;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-.offers-grid{display:flex;flex-direction:column;gap:10px}
-.card{background:var(--surface);border:2px solid var(--acc);border-radius:18px;padding:13px;cursor:pointer;position:relative}
-.my-tag{position:absolute;top:9px;right:9px;background:var(--acc);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px}
-.card-row{display:flex;gap:12px}
-.card-img{width:72px;height:72px;border-radius:12px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:30px}
-.card-body{flex:1}
-.card-title{font-family:var(--fd);font-size:14px;font-weight:700}
-.card-desc{font-size:12px;color:var(--t2);margin:3px 0 7px}
-.price-row{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
-.p-now{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--acc)}
-.p-old{font-size:11px;color:var(--t3);text-decoration:line-through}
-.p-pct{background:var(--acc-bg);color:var(--acc);font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px}
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.hero-sub {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+
+.hero-btn {
+  background: white;
+  color: #E8441A;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.hero-emoji {
+  font-size: 56px;
+}
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat {
+  background: white;
+  border: 1px solid #E0DAD0;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #E8441A;
+}
+
+.stat-lbl {
+  font-size: 10px;
+  color: #6B6358;
+  margin-top: 3px;
+}
+
+/* Section header */
+.sec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sec-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill {
+  background: #E8441A;
+  color: white;
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.live {
+  background: #EDFAF3;
+  border: 1px solid #6DDAA0;
+  border-radius: 100px;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0B7A48;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: #0B7A48;
+  border-radius: 50%;
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Cards de productos */
+.offers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  background: white;
+  border: 2px solid #E8441A;
+  border-radius: 18px;
+  padding: 13px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s;
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+.best-tag {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  background: #E8441A;
+  color: white;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.card-row {
+  display: flex;
+  gap: 12px;
+}
+
+.card-img {
+  width: 72px;
+  height: 72px;
+  background: #F0EDE6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.card-body {
+  flex: 1;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.card-brand {
+  font-size: 11px;
+  color: #6B6358;
+  margin: 2px 0 5px;
+}
+
+.card-desc {
+  font-size: 11px;
+  color: #A89F94;
+  margin-bottom: 6px;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.price-now {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #E8441A;
+}
+
+.price-old {
+  font-size: 11px;
+  color: #A89F94;
+  text-decoration: line-through;
+}
+
+.discount {
+  background: #FEF0EC;
+  color: #E8441A;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 100px;
+}
+
+.saving {
+  font-size: 10px;
+  color: #0B7A48;
+  margin-top: 4px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #18150F;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 12px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+}
 
 /* Admin */
-.admin-login{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px 24px}
-.admin-input{width:100%;padding:13px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;font-size:14px}
-.admin-btn{width:100%;padding:14px;background:var(--acc);color:#fff;font-weight:700;border:none;border-radius:12px;cursor:pointer}
-.admin-btn.sec{background:var(--surface);color:var(--t2);border:1.5px solid var(--border)}
-.save-btn{width:100%;padding:14px;background:var(--acc);color:#fff;font-weight:700;border:none;border-radius:12px;cursor:pointer}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:9px 18px;border-radius:100px;z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
-.toast.show{opacity:1}
+.admin-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100%;
+  padding: 40px;
+}
+
+.admin-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #E0DAD0;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.admin-btn {
+  width: 100%;
+  padding: 12px;
+  background: #E8441A;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid #E0DAD0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.back-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #E0DAD0;
+}
+
+.back-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #A89F94;
+}
 </style>
 </head>
 <body>
 <div id="app">
-
-  <div class="sponsor">
-    <span>🎉 <strong>Banco Nación</strong> · 30% OFF los miércoles</span>
+  <div class="header">🎉 Banco Nación · 30% OFF los miércoles</div>
+  
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')">Descuentos<em>App</em></div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar ofertas..." oninput="filterOffers()">
+    </div>
+    <button class="icon-btn" onclick="navigate('alerts')">🔔<span class="badge" id="alertBadge">0</span></button>
   </div>
 
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="logo" onclick="navigate('home')">
-        <span class="logo-pow">Powered by DescuentosAR</span>
-        <div class="logo-main">
-          <div class="logo-icon">🏷️</div>
-          <div class="logo-name">Descuentos<em>App</em></div>
-        </div>
-      </div>
-      <div class="search-wrap">
-        <div class="search-box">
-          <span>🔍</span>
-          <input class="search-input" type="search" placeholder="Buscar ofertas…" id="searchInput" oninput="filterOffers(this.value)">
-        </div>
-      </div>
-      <button class="icon-btn" onclick="navigate('alertas')">🔔<span class="badge" id="alertBadge">0</span></button>
-    </div>
-  </header>
-
   <div class="screens">
-    
     <!-- HOME -->
     <div class="screen active" id="screen-home">
       <div class="screen-body">
         <div class="hero">
-          <div class="hero-content">
+          <div>
             <div class="hero-title">¡Descuentos del día! 🔥</div>
             <div class="hero-sub">Precios actualizados</div>
-            <div class="hero-btn" onclick="navigate('alertas')">🔔 Activar alertas</div>
+            <div class="hero-btn" onclick="navigate('alerts')">🔔 Activar alertas</div>
           </div>
           <div class="hero-emoji">🛍️</div>
         </div>
+        
         <div class="stats">
-          <div class="stat"><div class="stat-num" id="statOffers">0</div><div class="stat-lbl">Ofertas</div></div>
-          <div class="stat"><div class="stat-num" id="statDiscount">0%</div><div class="stat-lbl">Dto máx</div></div>
+          <div class="stat"><div class="stat-num" id="statCount">0</div><div class="stat-lbl">Ofertas</div></div>
+          <div class="stat"><div class="stat-num" id="statDiscount">0%</div><div class="stat-lbl">Dto. máximo</div></div>
           <div class="stat"><div class="stat-num" id="statStores">0</div><div class="stat-lbl">Tiendas</div></div>
         </div>
-        <div class="sec-hdr">
+
+        <div class="sec-header">
           <div class="sec-title">🔥 Ofertas <span class="pill" id="offersCount">0</span></div>
           <div class="live"><div class="live-dot"></div>En vivo</div>
         </div>
-        <div class="offers-grid" id="homeGrid"></div>
+        
+        <div class="offers-grid" id="offersGrid"></div>
       </div>
     </div>
 
-    <!-- COMPARATIVA -->
+    <!-- COMPARAR -->
     <div class="screen" id="screen-compare">
-      <div class="back-hdr">
+      <div class="back-header">
         <div class="back-btn" onclick="goBack()">←</div>
         <div class="back-title" id="compareTitle">Comparativa</div>
       </div>
@@ -166,152 +518,255 @@ html,body{font-family:var(--fb);background:var(--bg);color:var(--text);height:10
     <!-- ALERTAS -->
     <div class="screen" id="screen-alerts">
       <div class="screen-body">
-        <div class="sec-hdr">
+        <div class="sec-header">
           <div class="sec-title">🔔 Mis alertas <span class="pill" id="alertsCount">0</span></div>
         </div>
         <div id="alertsList"></div>
       </div>
     </div>
 
-    <!-- CUENTA / ADMIN -->
+    <!-- CUENTA -->
     <div class="screen" id="screen-account">
       <div class="screen-body">
-        <div style="background:var(--surface);border-radius:18px;padding:20px;text-align:center;margin-bottom:16px">
-          <div style="width:64px;height:64px;background:var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px">👤</div>
-          <div style="font-family:var(--fd);font-size:18px;font-weight:800">Mi Cuenta</div>
+        <div style="background:white; border-radius:18px; padding:20px; text-align:center; margin-bottom:16px">
+          <div style="font-size:48px">👤</div>
+          <div style="font-family:Syne; font-size:18px; font-weight:800">Mi Cuenta</div>
         </div>
-        <div style="background:var(--surface);border-radius:18px;overflow:hidden">
-          <div onclick="navigate('admin')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer">
-            <span style="font-size:20px">⚙️</span>
-            <span style="flex:1;font-weight:600">Panel Admin</span>
+        <div style="background:white; border-radius:18px; overflow:hidden">
+          <div onclick="navigate('admin')" style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid #E0DAD0; cursor:pointer">
+            <span>⚙️</span>
+            <span style="flex:1; font-weight:600">Panel Admin</span>
             <span>›</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ADMIN PANEL -->
+    <!-- ADMIN -->
     <div class="screen" id="screen-admin">
-      <div id="adminLoginView" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px">
+      <div id="adminLogin" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; height:100%; padding:40px">
         <div style="font-size:48px">🔐</div>
-        <div style="font-family:var(--fd);font-size:20px;font-weight:800">Panel Admin</div>
-        <input type="password" id="adminPassword" class="admin-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')adminLogin()">
+        <div style="font-family:Syne; font-size:20px; font-weight:800">Panel Admin</div>
+        <input type="password" id="adminPass" class="admin-input" placeholder="Contraseña">
         <button class="admin-btn" onclick="adminLogin()">Ingresar</button>
-        <button class="admin-btn sec" onclick="goBack()">Volver</button>
+        <button class="admin-btn" onclick="goBack()" style="background:#E0DAD0; color:#18150F">Volver</button>
       </div>
       
-      <div id="adminPanelView" style="display:none;height:100%;flex-direction:column">
-        <div style="background:var(--text);color:#fff;padding:16px;display:flex;align-items:center;gap:12px">
-          <span style="font-size:22px">⚙️</span>
-          <span style="flex:1;font-weight:800">Admin - Google Sheets</span>
+      <div id="adminPanel" style="display:none; height:100%; flex-direction:column">
+        <div style="background:#18150F; color:white; padding:16px; display:flex; align-items:center">
+          <span style="flex:1; font-weight:800">Admin - Google Sheets</span>
           <span onclick="adminLogout()" style="cursor:pointer">✕</span>
         </div>
-        <div style="flex:1;overflow-y:auto;padding:16px">
-          
-          <!-- Configurar Google Sheet -->
-          <div style="background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
-            <h3 style="font-family:var(--fd);margin-bottom:12px">📊 Google Sheets</h3>
+        <div style="flex:1; overflow-y:auto; padding:16px">
+          <div style="background:white; border-radius:18px; padding:16px; margin-bottom:16px">
+            <h3 style="margin-bottom:12px">📊 Configurar Google Sheet</h3>
             <input type="text" id="sheetIdInput" class="admin-input" placeholder="ID del Google Sheet" style="margin-bottom:12px">
-            <input type="text" id="sheetNameInput" class="admin-input" placeholder="Nombre de la hoja" value="Ofertas" style="margin-bottom:12px">
-            <button class="save-btn" onclick="connectSheet()" style="background:var(--blue)">🔗 Conectar</button>
-            <div id="sheetStatus" style="margin-top:12px;font-size:12px;color:var(--t2)"></div>
+            <button class="admin-btn" onclick="connectSheet()" style="background:#1B4FD8">🔗 Conectar</button>
+            <div id="sheetStatus" style="margin-top:12px; font-size:12px; color:#6B6358"></div>
           </div>
-
-          <!-- Productos -->
-          <div style="background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
-            <h3 style="font-family:var(--fd);margin-bottom:12px">🏷️ Productos</h3>
-            <div id="productsList"></div>
-          </div>
-
-          <!-- Formulario edición -->
-          <div id="editForm" style="display:none;background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
-            <h3 style="font-family:var(--fd);margin-bottom:12px">✏️ Editar</h3>
-            <input type="hidden" id="editId">
-            <input type="text" id="editName" class="admin-input" placeholder="Nombre" style="margin-bottom:12px">
-            <input type="text" id="editEmoji" class="admin-input" placeholder="Emoji (📱)" maxlength="2" style="margin-bottom:12px">
-            <input type="text" id="editBrand" class="admin-input" placeholder="Marca" style="margin-bottom:12px">
-            <input type="number" id="editPrice" class="admin-input" placeholder="Precio" style="margin-bottom:12px">
-            <input type="number" id="editOldPrice" class="admin-input" placeholder="Precio anterior" style="margin-bottom:12px">
-            <input type="number" id="editInstallments" class="admin-input" placeholder="Cuotas" style="margin-bottom:12px">
-            <input type="url" id="editUrl" class="admin-input" placeholder="URL" style="margin-bottom:12px">
-            <textarea id="editDesc" class="admin-input" rows="3" placeholder="Descripción" style="margin-bottom:12px"></textarea>
-            <div style="display:flex;gap:10px">
-              <button class="save-btn" onclick="saveProduct()" style="flex:1">💾 Guardar</button>
-              <button class="save-btn" onclick="deleteProduct()" style="flex:0;background:#dc2626">🗑️</button>
+          
+          <div style="background:white; border-radius:18px; padding:16px">
+            <h3 style="margin-bottom:12px">📝 Datos de ejemplo</h3>
+            <div style="font-size:12px; color:#6B6358">
+              Si no ves productos, usá este ID de prueba:<br>
+              <code style="background:#F0EDE6; padding:4px; display:block; margin-top:6px">1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w</code>
             </div>
-          </div>
-
-          <div style="background:var(--blue-bg);border-radius:12px;padding:12px;font-size:12px">
-            <strong>📌 ID del Sheet:</strong><br>
-            <code style="background:rgba(0,0,0,.05);padding:4px;display:block;margin-top:6px">1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w</code>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <nav class="bnav">
-    <div class="bni active" id="nav-home" onclick="navigate('home')"><div class="ico">🏠</div><div class="lbl">Inicio</div></div>
-    <div class="bni" id="nav-compare" onclick="if(selectedProduct) navigate('compare'); else showToast('Seleccioná un producto')"><div class="ico">📊</div><div class="lbl">Comparar</div></div>
-    <div class="bni" id="nav-alerts" onclick="navigate('alerts')"><div class="ico">🔔</div><div class="lbl">Alertas</div></div>
-    <div class="bni" id="nav-account" onclick="navigate('account')"><div class="ico">👤</div><div class="lbl">Cuenta</div></div>
-  </nav>
+  <div class="nav">
+    <div class="nav-item active" onclick="navigate('home')"><div class="ico">🏠</div><div>Inicio</div></div>
+    <div class="nav-item" onclick="if(selectedProduct) navigate('compare'); else showToast('Seleccioná un producto primero')"><div class="ico">📊</div><div>Comparar</div></div>
+    <div class="nav-item" onclick="navigate('alerts')"><div class="ico">🔔</div><div>Alertas</div></div>
+    <div class="nav-item" onclick="navigate('account')"><div class="ico">👤</div><div>Cuenta</div></div>
+  </div>
 </div>
 
-<div class="toast" id="toastMsg"></div>
+<div class="toast" id="toast">Mensaje</div>
 
 <script>
 // ============================================
-// CONFIGURACIÓN INICIAL
+// DATOS DE EJEMPLO (FUNCIONAN SIEMPRE)
 // ============================================
-let products = [];
+let products = [
+  { id: '1', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: '#', desc: 'Triple cámara 50MP, pantalla AMOLED' },
+  { id: '2', name: 'Lenovo IdeaPad 3', emoji: '💻', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, shipping: 0, url: '#', desc: 'Intel Core i5, 16GB RAM, SSD 512GB' },
+  { id: '3', name: 'Adidas Ultraboost 22', emoji: '👟', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, shipping: 0, url: '#', desc: 'Tecnología BOOST, máxima comodidad' },
+  { id: '4', name: 'Samsung Galaxy S24', emoji: '📱', brand: 'Samsung', price: 699999, oldPrice: 849999, installments: 12, shipping: 0, url: '#', desc: 'IA integrada, cámara 200MP' },
+  { id: '5', name: 'MacBook Air M2', emoji: '💻', brand: 'Apple', price: 1049999, oldPrice: 1299999, installments: 18, shipping: 0, url: '#', desc: 'Chip M2, 8GB RAM, 256GB SSD' }
+];
+
 let selectedProduct = null;
 let currentScreen = 'home';
-let history = ['home'];
-
-// Sheet ID que te di
-const DEFAULT_SHEET_ID = '1v2CLM3-It5pcTNEzBVZ7FBS8T85ZhUFgE3VtO7LmHMQ';
+let screenHistory = ['home'];
 
 // Competidores simulados
 const competitors = {
-  'iphone15': [
-    { tienda: 'Mercado Libre', precio: 489999, envio: 0, cuotas: '12x sin int.', url: 'https://mercadolibre.com.ar', emoji: '🛒' }
+  '1': [
+    { tienda: 'Mercado Libre', precio: 499999, envio: 0, cuotas: '12x sin int.', url: '#', emoji: '🛒' },
+    { tienda: 'Frávega', precio: 509999, envio: 2500, cuotas: '6x sin int.', url: '#', emoji: '🔌' }
   ],
-  'default': [
-    { tienda: 'Mercado Libre', precio: 0, envio: 0, cuotas: 'Consultar', url: '#', emoji: '🛒' }
+  '2': [
+    { tienda: 'Mercado Libre', precio: 779999, envio: 0, cuotas: '12x sin int.', url: '#', emoji: '🛒' }
   ]
 };
 
 // ============================================
-// CARGAR PRODUCTOS DESDE GOOGLE SHEETS
+// FUNCIONES PRINCIPALES
 // ============================================
-async function loadProducts() {
-  // Intentar cargar configuración guardada
-  const savedId = localStorage.getItem('sheetId');
-  const sheetId = savedId || DEFAULT_SHEET_ID;
+function renderHome() {
+  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const filtered = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm) || 
+    p.brand.toLowerCase().includes(searchTerm)
+  );
   
-  if (!sheetId) {
-    loadDefaultProducts();
+  document.getElementById('statCount').textContent = products.length;
+  document.getElementById('offersCount').textContent = filtered.length;
+  document.getElementById('alertBadge').textContent = products.length;
+  document.getElementById('alertsCount').textContent = products.length;
+  
+  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
+  document.getElementById('statDiscount').textContent = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
+  document.getElementById('statStores').textContent = '5';
+  
+  const grid = document.getElementById('offersGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="loading">No se encontraron ofertas 🔍</div>';
     return;
   }
+  
+  filtered.forEach(p => {
+    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    const comps = competitors[p.id] || [];
+    const saving = comps[0]?.precio ? comps[0].precio - p.price : 0;
+    
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => { selectedProduct = p; navigate('compare'); };
+    card.innerHTML = `
+      <div class="best-tag">MEJOR PRECIO</div>
+      <div class="card-row">
+        <div class="card-img">${p.emoji}</div>
+        <div class="card-body">
+          <div class="card-title">${p.name}</div>
+          <div class="card-brand">${p.brand}</div>
+          <div class="card-desc">${p.desc}</div>
+          <div class="price-row">
+            <span class="price-now">$${p.price.toLocaleString()}</span>
+            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString()}</span>` : ''}
+            ${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''}
+          </div>
+          ${saving > 0 ? `<div class="saving">💰 Ahorrás $${saving.toLocaleString()}</div>` : ''}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderCompare() {
+  if (!selectedProduct) return;
+  
+  const container = document.getElementById('compareContent');
+  const discount = selectedProduct.oldPrice ? Math.round((1 - selectedProduct.price/selectedProduct.oldPrice)*100) : 0;
+  const comps = competitors[selectedProduct.id] || [];
+  
+  document.getElementById('compareTitle').textContent = selectedProduct.name;
+  
+  container.innerHTML = `
+    <div style="background:white; border-radius:18px; padding:16px; margin-bottom:16px">
+      <div style="display:flex; gap:14px; align-items:center">
+        <div style="font-size:48px">${selectedProduct.emoji}</div>
+        <div>
+          <div style="font-family:Syne; font-size:18px; font-weight:800">${selectedProduct.name}</div>
+          <div style="font-size:13px; color:#6B6358">${selectedProduct.brand}</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <div style="font-size:24px; font-weight:800; color:#E8441A">$${selectedProduct.price.toLocaleString()}</div>
+        ${selectedProduct.oldPrice ? `<div style="font-size:13px; color:#A89F94; text-decoration:line-through">$${selectedProduct.oldPrice.toLocaleString()}</div>` : ''}
+        ${discount > 0 ? `<div style="background:#FEF0EC; color:#E8441A; padding:4px 8px; border-radius:100px; display:inline-block; font-size:12px; margin-top:6px">-${discount}% OFF</div>` : ''}
+      </div>
+      <div style="margin-top:10px; font-size:13px">💳 ${selectedProduct.installments} cuotas sin interés</div>
+      <div style="margin-top:5px; font-size:13px">🚚 ${selectedProduct.shipping === 0 ? 'Envío gratis' : 'Envío con costo'}</div>
+    </div>
+    
+    <div style="background:white; border-radius:18px; overflow:hidden">
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr; background:#18150F; color:white; padding:12px 16px; font-size:12px; font-weight:700">
+        <div>Tienda</div><div>Precio</div><div></div>
+      </div>
+      <div style="background:#FEF0EC; padding:12px 16px; display:grid; grid-template-columns:2fr 1fr 1fr; align-items:center">
+        <div><strong>⭐ Nuestra oferta</strong><br><span style="font-size:11px">${selectedProduct.brand}</span></div>
+        <div><strong style="color:#E8441A">$${selectedProduct.price.toLocaleString()}</strong></div>
+        <div><a href="${selectedProduct.url}" style="background:#E8441A; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:600">Comprar →</a></div>
+      </div>
+      ${comps.map(c => `
+        <div style="padding:12px 16px; display:grid; grid-template-columns:2fr 1fr 1fr; align-items:center; border-bottom:1px solid #E0DAD0">
+          <div>${c.emoji} ${c.tienda}</div>
+          <div>$${c.precio.toLocaleString()}</div>
+          <div><a href="${c.url}" style="background:#F0EDE6; color:#18150F; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px">Ver →</a></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderAlerts() {
+  const list = document.getElementById('alertsList');
+  if (!list) return;
+  list.innerHTML = products.map(p => `
+    <div style="background:white; border-radius:12px; padding:13px; margin-bottom:10px; display:flex; align-items:center; gap:12px; cursor:pointer" onclick="selectedProduct=products.find(x=>x.id==='${p.id}'); navigate('compare')">
+      <div style="font-size:28px">${p.emoji}</div>
+      <div style="flex:1">
+        <div style="font-weight:700">${p.name}</div>
+        <div style="font-size:11px; color:#0B7A48">✓ Precio monitoreado</div>
+      </div>
+      <div>→</div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// GOOGLE SHEETS (OPCIONAL)
+// ============================================
+async function connectSheet() {
+  const sheetId = document.getElementById('sheetIdInput').value.trim();
+  const statusDiv = document.getElementById('sheetStatus');
+  
+  if (!sheetId) {
+    statusDiv.innerHTML = '❌ Ingresá un ID de Google Sheet';
+    statusDiv.style.color = '#dc2626';
+    return;
+  }
+  
+  statusDiv.innerHTML = '⏳ Cargando datos...';
+  statusDiv.style.color = '#6B6358';
   
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Ofertas`;
   
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error();
+    if (!response.ok) throw new Error('No se pudo cargar');
     
     const csv = await response.text();
     const rows = parseCSV(csv);
     
     if (rows.length > 1) {
-      products = [];
+      const newProducts = [];
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
-        if (row[0] && row[1]) {
-          products.push({
+        if (row[0] && row[1] && row[4]) {
+          newProducts.push({
             id: row[0],
-            name: row[1] || 'Producto',
+            name: row[1],
             emoji: row[2] || '🏷️',
             brand: row[3] || '',
             price: parseFloat(row[4]) || 0,
@@ -323,16 +778,28 @@ async function loadProducts() {
           });
         }
       }
+      
+      if (newProducts.length > 0) {
+        products = newProducts;
+        localStorage.setItem('sheetId', sheetId);
+        statusDiv.innerHTML = `✅ Cargados ${newProducts.length} productos`;
+        statusDiv.style.color = '#0B7A48';
+        renderHome();
+        renderAlerts();
+        showToast('✅ Datos cargados correctamente');
+      } else {
+        statusDiv.innerHTML = '⚠️ No se encontraron productos válidos';
+        statusDiv.style.color = '#E8441A';
+      }
+    } else {
+      statusDiv.innerHTML = '⚠️ El Sheet está vacío';
+      statusDiv.style.color = '#E8441A';
     }
   } catch (error) {
-    console.log('Error cargando Sheet, usando datos locales');
+    statusDiv.innerHTML = '❌ Error: Verificá que el Sheet sea público y tenga la pestaña "Ofertas"';
+    statusDiv.style.color = '#dc2626';
+    console.error('Error:', error);
   }
-  
-  if (products.length === 0) {
-    loadDefaultProducts();
-  }
-  
-  renderHome();
 }
 
 function parseCSV(csv) {
@@ -347,185 +814,113 @@ function parseCSV(csv) {
       if (ch === '"') {
         inQuotes = !inQuotes;
       } else if (ch === ',' && !inQuotes) {
-        row.push(current.replace(/^"|"$/g, ''));
+        row.push(current);
         current = '';
       } else {
         current += ch;
       }
     }
-    row.push(current.replace(/^"|"$/g, ''));
-    result.push(row);
+    row.push(current);
+    result.push(row.map(cell => cell.replace(/^"|"$/g, '')));
   }
   return result;
 }
 
-function loadDefaultProducts() {
-  products = [
-    { id: 'iphone15', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: '#', desc: 'Triple cámara 50MP, pantalla AMOLED' },
-    { id: 'lenovo', name: 'Lenovo IdeaPad 3', emoji: '💻', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, shipping: 0, url: '#', desc: 'Intel Core i5, 16GB RAM, SSD 512GB' },
-    { id: 'adidas', name: 'Adidas Ultraboost', emoji: '👟', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, shipping: 0, url: '#', desc: 'Tecnología BOOST, máxima comodidad' }
-  ];
-}
-
 // ============================================
-// RENDERIZAR PANTALLAS
-// ============================================
-function renderHome() {
-  const grid = document.getElementById('homeGrid');
-  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-  
-  const filtered = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm) || 
-    p.brand.toLowerCase().includes(searchTerm)
-  );
-  
-  document.getElementById('statOffers').textContent = products.length;
-  document.getElementById('offersCount').textContent = filtered.length;
-  document.getElementById('alertBadge').textContent = products.length;
-  document.getElementById('alertsCount').textContent = products.length;
-  
-  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
-  document.getElementById('statDiscount').textContent = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
-  document.getElementById('statStores').textContent = '3';
-  
-  if (!grid) return;
-  
-  grid.innerHTML = '';
-  
-  filtered.forEach(p => {
-    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
-    const comp = competitors[p.id] || competitors.default;
-    const saving = comp[0]?.precio ? comp[0].precio - p.price : 0;
-    
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.onclick = () => { selectedProduct = p; navigate('compare'); };
-    card.innerHTML = `
-      <div class="my-tag">MEJOR PRECIO</div>
-      <div class="card-row">
-        <div class="card-img">${p.emoji}</div>
-        <div class="card-body">
-          <div class="card-title">${p.name}</div>
-          <div class="card-desc">${p.brand} · ${p.desc.substring(0, 50)}</div>
-          <div class="price-row">
-            <span class="p-now">$${p.price.toLocaleString()}</span>
-            ${p.oldPrice ? `<span class="p-old">$${p.oldPrice.toLocaleString()}</span>` : ''}
-            ${discount > 0 ? `<span class="p-pct">-${discount}%</span>` : ''}
-          </div>
-          ${saving > 0 ? `<div class="price-row" style="margin-top:5px"><span style="font-size:10px;color:var(--green)">💰 Ahorrás $${saving.toLocaleString()}</span></div>` : ''}
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-  
-  if (filtered.length === 0) {
-    grid.innerHTML = '<div style="text-align:center;padding:32px;color:var(--t3)">No se encontraron ofertas 🔍</div>';
-  }
-}
-
-function renderCompare() {
-  if (!selectedProduct) return;
-  
-  const container = document.getElementById('compareContent');
-  const discount = selectedProduct.oldPrice ? Math.round((1 - selectedProduct.price/selectedProduct.oldPrice)*100) : 0;
-  const comps = competitors[selectedProduct.id] || competitors.default;
-  
-  document.getElementById('compareTitle').textContent = selectedProduct.name;
-  
-  container.innerHTML = `
-    <div style="background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
-      <div style="display:flex;gap:14px;align-items:center">
-        <div style="font-size:48px">${selectedProduct.emoji}</div>
-        <div>
-          <div style="font-family:var(--fd);font-size:18px;font-weight:800">${selectedProduct.name}</div>
-          <div style="font-size:13px;color:var(--t2)">${selectedProduct.brand}</div>
-        </div>
-      </div>
-      <div style="margin-top:12px">
-        <div style="font-size:24px;font-weight:800;color:var(--acc)">$${selectedProduct.price.toLocaleString()}</div>
-        ${selectedProduct.oldPrice ? `<div style="font-size:13px;color:var(--t3);text-decoration:line-through">$${selectedProduct.oldPrice.toLocaleString()}</div>` : ''}
-        ${discount > 0 ? `<div style="background:var(--acc-bg);color:var(--acc);padding:4px 8px;border-radius:100px;display:inline-block;font-size:12px;margin-top:6px">-${discount}% OFF</div>` : ''}
-      </div>
-      <div style="margin-top:10px;font-size:13px">💳 ${selectedProduct.installments} cuotas sin interés</div>
-      <div style="margin-top:5px;font-size:13px">🚚 ${selectedProduct.shipping === 0 ? 'Envío gratis' : 'Envío con costo'}</div>
-    </div>
-    
-    <div style="background:var(--surface);border-radius:18px;overflow:hidden">
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;background:var(--text);color:#fff;padding:12px 16px">
-        <div>Tienda</div><div>Precio</div><div>Ir</div>
-      </div>
-      <div style="background:var(--acc-bg);padding:12px 16px;display:grid;grid-template-columns:2fr 1fr 1fr;align-items:center">
-        <div><strong>⭐ Nuestra oferta</strong><br><span style="font-size:12px">${selectedProduct.brand}</span></div>
-        <div><strong style="color:var(--acc)">$${selectedProduct.price.toLocaleString()}</strong></div>
-        <div><a href="${selectedProduct.url}" target="_blank" style="background:var(--acc);color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px">Comprar →</a></div>
-      </div>
-      ${comps.map(c => `
-        <div style="padding:12px 16px;display:grid;grid-template-columns:2fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--border)">
-          <div>${c.emoji} ${c.tienda}</div>
-          <div>$${c.precio.toLocaleString()}</div>
-          <div><a href="${c.url}" target="_blank" style="background:var(--s2);color:var(--text);padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px">Ver →</a></div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function renderAlerts() {
-  const list = document.getElementById('alertsList');
-  if (!list) return;
-  list.innerHTML = products.map(p => `
-    <div style="background:var(--surface);border-radius:12px;padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:12px">
-      <div style="font-size:28px">${p.emoji}</div>
-      <div style="flex:1">
-        <div style="font-weight:700">${p.name}</div>
-        <div style="font-size:11px;color:var(--green)">✓ Precio monitoreado</div>
-      </div>
-      <div onclick="selectedProduct=products.find(x=>x.id==='${p.id}');navigate('compare')" style="cursor:pointer">→</div>
-    </div>
-  `).join('');
-}
-
-// ============================================
-// ADMIN FUNCTIONS
+// ADMIN
 // ============================================
 function adminLogin() {
-  const pass = document.getElementById('adminPassword').value;
+  const pass = document.getElementById('adminPass').value;
   if (pass === 'admin123') {
-    document.getElementById('adminLoginView').style.display = 'none';
-    document.getElementById('adminPanelView').style.display = 'flex';
-    loadAdminPanel();
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'flex';
+    
+    const savedId = localStorage.getItem('sheetId');
+    if (savedId) {
+      document.getElementById('sheetIdInput').value = savedId;
+    }
   } else {
     showToast('❌ Contraseña incorrecta');
   }
 }
 
 function adminLogout() {
-  document.getElementById('adminLoginView').style.display = 'flex';
-  document.getElementById('adminPanelView').style.display = 'none';
-  document.getElementById('adminPassword').value = '';
+  document.getElementById('adminLogin').style.display = 'flex';
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('adminPass').value = '';
   goBack();
 }
 
-function loadAdminPanel() {
-  // Cargar configuración guardada
-  const savedId = localStorage.getItem('sheetId');
-  const savedName = localStorage.getItem('sheetName');
-  document.getElementById('sheetIdInput').value = savedId || DEFAULT_SHEET_ID;
-  document.getElementById('sheetNameInput').value = savedName || 'Ofertas';
+// ============================================
+// NAVEGACIÓN
+// ============================================
+function navigate(screen) {
+  if (screen === currentScreen) return;
   
-  renderAdminProducts();
+  const screens = {
+    home: 'screen-home',
+    compare: 'screen-compare',
+    alerts: 'screen-alerts',
+    account: 'screen-account',
+    admin: 'screen-admin'
+  };
+  
+  const oldScreen = document.getElementById(screens[currentScreen]);
+  const newScreen = document.getElementById(screens[screen]);
+  
+  if (!oldScreen || !newScreen) return;
+  
+  oldScreen.classList.remove('active');
+  newScreen.classList.add('active');
+  
+  screenHistory.push(screen);
+  currentScreen = screen;
+  
+  // Actualizar navegación
+  document.querySelectorAll('.nav-item').forEach((item, idx) => {
+    const navScreens = ['home', 'compare', 'alerts', 'account'];
+    item.classList.toggle('active', navScreens[idx] === screen);
+  });
+  
+  // Renderizar contenido si es necesario
+  if (screen === 'compare') renderCompare();
+  if (screen === 'alerts') renderAlerts();
+  
+  newScreen.scrollTop = 0;
 }
 
-function renderAdminProducts() {
-  const list = document.getElementById('productsList');
-  list.innerHTML = products.map(p => `
-    <div onclick="editProduct('${p.id}')" style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer">
-      <div style="font-size:24px">${p.emoji}</div>
-      <div style="flex:1">
-        <div style="font-weight:700">${p.name}</div>
-        <div style="font-size:12px;color:var(--acc)">$${p.price.toLocaleString()}</div>
-      </div>
-      <div>✏️</div>
-    </div>
- 
+function goBack() {
+  if (screenHistory.length <= 1) return;
+  screenHistory.pop();
+  const prevScreen = screenHistory[screenHistory.length - 1];
+  navigate(prevScreen);
+}
+
+function filterOffers() {
+  renderHome();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ============================================
+// INICIALIZAR
+// ============================================
+renderHome();
+renderAlerts();
+
+// Cargar Sheet guardado automáticamente
+const savedSheetId = localStorage.getItem('sheetId');
+if (savedSheetId) {
+  setTimeout(() => {
+    document.getElementById('sheetIdInput').value = savedSheetId;
+    connectSheet();
+  }, 500);
+}
+</script>
+</body>
+</html>
