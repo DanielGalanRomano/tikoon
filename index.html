@@ -39,8 +39,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .live{background:#EDFAF3;border:1px solid #6DDAA0;border-radius:100px;padding:3px 9px;font-size:10px;font-weight:700;color:#0B7A48;display:flex;align-items:center;gap:5px;}
 .live-dot{width:6px;height:6px;background:#0B7A48;border-radius:50%;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.offers-grid{display:flex;flex-direction:column;gap:10px;width:100%;overflow-x:hidden;}
-.card{background:#fff;border:2px solid #E8441A;border-radius:18px;padding:13px;cursor:pointer;position:relative;transition:transform .1s;width:100%;}
+.offers-grid{display:flex;flex-direction:column;gap:10px;width:100%;}
+.card{background:#fff;border:2px solid #E8441A;border-radius:18px;padding:13px;cursor:pointer;position:relative;transition:transform .1s;}
 .card:active{transform:scale(.98);}
 .best-tag{position:absolute;top:9px;right:9px;background:#E8441A;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;}
 .card-row{display:flex;gap:12px;flex-wrap:wrap;}
@@ -102,7 +102,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .admin-btn{width:100%;padding:12px;background:#E8441A;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;margin-top:8px;}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#18150F;color:#fff;padding:8px 16px;border-radius:100px;font-size:12px;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
-@media (max-width:480px){.card-row{flex-direction:row;}.card-body{min-width:120px;}.product-detail-top{flex-direction:row;}.stats{gap:6px;}.stat{padding:8px;}.stat-num{font-size:16px;}}
+@media (max-width:480px){.card-row{flex-direction:row;}.card-body{min-width:120px;}.product-detail-top{flex-direction:row;}}
 </style>
 </head>
 <body>
@@ -114,7 +114,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
     <div class="screen" id="screen-compare"><div class="back-header"><div class="back-btn" onclick="goBack()">←</div><div class="back-title" id="compareTitle">Comparativa de precios</div></div><div class="screen-body" id="compareContent"></div></div>
     <div class="screen" id="screen-alerts"><div class="screen-body"><div class="sec-header"><div class="sec-title">🔔 Mis alertas <span class="pill" id="alertsCount">0</span></div></div><div id="alertsList"></div></div></div>
     <div class="screen" id="screen-account"><div class="screen-body"><div style="background:#fff;border-radius:18px;padding:20px;text-align:center;margin-bottom:16px"><div style="font-size:48px">👤</div><div style="font-size:18px;font-weight:800">Mi Cuenta</div></div><div style="background:#fff;border-radius:18px;overflow:hidden"><div onclick="navigate('admin')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer"><span>⚙️</span><span style="flex:1;font-weight:600">Panel Admin</span><span>›</span></div></div></div></div>
-    <div class="screen" id="screen-admin"><div id="adminLogin" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px"><div style="font-size:48px">🔐</div><div style="font-size:20px;font-weight:800">Panel Admin</div><input type="password" id="adminPass" class="admin-input" placeholder="Contraseña" style="max-width:300px"><button class="admin-btn" onclick="adminLogin()" style="max-width:300px">Ingresar</button><button class="admin-btn" onclick="goBack()" style="background:#E0DAD0;color:#18150F;max-width:300px">Volver</button></div><div id="adminPanel" style="display:none;height:100%;flex-direction:column"><div style="background:#18150F;color:#fff;padding:16px;display:flex;align-items:center"><span style="flex:1;font-weight:800">Admin - Google Sheets</span><span onclick="adminLogout()" style="cursor:pointer">✕</span></div><div style="flex:1;overflow-y:auto;padding:16px"><div style="background:#fff;border-radius:18px;padding:16px;margin-bottom:16px"><h3 style="margin-bottom:12px">📊 Configurar Google Sheet</h3><input type="text" id="sheetIdInput" class="admin-input" placeholder="ID del Google Sheet"><button class="admin-btn" onclick="connectSheet()" style="background:#1B4FD8">🔗 Conectar y guardar</button><div id="sheetStatus" style="margin-top:12px;font-size:12px;color:#6B6358"></div></div><div style="background:#fff;border-radius:18px;padding:16px"><h3 style="margin-bottom:12px">📝 Formato del Google Sheet</h3><div style="font-size:12px;color:#6B6358"><strong>Columnas (fila 1):</strong><br><code style="background:#F0EDE6;padding:4px;display:block;margin:8px 0;font-size:10px;overflow-x:auto;">id | nombre | emoji | marca | precio | precio_anterior | cuotas | descripcion</code></div></div></div></div></div>
+    <div class="screen" id="screen-admin"><div id="adminLogin" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px"><div style="font-size:48px">🔐</div><div style="font-size:20px;font-weight:800">Panel Admin</div><input type="password" id="adminPass" class="admin-input" placeholder="Contraseña" style="max-width:300px"><button class="admin-btn" onclick="adminLogin()" style="max-width:300px">Ingresar</button><button class="admin-btn" onclick="goBack()" style="background:#E0DAD0;color:#18150F;max-width:300px">Volver</button></div><div id="adminPanel" style="display:none;height:100%;flex-direction:column"><div style="background:#18150F;color:#fff;padding:16px;display:flex;align-items:center"><span style="flex:1;font-weight:800">Admin - Google Sheets</span><span onclick="adminLogout()" style="cursor:pointer">✕</span></div><div style="flex:1;overflow-y:auto;padding:16px"><div style="background:#fff;border-radius:18px;padding:16px;margin-bottom:16px"><h3 style="margin-bottom:12px">📊 Configurar Google Sheet</h3><input type="text" id="sheetIdInput" class="admin-input" placeholder="ID del Google Sheet"><button class="admin-btn" onclick="connectSheet()" style="background:#1B4FD8">🔗 Conectar y guardar</button><div id="sheetStatus" style="margin-top:12px;font-size:12px;color:#6B6358"></div></div><div style="background:#fff;border-radius:18px;padding:16px"><h3 style="margin-bottom:12px">📝 Formato del Google Sheet</h3><div style="font-size:12px;color:#6B6358"><strong>Columnas (fila 1):</strong><br><code style="background:#F0EDE6;padding:4px;display:block;margin:8px 0;font-size:10px;overflow-x:auto;">id | nombre | emoji | marca | precio | precio_anterior | cuotas | descripcion</code><br><strong>Ejemplo:</strong><br>tv_samsung | Samsung TV 40" 4K | 📺 | Samsung | 299999 | 399999 | 12 | Smart TV 4K</div></div></div></div></div>
     <div class="screen" id="screen-exit"><div class="back-header"><div class="back-btn" onclick="goBack()">←</div><div class="back-title">Saliendo de DescuentosApp</div></div><div class="screen-body"><div class="exit-screen"><div class="exit-icon">⚠️</div><div class="exit-title">Estás saliendo de DescuentosApp</div><div class="exit-sub">Serás redirigido a WhatsApp para completar tu compra</div><div class="exit-card"><div class="exit-card-title">Serás redirigido a</div><div class="exit-store"><div class="exit-store-icon">💬</div><div><div class="exit-store-name">WhatsApp</div><div class="exit-store-url">wa.me/5491137991082</div></div></div></div><div class="progress-bar"><div class="progress-fill"></div></div><div class="exit-buttons"><a href="#" id="exitDirectLink" class="exit-btn-primary" target="_blank">💬 Ir a WhatsApp ahora</a><button class="exit-btn-secondary" onclick="goBack()">← Volver a DescuentosApp</button></div><div class="exit-note">🔒 No compartimos tus datos. Serás redirigido a un sitio externo.</div></div></div></div>
   </div>
   <div class="nav"><div class="nav-item active" onclick="navigate('home')"><div class="ico">🏠</div><div>Inicio</div></div><div class="nav-item" onclick="if(selectedProduct) navigate('compare'); else showToast('Seleccioná un producto')"><div class="ico">📊</div><div>Comparar</div></div><div class="nav-item" onclick="navigate('alerts')"><div class="ico">🔔</div><div>Alertas</div></div><div class="nav-item" onclick="navigate('account')"><div class="ico">👤</div><div>Cuenta</div></div></div>
@@ -143,81 +143,58 @@ const defaultProducts = [
 ];
 
 // ============================================
-// BUSCAR PRECIOS COMPETIDORES (MERCADO LIBRE + LINKS DIRECTOS)
+// BUSCAR PRECIOS REALES DE MERCADO LIBRE
 // ============================================
-async function buscarCompetidores(productoNombre) {
-  const competidores = [];
-  
-  // 1. MERCADO LIBRE API
+async function buscarPreciosML(productoNombre) {
   try {
     const busqueda = encodeURIComponent(productoNombre);
-    const url = `https://api.mercadolibre.com/sites/MLA/search?q=${busqueda}&limit=2`;
+    const url = `https://api.mercadolibre.com/sites/MLA/search?q=${busqueda}&limit=3`;
     const response = await fetch(url);
     const data = await response.json();
+    
     if (data.results && data.results.length > 0) {
-      for (let i = 0; i < data.results.length; i++) {
-        const item = data.results[i];
-        competidores.push({
-          tienda: i === 0 ? 'Mercado Libre' : 'Mercado Libre (2do)',
-          precio: item.price,
-          envio: item.shipping?.free_shipping ? 0 : 5000,
-          cuotas: item.installments ? `${item.installments.quantity}x ${item.installments.amount ? `$${Math.round(item.installments.amount)}` : 'sin interés'}` : 'Consultar',
-          url: item.permalink,
-          emoji: '🛒'
-        });
-      }
+      return data.results.map(item => ({
+        tienda: 'Mercado Libre',
+        precio: item.price,
+        envio: item.shipping?.free_shipping ? 0 : 5000,
+        cuotas: item.installments ? `${item.installments.quantity} cuotas de $${Math.round(item.installments.amount).toLocaleString('es-AR')}` : 'Consultar',
+        url: item.permalink,
+        emoji: '🛒',
+        real: true
+      }));
     }
   } catch(e) { console.log('Error ML:', e); }
+  return [];
+}
+
+// ============================================
+// GENERAR LINKS DE BÚSQUEDA PARA OTRAS TIENDAS
+// ============================================
+function generarLinksBusqueda(productoNombre) {
+  const busqueda = encodeURIComponent(productoNombre);
+  return [
+    { tienda: 'Frávega', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.fravega.com/buscar?search=${busqueda}`, emoji: '🔌', real: false },
+    { tienda: 'Garbarino', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.garbarino.com/search/?q=${busqueda}`, emoji: '🏪', real: false },
+    { tienda: 'Musimundo', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.musimundo.com/search?q=${busqueda}`, emoji: '🎵', real: false },
+    { tienda: 'Casa Royal', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.casaroyal.com.ar/catalogsearch/result/?q=${busqueda}`, emoji: '🏬', real: false }
+  ];
+}
+
+// ============================================
+// OBTENER TODOS LOS PRECIOS DE COMPETIDORES
+// ============================================
+async function obtenerCompetidores(productoNombre) {
+  showToast('🔍 Buscando en Mercado Libre...');
+  const preciosML = await buscarPreciosML(productoNombre);
+  const linksBusqueda = generarLinksBusqueda(productoNombre);
   
-  // 2. FRÁVEGA - Link de búsqueda directo
-  const fravegaUrl = `https://www.fravega.com/buscar?search=${encodeURIComponent(productoNombre)}`;
-  competidores.push({
-    tienda: 'Frávega',
-    precio: null,
-    envio: null,
-    cuotas: 'Ver sitio',
-    url: fravegaUrl,
-    emoji: '🔌',
-    esBusqueda: true
-  });
+  let todos = [...preciosML, ...linksBusqueda];
   
-  // 3. GARBARINO - Link de búsqueda directo
-  const garbarinoUrl = `https://www.garbarino.com/search/?q=${encodeURIComponent(productoNombre)}`;
-  competidores.push({
-    tienda: 'Garbarino',
-    precio: null,
-    envio: null,
-    cuotas: 'Ver sitio',
-    url: garbarinoUrl,
-    emoji: '🏪',
-    esBusqueda: true
-  });
+  if (preciosML.length === 0) {
+    todos = linksBusqueda;
+  }
   
-  // 4. MUSIMUNDO - Link de búsqueda directo
-  const musimundoUrl = `https://www.musimundo.com/search?q=${encodeURIComponent(productoNombre)}`;
-  competidores.push({
-    tienda: 'Musimundo',
-    precio: null,
-    envio: null,
-    cuotas: 'Ver sitio',
-    url: musimundoUrl,
-    emoji: '🎵',
-    esBusqueda: true
-  });
-  
-  // 5. CASA ROYAL (electrodomésticos)
-  const royalUrl = `https://www.casaroyal.com.ar/catalogsearch/result/?q=${encodeURIComponent(productoNombre)}`;
-  competidores.push({
-    tienda: 'Casa Royal',
-    precio: null,
-    envio: null,
-    cuotas: 'Ver sitio',
-    url: royalUrl,
-    emoji: '🏬',
-    esBusqueda: true
-  });
-  
-  return competidores;
+  return todos;
 }
 
 // ============================================
@@ -240,8 +217,7 @@ async function cargarProductosDesdeSheet() {
           nuevos.push({
             id: row[0], name: row[1], emoji: row[2] || '🏷️', brand: row[3] || '',
             price: parseFloat(row[4]) || 0, oldPrice: parseFloat(row[5]) || null,
-            installments: parseInt(row[6]) || 1, desc: row[7] || `Oferta en ${row[1]}`,
-            url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20${encodeURIComponent(row[1])}`
+            installments: parseInt(row[6]) || 1, desc: row[7] || `Oferta en ${row[1]}`
           });
         }
       }
@@ -295,23 +271,40 @@ function renderHome() {
     card.className = 'card';
     card.onclick = async () => {
       selectedProduct = p;
-      showToast('🔄 Buscando precios de la competencia...');
-      document.getElementById('compareContent').innerHTML = '<div class="loading-row"><div class="loading-spinner"></div><p style="margin-top:10px">Buscando precios en tiempo real...</p></div>';
+      document.getElementById('compareContent').innerHTML = '<div class="loading-row"><div class="loading-spinner"></div><p style="margin-top:10px">Buscando precios en Mercado Libre...</p></div>';
       navigate('compare');
-      competitorPrices = await buscarCompetidores(p.name);
+      competitorPrices = await obtenerCompetidores(p.name);
       renderCompare();
     };
     card.innerHTML = `<div class="best-tag">MEJOR PRECIO</div><div class="card-row"><div class="card-img">${p.emoji}</div><div class="card-body"><div class="card-title">${p.name}</div><div class="card-brand">${p.brand}</div><div class="card-desc">${p.desc.substring(0,50)}${p.desc.length>50?'...':''}</div><div class="price-row"><span class="price-now">$${p.price.toLocaleString('es-AR')}</span>${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''}</div><div style="font-size:10px;color:#0B7A48;margin-top:5px">💳 ${p.installments} cuotas sin interés</div></div></div>`;
     grid.appendChild(card);
   });
 }
+
 function renderCompare() {
   if (!selectedProduct) return;
   const discount = selectedProduct.oldPrice ? Math.round((1 - selectedProduct.price/selectedProduct.oldPrice)*100) : 0;
   document.getElementById('compareTitle').innerHTML = selectedProduct.name;
+  
   let competidoresHtml = '';
-  if (competitorPrices.length === 0) competidoresHtml = '<div class="loading-row">No se encontraron precios de competidores</div>';
-  else competidoresHtml = competitorPrices.map(c => `<div class="comparison-row"><div class="store-cell"><div class="store-icon">${c.emoji}</div><div><div class="store-name">${c.tienda}</div><div class="store-sub">${c.envio === 0 ? 'Envío gratis' : (c.envio ? `Envío $${c.envio.toLocaleString('es-AR')}` : 'Ver precios')}</div></div></div><div class="comparison-price">${c.precio ? `$${c.precio.toLocaleString('es-AR')}` : 'Consultar'}</div><div style="font-size:11px;color:#6B6358">${c.cuotas}</div><div><a href="${c.url}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#F0EDE6;color:#18150F">Ver →</a></div></div>`).join('');
+  if (competitorPrices.length === 0) {
+    competidoresHtml = '<div class="loading-row">⚠️ No se encontraron precios de competidores</div>';
+  } else {
+    competidoresHtml = competitorPrices.map(c => `
+      <div class="comparison-row">
+        <div class="store-cell">
+          <div class="store-icon">${c.emoji}</div>
+          <div>
+            <div class="store-name">${c.tienda}</div>
+            <div class="store-sub">${c.envio === 0 ? 'Envío gratis' : (c.envio ? `Envío $${c.envio.toLocaleString('es-AR')}` : 'Buscar ofertas')}</div>
+          </div>
+        </div>
+        <div class="comparison-price">${c.precio ? `$${c.precio.toLocaleString('es-AR')}` : 'Consultar'}</div>
+        <div style="font-size:11px;color:#6B6358">${c.cuotas}</div>
+        <div><a href="${c.url}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#F0EDE6;color:#18150F">Ver →</a></div>
+      </div>
+    `).join('');
+  }
   
   document.getElementById('compareContent').innerHTML = `
     <div class="product-detail">
@@ -335,12 +328,12 @@ function renderCompare() {
         <div>Cuotas/Info</div>
         <div></div>
       </div>
-      <div class="comparison-row best">
+            <div class="comparison-row best">
         <div class="store-cell">
           <div class="store-icon">⭐</div>
           <div>
             <div class="store-name">Nuestra oferta</div>
-            <div class="store-sub">Envío gratis</div>
+            <div class="store-sub">Envío gratis - Stock disponible</div>
           </div>
         </div>
         <div class="comparison-price" style="color:#E8441A">$${selectedProduct.price.toLocaleString('es-AR')}</div>
@@ -477,10 +470,6 @@ async function init() {
       await cargarProductosDesdeSheet();
       renderHome();
       renderAlerts();
-      if (selectedProduct) {
-        competitorPrices = await buscarCompetidores(selectedProduct.name);
-        if (currentScreen === 'compare') renderCompare();
-      }
     }
   }, 30000);
 }
