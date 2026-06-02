@@ -6,6 +6,7 @@
 <title>DescuentosApp — Mejores Ofertas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
+  /* Estilos esenciales */
   :root { --bg: #F5F2EC; --surface: #FFF; --text: #1C1B19; --primary: #E8441A; --border: 1px solid rgba(0,0,0,0.06); }
   body { background-color: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding-bottom: 100px; }
   header { background: var(--surface); padding: 20px; border-bottom: var(--border); }
@@ -13,7 +14,7 @@
   .grid-ofertas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
   .card-prod { background: var(--surface); padding: 12px; border-radius: 12px; border: var(--border); }
   .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #FFF; border-top: var(--border); display: flex; justify-content: space-around; padding: 15px; }
-  .nav-tab { cursor: pointer; border: none; background: none; color: #706E64; }
+  .nav-tab { cursor: pointer; border: none; background: none; color: #706E64; display: flex; flex-direction: column; align-items: center; }
   .nav-tab.active { color: var(--primary); }
 </style>
 </head>
@@ -30,8 +31,12 @@
 </main>
 
 <nav class="nav-bottom">
-  <button class="nav-tab active" onclick="switchView('home')" id="tab-home">Ofertas</button>
-  <button class="nav-tab" onclick="switchView('admin')" id="tab-admin">Consola</button>
+  <button class="nav-tab active" onclick="switchView('home')" id="tab-home">
+    <span>Ofertas</span>
+  </button>
+  <button class="nav-tab" onclick="switchView('admin')" id="tab-admin">
+    <span>Consola</span>
+  </button>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -43,25 +48,32 @@
 
   let productos = [];
 
-  // 2. FUNCIÓN DE NAVEGACIÓN
+  // 2. FUNCIÓN DE NAVEGACIÓN CORREGIDA
   function switchView(viewName) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('view-' + viewName).classList.add('active');
-    document.getElementById('tab-' + viewName).classList.add('active');
+    const targetView = document.getElementById('view-' + viewName);
+    const targetTab = document.getElementById('tab-' + viewName);
+    if(targetView) targetView.classList.add('active');
+    if(targetTab) targetTab.classList.add('active');
   }
 
   // 3. OBTENER DATOS
   async function fetchAllOfertas() {
-    const { data, error } = await supabase.from('ofertas').select('*');
-    if (error) { console.error(error); return; }
-    productos = data;
-    renderUI();
+    try {
+      const { data, error } = await supabase.from('ofertas').select('*');
+      if (error) throw error;
+      productos = data || [];
+      renderUI();
+    } catch(e) {
+      console.error("Error al cargar:", e);
+    }
   }
 
   // 4. RENDERIZADO
   function renderUI() {
     const box = document.getElementById('grid-box');
+    if (!box) return;
     box.innerHTML = productos.map(p => `
       <div class="card-prod">
         <h3>${p.nombre}</h3>
