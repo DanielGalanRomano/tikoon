@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#E8441A">
-<meta name="mobile-web-app-capable" content="yes">
 <title>DescuentosApp — Mejores Ofertas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
 /* ============================================
-   ESTILOS COMPLETOS (mismos que antes)
+   ESTILOS COMPLETOS
    ============================================ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -22,141 +20,98 @@
   --star:#F59E0B;--purple:#7C3AED;
   --r:12px;--rl:18px;--rx:24px;
   --fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
-  --sh:0 2px 8px rgba(0,0,0,.06);--shm:0 4px 16px rgba(0,0,0,.09);
+  --sh:0 2px 8px rgba(0,0,0,.06);
   --safe:env(safe-area-inset-bottom,0px);
 }
 html,body{font-family:var(--fb);background:var(--bg);color:var(--text);height:100%;overflow:hidden}
 #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 
-.sponsor{background:var(--purple);color:#fff;text-align:center;padding:6px 16px;font-size:11.5px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0}
-.sponsor-cta{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:100px;padding:2px 10px;font-size:10.5px;font-weight:700;cursor:pointer}
-
-.topbar{background:var(--surface);border-bottom:1.5px solid var(--border);box-shadow:var(--sh);flex-shrink:0}
+/* Header */
+.sponsor{background:var(--purple);color:#fff;text-align:center;padding:6px 16px;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0}
+.topbar{background:var(--surface);border-bottom:1.5px solid var(--border);flex-shrink:0}
 .topbar-inner{padding:0 16px;height:54px;display:flex;align-items:center;gap:12px}
-.logo{display:flex;flex-direction:column;gap:1px;flex-shrink:0;cursor:pointer}
-.logo-pow{font-size:8px;font-weight:500;color:var(--t3);letter-spacing:1px}
+.logo{display:flex;flex-direction:column;gap:1px;cursor:pointer}
+.logo-pow{font-size:8px;font-weight:500;color:var(--t3)}
 .logo-main{display:flex;align-items:center;gap:7px}
 .logo-icon{width:28px;height:28px;background:var(--acc);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.logo-name{font-family:var(--fd);font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.logo-name{font-family:var(--fd);font-size:17px;font-weight:800;color:var(--text)}
 .logo-name em{color:var(--acc);font-style:normal}
-.search-wrap{flex:1;min-width:0}
-.search-box{display:flex;align-items:center;gap:8px;background:var(--s2);border:1.5px solid var(--border);border-radius:100px;padding:8px 14px;cursor:text}
-.search-box:focus-within{border-color:var(--acc);background:#fff;box-shadow:0 0 0 3px var(--acc-bg)}
-.search-ico{color:var(--t3);flex-shrink:0}
+.search-wrap{flex:1}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--s2);border:1.5px solid var(--border);border-radius:100px;padding:8px 14px}
 .search-input{border:none;background:transparent;font-size:13px;width:100%;outline:none}
-.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;position:relative;flex-shrink:0}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;position:relative}
 .badge{position:absolute;top:2px;right:2px;width:14px;height:14px;background:var(--acc);color:#fff;border-radius:50%;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
 
-.live{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);border:1px solid var(--green-b);border-radius:100px;padding:3px 9px;font-size:10px;font-weight:700;color:var(--green);font-family:var(--fd)}
-.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.4s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-
-.skel{background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;font-size:12px;font-weight:600;padding:9px 18px;border-radius:100px;z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-.screens{flex:1;overflow:hidden;position:relative}
-.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);display:none;flex-direction:column}
-.screen.active{display:flex}
-.screen.slide-in{animation:sIn .28s cubic-bezier(.4,0,.2,1) both}
-@keyframes sIn{from{transform:translateX(100%);opacity:.5}to{transform:translateX(0);opacity:1}}
-@keyframes sOut{from{transform:translateX(0);opacity:1}to{transform:translateX(-30%);opacity:.3}}
-
+/* Navegación inferior */
 .bnav{background:var(--surface);border-top:1.5px solid var(--border);display:flex;padding-bottom:var(--safe);flex-shrink:0}
 .bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;gap:3px}
 .bni .ico{font-size:22px}
 .bni .lbl{font-family:var(--fd);font-size:10px;font-weight:600;color:var(--t3)}
 .bni.active .lbl{color:var(--acc)}
-.bni.active .ico{transform:scale(1.15)}
 
-.back-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px 10px;background:var(--surface);border-bottom:1.5px solid var(--border);flex-shrink:0}
+/* Pantallas */
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;background:var(--bg);display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* Botones y headers */
+.back-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1.5px solid var(--border)}
 .back-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .back-title{font-family:var(--fd);font-size:16px;font-weight:700;flex:1}
 
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+/* Cards */
+.screen-body{padding:16px;flex:1}
+.hero{background:linear-gradient(135deg,var(--acc) 0%,var(--acc2) 100%);border-radius:18px;padding:16px;color:#fff;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.hero-title{font-family:var(--fd);font-size:20px;font-weight:800}
+.hero-sub{font-size:13px;opacity:.85;margin-bottom:12px}
+.hero-btn{background:#fff;color:var(--acc);font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;cursor:pointer;display:inline-block}
+.hero-emoji{font-size:56px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.stat-num{font-family:var(--fd);font-size:20px;font-weight:800;color:var(--acc)}
+.stat-lbl{font-size:10px;color:var(--t2)}
+
+.sec-hdr{display:flex;justify-content:space-between;margin-bottom:12px}
 .sec-title{font-family:var(--fd);font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px}
 .pill{background:var(--acc);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px}
-.sec-link{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--acc);cursor:pointer}
+.live{background:var(--green-bg);border:1px solid var(--green-b);border-radius:100px;padding:3px 9px;font-size:10px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:5px}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.tag{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;font-family:var(--fd)}
-.t-orange{background:var(--acc-bg);color:var(--acc2)}
-
-.price-row{display:flex;align-items:baseline;gap:5px}
+.offers-grid{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:2px solid var(--acc);border-radius:18px;padding:13px;cursor:pointer;position:relative}
+.my-tag{position:absolute;top:9px;right:9px;background:var(--acc);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px}
+.card-row{display:flex;gap:12px}
+.card-img{width:72px;height:72px;border-radius:12px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:30px}
+.card-body{flex:1}
+.card-title{font-family:var(--fd);font-size:14px;font-weight:700}
+.card-desc{font-size:12px;color:var(--t2);margin:3px 0 7px}
+.price-row{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
 .p-now{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--acc)}
 .p-old{font-size:11px;color:var(--t3);text-decoration:line-through}
 .p-pct{background:var(--acc-bg);color:var(--acc);font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px}
 
-.screen-body{padding:16px 16px 0;flex:1}
-.hero{background:linear-gradient(135deg,var(--acc) 0%,var(--acc2) 100%);border-radius:var(--rl);padding:16px;color:#fff;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;position:relative}
-.hero-content{position:relative;z-index:1}
-.hero-title{font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:4px}
-.hero-sub{font-size:13px;opacity:.85;margin-bottom:12px}
-.hero-btn{display:inline-flex;align-items:center;gap:5px;background:#fff;color:var(--acc);font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;cursor:pointer}
-.hero-emoji{font-size:56px;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.stat{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:12px 10px;text-align:center}
-.stat-num{font-family:var(--fd);font-size:20px;font-weight:800;color:var(--acc)}
-.stat-lbl{font-size:10px;color:var(--t2);margin-top:2px}
-
-.offers-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.card{background:var(--surface);border:2px solid var(--acc);border-radius:var(--rl);padding:13px;cursor:pointer;transition:all .18s;box-shadow:var(--sh);position:relative}
-.card:active{transform:scale(.98)}
-.my-tag{position:absolute;top:9px;right:9px;background:var(--acc);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px}
-.card-row{display:flex;gap:12px;align-items:flex-start}
-.card-img{width:72px;height:72px;border-radius:var(--r);background:var(--s2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:30px}
-.card-body{flex:1}
-.card-title{font-family:var(--fd);font-size:14px;font-weight:700;margin-bottom:3px}
-.card-desc{font-size:12px;color:var(--t2);margin-bottom:7px}
-.card-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px}
-
-.comp-mini{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--green);background:var(--green-bg);border-radius:6px;padding:2px 7px;margin-top:4px}
-
-.cmp-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px}
-.cmp-banner{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);background:var(--s2)}
-.cmp-img{width:40px;height:40px;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--border)}
-.cmp-pname{font-family:var(--fd);font-size:13px;font-weight:800}
-.cmp-hdr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;background:var(--text);color:#fff;padding:10px 16px;gap:6px}
-.cmp-hdr-c{font-size:10px;font-weight:700;text-transform:uppercase}
-.cmp-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:12px 16px;gap:6px;align-items:center;border-bottom:1px solid var(--border);cursor:pointer}
-.cmp-row.best{background:var(--acc-bg);border-left:3px solid var(--acc)}
-.store-cell{display:flex;align-items:center;gap:9px}
-.store-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.store-name{font-family:var(--fd);font-size:13px;font-weight:700}
-.best-lbl{background:var(--acc);color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:100px;margin-top:2px;display:inline-block}
-.cmp-price{font-family:var(--fd);font-size:15px;font-weight:800}
-.cmp-row.best .cmp-price{color:var(--acc)}
-.cmp-ship.free{color:var(--green);font-weight:700}
-.cmp-btn{display:inline-flex;padding:6px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none}
-.cmp-btn.primary{background:var(--acc);color:#fff}
-.cmp-btn.sec{background:transparent;border:1.5px solid var(--border2);color:var(--t2)}
-
+/* Admin */
 .admin-login{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px 24px}
-.admin-input{width:100%;padding:13px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);font-size:14px}
-.admin-btn{width:100%;padding:14px;background:var(--acc);color:#fff;font-weight:700;border:none;border-radius:var(--r);cursor:pointer}
+.admin-input{width:100%;padding:13px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;font-size:14px}
+.admin-btn{width:100%;padding:14px;background:var(--acc);color:#fff;font-weight:700;border:none;border-radius:12px;cursor:pointer}
 .admin-btn.sec{background:var(--surface);color:var(--t2);border:1.5px solid var(--border)}
-.save-btn{width:100%;padding:14px;background:var(--acc);color:#fff;font-weight:700;border:none;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-
-@media(max-width:400px){
-  .cmp-hdr,.cmp-row{grid-template-columns:2fr 1fr 1fr 1fr}
-  .cmp-hdr-c:nth-child(3),.cmp-row>*:nth-child(3){display:none}
-}
+.save-btn{width:100%;padding:14px;background:var(--acc);color:#fff;font-weight:700;border:none;border-radius:12px;cursor:pointer}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:9px 18px;border-radius:100px;z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
 <div id="app">
 
   <div class="sponsor">
-    <span>🎉 <strong>Banco Nación</strong> · 30% OFF los miércoles en +2.400 comercios</span>
-    <span class="sponsor-cta">Ver más →</span>
+    <span>🎉 <strong>Banco Nación</strong> · 30% OFF los miércoles</span>
   </div>
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="logo" onclick="goHome()">
+      <div class="logo" onclick="navigate('home')">
         <span class="logo-pow">Powered by DescuentosAR</span>
         <div class="logo-main">
           <div class="logo-icon">🏷️</div>
@@ -165,166 +120,130 @@ html,body{font-family:var(--fb);background:var(--bg);color:var(--text);height:10
       </div>
       <div class="search-wrap">
         <div class="search-box">
-          <svg class="search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <input class="search-input" type="search" placeholder="Buscar ofertas…" oninput="filterOffers(this.value)">
+          <span>🔍</span>
+          <input class="search-input" type="search" placeholder="Buscar ofertas…" id="searchInput" oninput="filterOffers(this.value)">
         </div>
       </div>
-      <button class="icon-btn" onclick="navigate('alertas')">🔔<span class="badge" id="alert-badge">0</span></button>
+      <button class="icon-btn" onclick="navigate('alertas')">🔔<span class="badge" id="alertBadge">0</span></button>
     </div>
   </header>
 
   <div class="screens">
+    
     <!-- HOME -->
     <div class="screen active" id="screen-home">
       <div class="screen-body">
         <div class="hero">
           <div class="hero-content">
             <div class="hero-title">¡Descuentos del día! 🔥</div>
-            <div class="hero-sub">Precios actualizados en tiempo real</div>
+            <div class="hero-sub">Precios actualizados</div>
             <div class="hero-btn" onclick="navigate('alertas')">🔔 Activar alertas</div>
           </div>
           <div class="hero-emoji">🛍️</div>
         </div>
         <div class="stats">
-          <div class="stat"><div class="stat-num" id="stat-offers">—</div><div class="stat-lbl">Ofertas</div></div>
-          <div class="stat"><div class="stat-num" id="stat-stores">—</div><div class="stat-lbl">Tiendas</div></div>
-          <div class="stat"><div class="stat-num" id="stat-best">—</div><div class="stat-lbl">Mejor desc.</div></div>
+          <div class="stat"><div class="stat-num" id="statOffers">0</div><div class="stat-lbl">Ofertas</div></div>
+          <div class="stat"><div class="stat-num" id="statDiscount">0%</div><div class="stat-lbl">Dto máx</div></div>
+          <div class="stat"><div class="stat-num" id="statStores">0</div><div class="stat-lbl">Tiendas</div></div>
         </div>
         <div class="sec-hdr">
-          <div class="sec-title">🔥 Ofertas <span class="pill" id="home-count">0</span></div>
+          <div class="sec-title">🔥 Ofertas <span class="pill" id="offersCount">0</span></div>
           <div class="live"><div class="live-dot"></div>En vivo</div>
         </div>
-        <div class="offers-grid" id="home-grid"></div>
+        <div class="offers-grid" id="homeGrid"></div>
       </div>
     </div>
 
     <!-- COMPARATIVA -->
-    <div class="screen" id="screen-comparativa">
+    <div class="screen" id="screen-compare">
       <div class="back-hdr">
         <div class="back-btn" onclick="goBack()">←</div>
-        <div class="back-title" id="cmp-title">Comparativa</div>
+        <div class="back-title" id="compareTitle">Comparativa</div>
       </div>
-      <div class="screen-body">
-        <div class="cmp-wrap">
-          <div class="cmp-banner">
-            <div class="cmp-img" id="cmp-emoji">📦</div>
-            <div>
-              <div class="cmp-pname" id="cmp-name">Cargando...</div>
-              <div style="font-size:11px;color:var(--t2)">Compará precios y ahorrá</div>
-            </div>
-          </div>
-          <div class="cmp-hdr">
-            <div class="cmp-hdr-c">Tienda</div>
-            <div class="cmp-hdr-c">Precio</div>
-            <div class="cmp-hdr-c">Envío</div>
-            <div class="cmp-hdr-c">Cuotas</div>
-            <div class="cmp-hdr-c">Ir</div>
-          </div>
-          <div id="cmp-rows"></div>
-        </div>
-      </div>
+      <div class="screen-body" id="compareContent"></div>
     </div>
 
     <!-- ALERTAS -->
-    <div class="screen" id="screen-alertas">
+    <div class="screen" id="screen-alerts">
       <div class="screen-body">
         <div class="sec-hdr">
-          <div class="sec-title">🔔 Mis alertas <span class="pill" id="alert-count">0</span></div>
-          <div class="sec-link" onclick="showToast('Próximamente: más alertas 🔔')">+ Nueva</div>
+          <div class="sec-title">🔔 Mis alertas <span class="pill" id="alertsCount">0</span></div>
         </div>
-        <div id="alerts-list"></div>
+        <div id="alertsList"></div>
       </div>
     </div>
 
-    <!-- MI CUENTA -->
-    <div class="screen" id="screen-cuenta">
+    <!-- CUENTA / ADMIN -->
+    <div class="screen" id="screen-account">
       <div class="screen-body">
-        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rl);padding:20px;text-align:center;margin-bottom:16px">
+        <div style="background:var(--surface);border-radius:18px;padding:20px;text-align:center;margin-bottom:16px">
           <div style="width:64px;height:64px;background:var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px">👤</div>
           <div style="font-family:var(--fd);font-size:18px;font-weight:800">Mi Cuenta</div>
-          <div style="font-size:13px;color:var(--t2);margin-bottom:12px">usuario@descuentosapp.com</div>
         </div>
-        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rl);overflow:hidden">
-          <div class="settings-item" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="navigate('admin')">
+        <div style="background:var(--surface);border-radius:18px;overflow:hidden">
+          <div onclick="navigate('admin')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer">
             <span style="font-size:20px">⚙️</span>
-            <span style="font-family:var(--fd);font-size:14px;font-weight:600;flex:1">Panel Admin</span>
-            <span style="color:var(--t3)">›</span>
+            <span style="flex:1;font-weight:600">Panel Admin</span>
+            <span>›</span>
           </div>
         </div>
-        <div style="text-align:center;padding:16px;font-size:12px;color:var(--t3)">DescuentosApp v3.0</div>
       </div>
     </div>
 
-    <!-- ADMIN -->
+    <!-- ADMIN PANEL -->
     <div class="screen" id="screen-admin">
-      <div id="admin-login" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px 24px">
+      <div id="adminLoginView" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px">
         <div style="font-size:48px">🔐</div>
         <div style="font-family:var(--fd);font-size:20px;font-weight:800">Panel Admin</div>
-        <input type="password" id="admin-pass" class="admin-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')adminLogin()">
+        <input type="password" id="adminPassword" class="admin-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')adminLogin()">
         <button class="admin-btn" onclick="adminLogin()">Ingresar</button>
         <button class="admin-btn sec" onclick="goBack()">Volver</button>
       </div>
-      <div id="admin-panel" style="display:none;height:100%;flex-direction:column">
+      
+      <div id="adminPanelView" style="display:none;height:100%;flex-direction:column">
         <div style="background:var(--text);color:#fff;padding:16px;display:flex;align-items:center;gap:12px">
           <span style="font-size:22px">⚙️</span>
-          <span style="font-family:var(--fd);font-size:16px;font-weight:800;flex:1">Admin - Google Sheets</span>
-          <span style="cursor:pointer" onclick="adminLogout()">Salir ×</span>
+          <span style="flex:1;font-weight:800">Admin - Google Sheets</span>
+          <span onclick="adminLogout()" style="cursor:pointer">✕</span>
         </div>
         <div style="flex:1;overflow-y:auto;padding:16px">
           
-          <!-- Configuración de Google Sheets -->
-          <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:16px">
-            <h3 style="font-family:var(--fd);margin-bottom:12px">📊 Configurar Google Sheets</h3>
-            <div style="margin-bottom:12px">
-              <input type="text" id="sheet-id" class="admin-input" placeholder="ID del Google Sheet (ej: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms)">
-            </div>
-            <div style="margin-bottom:12px">
-              <input type="text" id="sheet-name" class="admin-input" placeholder="Nombre de la hoja (ej: Ofertas)" value="Ofertas">
-            </div>
-            <button class="save-btn" onclick="connectGoogleSheets()" style="background:var(--blue)">🔗 Conectar y cargar datos</button>
-            <div id="sheet-status" style="margin-top:12px;font-size:12px;color:var(--t2)"></div>
+          <!-- Configurar Google Sheet -->
+          <div style="background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
+            <h3 style="font-family:var(--fd);margin-bottom:12px">📊 Google Sheets</h3>
+            <input type="text" id="sheetIdInput" class="admin-input" placeholder="ID del Google Sheet" style="margin-bottom:12px">
+            <input type="text" id="sheetNameInput" class="admin-input" placeholder="Nombre de la hoja" value="Ofertas" style="margin-bottom:12px">
+            <button class="save-btn" onclick="connectSheet()" style="background:var(--blue)">🔗 Conectar</button>
+            <div id="sheetStatus" style="margin-top:12px;font-size:12px;color:var(--t2)"></div>
           </div>
 
-          <!-- Lista de productos -->
-          <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:16px">
+          <!-- Productos -->
+          <div style="background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
             <h3 style="font-family:var(--fd);margin-bottom:12px">🏷️ Productos</h3>
-            <div id="admin-products-list"></div>
+            <div id="productsList"></div>
           </div>
 
-          <!-- Formulario de edición -->
-          <div id="admin-form" style="display:none;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:16px">
-            <h3 style="font-family:var(--fd);margin-bottom:12px">✏️ Editar Oferta</h3>
-            <input type="hidden" id="edit-id">
-            <div style="margin-bottom:12px"><input type="text" id="edit-name" class="admin-input" placeholder="Nombre del producto"></div>
-            <div style="margin-bottom:12px"><input type="text" id="edit-emoji" class="admin-input" placeholder="Emoji (ej: 📱)" maxlength="2"></div>
-            <div style="margin-bottom:12px"><input type="text" id="edit-brand" class="admin-input" placeholder="Marca"></div>
-            <div style="margin-bottom:12px"><input type="number" id="edit-price" class="admin-input" placeholder="Precio"></div>
-            <div style="margin-bottom:12px"><input type="number" id="edit-oldprice" class="admin-input" placeholder="Precio anterior"></div>
-            <div style="margin-bottom:12px"><input type="number" id="edit-installments" class="admin-input" placeholder="Cuotas"></div>
-            <div style="margin-bottom:12px">
-              <select id="edit-shipping" class="admin-input">
-                <option value="true">Envío gratis</option>
-                <option value="false">Envío con costo</option>
-              </select>
-            </div>
-            <div style="margin-bottom:12px"><input type="url" id="edit-url" class="admin-input" placeholder="URL de compra"></div>
-            <div style="margin-bottom:12px"><textarea id="edit-desc" class="admin-input" rows="3" placeholder="Descripción"></textarea></div>
+          <!-- Formulario edición -->
+          <div id="editForm" style="display:none;background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
+            <h3 style="font-family:var(--fd);margin-bottom:12px">✏️ Editar</h3>
+            <input type="hidden" id="editId">
+            <input type="text" id="editName" class="admin-input" placeholder="Nombre" style="margin-bottom:12px">
+            <input type="text" id="editEmoji" class="admin-input" placeholder="Emoji (📱)" maxlength="2" style="margin-bottom:12px">
+            <input type="text" id="editBrand" class="admin-input" placeholder="Marca" style="margin-bottom:12px">
+            <input type="number" id="editPrice" class="admin-input" placeholder="Precio" style="margin-bottom:12px">
+            <input type="number" id="editOldPrice" class="admin-input" placeholder="Precio anterior" style="margin-bottom:12px">
+            <input type="number" id="editInstallments" class="admin-input" placeholder="Cuotas" style="margin-bottom:12px">
+            <input type="url" id="editUrl" class="admin-input" placeholder="URL" style="margin-bottom:12px">
+            <textarea id="editDesc" class="admin-input" rows="3" placeholder="Descripción" style="margin-bottom:12px"></textarea>
             <div style="display:flex;gap:10px">
-              <button class="save-btn" onclick="saveProduct()" style="flex:1">💾 Guardar cambios</button>
-              <button class="save-btn" onclick="deleteProduct()" style="flex:0;background:#dc2626">🗑️ Eliminar</button>
+              <button class="save-btn" onclick="saveProduct()" style="flex:1">💾 Guardar</button>
+              <button class="save-btn" onclick="deleteProduct()" style="flex:0;background:#dc2626">🗑️</button>
             </div>
           </div>
 
-          <div class="sheets-info" style="background:var(--blue-bg);border:1.5px solid var(--blue-b);border-radius:var(--r);padding:12px;margin-top:16px;font-size:12px">
-            <strong>📌 Instrucciones:</strong><br>
-            1. Creá un Google Sheet con una pestaña llamada "Ofertas"<br>
-            2. Agregá estas columnas (fila 1):<br>
-            <code style="background:rgba(0,0,0,.05);padding:2px 4px;border-radius:4px;display:inline-block;margin-top:4px">
-            id | nombre | emoji | marca | precio | precio_anterior | cuotas | envio_gratis | url | descripcion
-            </code><br>
-            3. Publicá el Sheet: Archivo → Compartir → Cualquier persona con el enlace<br>
-            4. Copiá el ID del Sheet (en la URL: docs.google.com/spreadsheets/d/[ID_AQUI]/edit)<br>
-            5. Pegá el ID arriba y hacé click en "Conectar"
+          <div style="background:var(--blue-bg);border-radius:12px;padding:12px;font-size:12px">
+            <strong>📌 ID del Sheet:</strong><br>
+            <code style="background:rgba(0,0,0,.05);padding:4px;display:block;margin-top:6px">1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w</code>
           </div>
         </div>
       </div>
@@ -332,132 +251,281 @@ html,body{font-family:var(--fb);background:var(--bg);color:var(--text);height:10
   </div>
 
   <nav class="bnav">
-    <div class="bni active" id="bnav-home" onclick="navigate('home')"><div class="ico">🏠</div><div class="lbl">Inicio</div></div>
-    <div class="bni" id="bnav-cmp" onclick="if(selectedProduct)navigate('comparativa');else showToast('Seleccioná un producto primero')"><div class="ico">📊</div><div class="lbl">Comparar</div></div>
-    <div class="bni" id="bnav-alerts" onclick="navigate('alertas')"><div class="ico">🔔</div><div class="lbl">Alertas</div></div>
-    <div class="bni" id="bnav-acct" onclick="navigate('cuenta')"><div class="ico">👤</div><div class="lbl">Mi cuenta</div></div>
+    <div class="bni active" id="nav-home" onclick="navigate('home')"><div class="ico">🏠</div><div class="lbl">Inicio</div></div>
+    <div class="bni" id="nav-compare" onclick="if(selectedProduct) navigate('compare'); else showToast('Seleccioná un producto')"><div class="ico">📊</div><div class="lbl">Comparar</div></div>
+    <div class="bni" id="nav-alerts" onclick="navigate('alerts')"><div class="ico">🔔</div><div class="lbl">Alertas</div></div>
+    <div class="bni" id="nav-account" onclick="navigate('account')"><div class="ico">👤</div><div class="lbl">Cuenta</div></div>
   </nav>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toastMsg"></div>
 
 <script>
 // ============================================
-// CONFIGURACIÓN
+// CONFIGURACIÓN INICIAL
 // ============================================
-const ADMIN_PASSWORD = 'admin123';
-const STORAGE_KEY = 'descuentosapp_sheets';
-
-// Estado global
 let products = [];
-let competitorPrices = {};
 let selectedProduct = null;
 let currentScreen = 'home';
-let screenHistory = ['home'];
-let searchTerm = '';
-let isAdminAuth = false;
-let sheetConfig = { id: '', name: 'Ofertas' };
+let history = ['home'];
 
-// Competidores simulados (como backup)
-const DEFAULT_COMPETITORS = {
+// Sheet ID que te di
+const DEFAULT_SHEET_ID = '1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w';
+
+// Competidores simulados
+const competitors = {
+  'iphone15': [
+    { tienda: 'Mercado Libre', precio: 489999, envio: 0, cuotas: '12x sin int.', url: 'https://mercadolibre.com.ar', emoji: '🛒' }
+  ],
   'default': [
-    { tienda: 'Mercado Libre', precio: 0, envio: true, cuotas: 'Consultar', url: '#', emoji: '🛒' }
+    { tienda: 'Mercado Libre', precio: 0, envio: 0, cuotas: 'Consultar', url: '#', emoji: '🛒' }
   ]
 };
 
 // ============================================
-// GOOGLE SHEETS - CARGAR DATOS
+// CARGAR PRODUCTOS DESDE GOOGLE SHEETS
 // ============================================
-async function loadFromGoogleSheets() {
-  // Cargar configuración guardada
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const data = JSON.parse(saved);
-      sheetConfig = data.sheetConfig || { id: '', name: 'Ofertas' };
-      if (data.products) products = data.products;
-    }
-  } catch(e) {}
-
-  // Si hay un Sheet configurado, cargar datos
-  if (sheetConfig.id) {
-    await fetchGoogleSheetsData();
-  }
-
-  // Si no hay productos, cargar datos por defecto
-  if (products.length === 0) {
+async function loadProducts() {
+  // Intentar cargar configuración guardada
+  const savedId = localStorage.getItem('sheetId');
+  const sheetId = savedId || DEFAULT_SHEET_ID;
+  
+  if (!sheetId) {
     loadDefaultProducts();
+    return;
   }
-
-  renderHome();
-  renderAlerts();
-  updateStats();
-}
-
-async function fetchGoogleSheetsData() {
-  if (!sheetConfig.id) return;
-
-  const url = `https://docs.google.com/spreadsheets/d/${sheetConfig.id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetConfig.name)}`;
+  
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Ofertas`;
   
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error('No se pudo cargar el Sheet');
+    if (!response.ok) throw new Error();
     
-    const csvText = await response.text();
-    const data = parseCSV(csvText);
+    const csv = await response.text();
+    const rows = parseCSV(csv);
     
-    if (data && data.length > 1) {
-      const headers = data[0];
+    if (rows.length > 1) {
       products = [];
-      
-      for (let i = 1; i < data.length; i++) {
-        const row = data[i];
-        const product = {
-          id: row[0] || `prod_${i}`,
-          name: row[1] || 'Producto sin nombre',
-          emoji: row[2] || '🏷️',
-          brand: row[3] || '',
-          price: parseFloat(row[4]) || 0,
-          oldPrice: parseFloat(row[5]) || null,
-          installments: parseInt(row[6]) || 1,
-          shipping: row[7] === 'true' || row[7] === 'TRUE' || row[7] === 'Si' ? 0 : null,
-          url: row[8] || '#',
-          desc: row[9] || `Oferta increíble en ${row[1] || 'producto'}`
-        };
-        products.push(product);
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[0] && row[1]) {
+          products.push({
+            id: row[0],
+            name: row[1] || 'Producto',
+            emoji: row[2] || '🏷️',
+            brand: row[3] || '',
+            price: parseFloat(row[4]) || 0,
+            oldPrice: parseFloat(row[5]) || null,
+            installments: parseInt(row[6]) || 1,
+            shipping: row[7] === 'true' || row[7] === 'TRUE' ? 0 : null,
+            url: row[8] || '#',
+            desc: row[9] || `Oferta en ${row[1]}`
+          });
+        }
       }
-      
-      saveToLocalStorage();
-      updateSheetStatus('✅ Datos cargados correctamente', 'success');
     }
   } catch (error) {
-    console.error('Error cargando Google Sheets:', error);
-    updateSheetStatus('❌ Error al cargar: ' + error.message, 'error');
+    console.log('Error cargando Sheet, usando datos locales');
   }
+  
+  if (products.length === 0) {
+    loadDefaultProducts();
+  }
+  
+  renderHome();
 }
 
-function parseCSV(csvText) {
-  const lines = csvText.split('\n');
+function parseCSV(csv) {
+  const lines = csv.split('\n');
   const result = [];
-  
   for (const line of lines) {
     const row = [];
     let current = '';
     let inQuotes = false;
-    
     for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') {
+      const ch = line[i];
+      if (ch === '"') {
         inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        row.push(current.trim());
+      } else if (ch === ',' && !inQuotes) {
+        row.push(current.replace(/^"|"$/g, ''));
         current = '';
       } else {
-        current += char;
+        current += ch;
       }
     }
-    row.push(current.trim());
+    row.push(current.replace(/^"|"$/g, ''));
     result.push(row);
   }
-  
   return result;
+}
+
+function loadDefaultProducts() {
+  products = [
+    { id: 'iphone15', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: '#', desc: 'Triple cámara 50MP, pantalla AMOLED' },
+    { id: 'lenovo', name: 'Lenovo IdeaPad 3', emoji: '💻', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, shipping: 0, url: '#', desc: 'Intel Core i5, 16GB RAM, SSD 512GB' },
+    { id: 'adidas', name: 'Adidas Ultraboost', emoji: '👟', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, shipping: 0, url: '#', desc: 'Tecnología BOOST, máxima comodidad' }
+  ];
+}
+
+// ============================================
+// RENDERIZAR PANTALLAS
+// ============================================
+function renderHome() {
+  const grid = document.getElementById('homeGrid');
+  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  
+  const filtered = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm) || 
+    p.brand.toLowerCase().includes(searchTerm)
+  );
+  
+  document.getElementById('statOffers').textContent = products.length;
+  document.getElementById('offersCount').textContent = filtered.length;
+  document.getElementById('alertBadge').textContent = products.length;
+  document.getElementById('alertsCount').textContent = products.length;
+  
+  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
+  document.getElementById('statDiscount').textContent = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
+  document.getElementById('statStores').textContent = '3';
+  
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  
+  filtered.forEach(p => {
+    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    const comp = competitors[p.id] || competitors.default;
+    const saving = comp[0]?.precio ? comp[0].precio - p.price : 0;
+    
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => { selectedProduct = p; navigate('compare'); };
+    card.innerHTML = `
+      <div class="my-tag">MEJOR PRECIO</div>
+      <div class="card-row">
+        <div class="card-img">${p.emoji}</div>
+        <div class="card-body">
+          <div class="card-title">${p.name}</div>
+          <div class="card-desc">${p.brand} · ${p.desc.substring(0, 50)}</div>
+          <div class="price-row">
+            <span class="p-now">$${p.price.toLocaleString()}</span>
+            ${p.oldPrice ? `<span class="p-old">$${p.oldPrice.toLocaleString()}</span>` : ''}
+            ${discount > 0 ? `<span class="p-pct">-${discount}%</span>` : ''}
+          </div>
+          ${saving > 0 ? `<div class="price-row" style="margin-top:5px"><span style="font-size:10px;color:var(--green)">💰 Ahorrás $${saving.toLocaleString()}</span></div>` : ''}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:32px;color:var(--t3)">No se encontraron ofertas 🔍</div>';
+  }
+}
+
+function renderCompare() {
+  if (!selectedProduct) return;
+  
+  const container = document.getElementById('compareContent');
+  const discount = selectedProduct.oldPrice ? Math.round((1 - selectedProduct.price/selectedProduct.oldPrice)*100) : 0;
+  const comps = competitors[selectedProduct.id] || competitors.default;
+  
+  document.getElementById('compareTitle').textContent = selectedProduct.name;
+  
+  container.innerHTML = `
+    <div style="background:var(--surface);border-radius:18px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="font-size:48px">${selectedProduct.emoji}</div>
+        <div>
+          <div style="font-family:var(--fd);font-size:18px;font-weight:800">${selectedProduct.name}</div>
+          <div style="font-size:13px;color:var(--t2)">${selectedProduct.brand}</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <div style="font-size:24px;font-weight:800;color:var(--acc)">$${selectedProduct.price.toLocaleString()}</div>
+        ${selectedProduct.oldPrice ? `<div style="font-size:13px;color:var(--t3);text-decoration:line-through">$${selectedProduct.oldPrice.toLocaleString()}</div>` : ''}
+        ${discount > 0 ? `<div style="background:var(--acc-bg);color:var(--acc);padding:4px 8px;border-radius:100px;display:inline-block;font-size:12px;margin-top:6px">-${discount}% OFF</div>` : ''}
+      </div>
+      <div style="margin-top:10px;font-size:13px">💳 ${selectedProduct.installments} cuotas sin interés</div>
+      <div style="margin-top:5px;font-size:13px">🚚 ${selectedProduct.shipping === 0 ? 'Envío gratis' : 'Envío con costo'}</div>
+    </div>
+    
+    <div style="background:var(--surface);border-radius:18px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;background:var(--text);color:#fff;padding:12px 16px">
+        <div>Tienda</div><div>Precio</div><div>Ir</div>
+      </div>
+      <div style="background:var(--acc-bg);padding:12px 16px;display:grid;grid-template-columns:2fr 1fr 1fr;align-items:center">
+        <div><strong>⭐ Nuestra oferta</strong><br><span style="font-size:12px">${selectedProduct.brand}</span></div>
+        <div><strong style="color:var(--acc)">$${selectedProduct.price.toLocaleString()}</strong></div>
+        <div><a href="${selectedProduct.url}" target="_blank" style="background:var(--acc);color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px">Comprar →</a></div>
+      </div>
+      ${comps.map(c => `
+        <div style="padding:12px 16px;display:grid;grid-template-columns:2fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--border)">
+          <div>${c.emoji} ${c.tienda}</div>
+          <div>$${c.precio.toLocaleString()}</div>
+          <div><a href="${c.url}" target="_blank" style="background:var(--s2);color:var(--text);padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px">Ver →</a></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderAlerts() {
+  const list = document.getElementById('alertsList');
+  if (!list) return;
+  list.innerHTML = products.map(p => `
+    <div style="background:var(--surface);border-radius:12px;padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">${p.emoji}</div>
+      <div style="flex:1">
+        <div style="font-weight:700">${p.name}</div>
+        <div style="font-size:11px;color:var(--green)">✓ Precio monitoreado</div>
+      </div>
+      <div onclick="selectedProduct=products.find(x=>x.id==='${p.id}');navigate('compare')" style="cursor:pointer">→</div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// ADMIN FUNCTIONS
+// ============================================
+function adminLogin() {
+  const pass = document.getElementById('adminPassword').value;
+  if (pass === 'admin123') {
+    document.getElementById('adminLoginView').style.display = 'none';
+    document.getElementById('adminPanelView').style.display = 'flex';
+    loadAdminPanel();
+  } else {
+    showToast('❌ Contraseña incorrecta');
+  }
+}
+
+function adminLogout() {
+  document.getElementById('adminLoginView').style.display = 'flex';
+  document.getElementById('adminPanelView').style.display = 'none';
+  document.getElementById('adminPassword').value = '';
+  goBack();
+}
+
+function loadAdminPanel() {
+  // Cargar configuración guardada
+  const savedId = localStorage.getItem('sheetId');
+  const savedName = localStorage.getItem('sheetName');
+  document.getElementById('sheetIdInput').value = savedId || DEFAULT_SHEET_ID;
+  document.getElementById('sheetNameInput').value = savedName || 'Ofertas';
+  
+  renderAdminProducts();
+}
+
+function renderAdminProducts() {
+  const list = document.getElementById('productsList');
+  list.innerHTML = products.map(p => `
+    <div onclick="editProduct('${p.id}')" style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer">
+      <div style="font-size:24px">${p.emoji}</div>
+      <div style="flex:1">
+        <div style="font-weight:700">${p.name}</div>
+        <div style="font-size:12px;color:var(--acc)">$${p.price.toLocaleString()}</div>
+      </div>
+      <div>✏️</div>
+    </div>
+ 
