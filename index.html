@@ -449,8 +449,8 @@ nav.nav-bottom {
 
 <script>
 /* ════ CONFIGURACIÓN DE CONEXIÓN DE TU BACKEND ════ */
-const SUPABASE_URL = "https://YOUR_SUPABASE_URL.supabase.co"; // Reemplazar por tu URL real
-const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY"; // Reemplazar por tu clave anon real
+const SUPABASE_URL = "https://rujxdrdgegwfbmmpvmid.supabase.co"; 
+const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD"; 
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -498,7 +498,7 @@ async function fetchAllOfertas() {
     const { data, error } = await supabase
       .from('ofertas')
       .select('*')
-      .order('creado', { ascending: false });
+      .order('destacado', { ascending: false }); // Ordena trayendo destacadas primero
 
     if (error) throw error;
     if (data) actualizarCatalogoSupabase(data);
@@ -510,25 +510,25 @@ async function fetchAllOfertas() {
 function actualizarCatalogoSupabase(data) {
   // MAPEO EXACTO DE TU NUEVA TABLA CON ENVIO COMO BOOLEAN
   S.products = data.map(item => ({
-    id: item.producto_id,
+    id: item.producto_id,         // Sincroniza 'producto_id' de la DB con el 'id' local
     name: item.nombre,
-    brand: item.marca || 'Exclusivo',
-    category: item.categoria,
+    brand: item.marca || 'Genérico',
+    category: item.categoria || 'otros',
     store: item.tienda,
     price: Number(item.precio || 0),
     oldPrice: item.precio_anterior ? Number(item.precio_anterior) : null,
-    discount: item.descuento,
+    discount: item.descuento || 0,
     
-    // Tratamiento booleano -> si es true se almacena 0 (gratis) para compatibilidad UI
+    // Tratamiento booleano -> si item.envio es true, se mapea a 0 (Gratis) para compatibilidad UI
     shipping: item.envio === true ? 0 : null, 
     
-    installments: item.cuotas || 1,
+    installments: parseInt(item.cuotas || 1),
     url: item.url || '#',
     emoji: item.imagen || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500',
     stock: item.stock,
     featured: item.destacado,
     desc: item.descripcion || '',
-    db_id: item.id // Guardamos la PK real autoincremental de la fila por si necesitamos editar/borrar
+    db_id: item.id                // Clave primaria autoincremental real para ediciones/bajas
   }));
 
   renderHomeGrid(S._search);
@@ -675,7 +675,7 @@ async function saveProduct(e) {
   const precio = parseFloat(document.getElementById('f-price').value);
   const precio_anterior = parseFloat(document.getElementById('f-oldprice').value) || null;
   const cuotas = parseInt(document.getElementById('f-installments').value) || 1;
-  const envio = document.getElementById('f-shipping').value === "true"; // Parseo a boolean estricto
+  const envio = document.getElementById('f-shipping').value === "true"; // Parseo estricto a boolean
   const url = document.getElementById('f-url').value.trim();
   const imagen = document.getElementById('f-img').value.trim() || undefined;
   const descripcion = document.getElementById('f-desc').value.trim();
@@ -695,14 +695,14 @@ async function saveProduct(e) {
     let responseError;
 
     if (S.editingId) {
-      // Actualización basada en la PK única autoincremental de tu tabla ofertas
+      // Actualización basada en la PK única autoincremental de la fila
       const { error } = await supabase
         .from('ofertas')
         .update(payload)
         .eq('id', S.editingId);
       responseError = error;
     } else {
-      // Inserción limpia con cláusula on conflict nativa equivalente a tu SQL
+      // Inserción limpia respetando el constraint único nativo de tu SQL
       const { error } = await supabase
         .from('ofertas')
         .upsert(payload, { onConflict: 'producto_id,tienda' });
@@ -762,6 +762,7 @@ function startEdit(dbId) {
 function cancelEdit() {
   S.editingId = null;
   document.getElementById('form-title').textContent = "Agregar Nueva Oferta";
+  document.getElementById('prod-form').reset();
 }
 
 function renderAdminProdList() {
