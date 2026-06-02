@@ -354,7 +354,9 @@ nav.nav-bottom {
 <div class="cats-scroll" id="cats-box"></div>
 
 <main id="view-home" class="view active">
-  <div class="grid-ofertas" id="grid-box"></div>
+  <div class="grid-ofertas" id="grid-box">
+    <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-m);">Cargando ofertas desde la base de datos...</div>
+  </div>
 </main>
 
 <main id="view-detail" class="view">
@@ -450,7 +452,7 @@ nav.nav-bottom {
 const SUPABASE_URL = "https://rujxdrdgegwfbmmpvmid.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD"; 
 
-// Inicialización limpia del cliente (CORREGIDO: Declarado una sola vez)
+// Inicialización limpia
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ════ ESTADO GLOBAL DE LA APP ════ */
@@ -464,10 +466,10 @@ const S = {
 
 let cur = 'home';
 
-// Inicialización de Eventos y Carga Inicial
+// CORRECCIÓN 2: Secuencia de arranque controlada e inmune a delays de red
 document.addEventListener("DOMContentLoaded", () => {
-  initRealtimeFetch();
   renderCategories();
+  initRealtimeFetch();
   
   document.getElementById('search-input').addEventListener('input', (e) => {
     S._search = e.target.value.toLowerCase();
@@ -495,9 +497,13 @@ async function fetchAllOfertas() {
       .select('id, producto_id, nombre, marca, categoria, tienda, precio, "precio anterior", envio, cuotas, "url compra", imagen, descripcion');
 
     if (error) throw error;
-    if (data) actualizarCatalogoSupabase(data);
+    actualizarCatalogoSupabase(data || []);
   } catch (err) {
     console.error("Error obteniendo datos de Supabase:", err.message);
+    const box = document.getElementById('grid-box');
+    if (box) {
+      box.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#C62828;">⚠️ Error de conexión: ${err.message}</div>`;
+    }
   }
 }
 
@@ -552,6 +558,8 @@ function filterCat(cat) {
 
 function getGroupedProducts() {
   const map = {};
+  if (!S.products || !S.products.length) return [];
+  
   S.products.forEach(p => {
     if (S._activeCat !== 'todos' && p.category !== S._activeCat) return;
 
@@ -585,7 +593,7 @@ function renderHomeGrid(query = '') {
   }
 
   if (items.length === 0) {
-    box.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-m);">No se encontraron ofertas activas en Supabase.</div>`;
+    box.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-m);">No se encontraron ofertas activas en Supabase. ¡Agrega una desde la pestaña Consola!</div>`;
     return;
   }
 
@@ -720,7 +728,7 @@ async function deleteOffer(dbId) {
       .eq('id', dbId);
 
     if (error) throw error;
-    showToast("Oferta eliminada");
+    showToast("Oferta("");
     await fetchAllOfertas();
   } catch (err) {
     alert("Error eliminando: " + err.message);
@@ -759,6 +767,10 @@ function cancelEdit() {
 function renderAdminProdList() {
   const box = document.getElementById('admin-list');
   if (!box) return;
+  if (!S.products.length) {
+    box.innerHTML = `<div style="font-size:13px; color:var(--text-m); padding:10px 0;">No hay elementos para administrar.</div>`;
+    return;
+  }
   box.innerHTML = S.products.map(p => `
     <div class="adm-item">
       <div>
