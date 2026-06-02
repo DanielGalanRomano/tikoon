@@ -1,74 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>DescuentosApp — Mejores Ofertas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <style>
-    /* He mantenido todos tus estilos originales de index-data-claude2.html */
-    :root { --bg:#F5F2EC; --surface:#FFF; --acc:#E8441A; --text:#18150F; --t3:#A89F94; --border:#E0DAD0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); margin: 0; }
-    #app { display: flex; flex-direction: column; height: 100dvh; }
-    .screen { display: none; flex: 1; overflow-y: auto; }
-    .screen.active { display: flex; flex-direction: column; }
-    .offers-grid { display: grid; padding: 16px; gap: 10px; }
-    .card { background: var(--surface); border: 2px solid var(--acc); border-radius: 12px; padding: 16px; }
-    .topbar { background: var(--surface); padding: 16px; border-bottom: 1.5px solid var(--border); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>DescuentosApp</title>
+<style>
+/* ... AQUÍ PEGA TU CSS ORIGINAL COMPLETO DESDE TU ARCHIVO ... */
+/* Asegúrate de que las clases .offers-grid y .card estén presentes */
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <div id="app">
-  <div class="sponsor" style="background:#7C3AED; color:#fff; padding:6px; text-align:center; font-size:11px;">
-    🎉 <strong>Banco Nación</strong> · 30% OFF los miércoles
-  </div>
-
-  <header class="topbar">
-    <div class="logo">Descuentos<em>App</em></div>
-  </header>
-
   <div class="screens">
     <div class="screen active" id="screen-home">
-      <div class="offers-grid" id="offers-list">
-        <p>Cargando ofertas...</p>
+      <div class="screen-body">
+        <div class="offers-grid" id="offers-list">
+           <p>Cargando datos...</p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // 1. CONFIGURACIÓN ÚNICA
-  const SUPABASE_URL = "https://rujxdrdgegwfbmmpvmid.supabase.co"; 
-  const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD"; 
+  // 1. CONFIGURACIÓN
+  const SUPABASE_URL = "https://rujxdrdgegwfbmmpvmid.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD";
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // 2. LÓGICA DE CARGA
-  async function cargarDatos() {
-    const container = document.getElementById('offers-list');
-    const { data, error } = await supabase.from('ofertas').select('*');
-    
-    if (error) {
-      container.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
-      return;
-    }
+  // 2. FUNCIÓN PARA RENDERIZAR LAS OFERTAS
+  async function loadData() {
+    const list = document.getElementById('offers-list');
+    try {
+      const { data, error } = await supabase.from('ofertas').select('*');
+      if (error) throw error;
 
-    if (data.length === 0) {
-      container.innerHTML = "<p>No hay ofertas cargadas.</p>";
-      return;
+      if (data && data.length > 0) {
+        list.innerHTML = data.map(item => `
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">${item.nombre}</h3>
+              <p class="p-now">$${item.precio}</p>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        list.innerHTML = "<p>No hay ofertas.</p>";
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      list.innerHTML = "<p>Error de conexión.</p>";
     }
-
-    container.innerHTML = data.map(item => `
-      <div class="card">
-        <h3>${item.nombre}</h3>
-        <p>Precio: $${item.precio}</p>
-      </div>
-    `).join('');
   }
 
-  // 3. INICIALIZACIÓN
-  window.onload = cargarDatos;
+  // 3. INICIO
+  document.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
 </html>
