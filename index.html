@@ -1,14 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title stylke="font-family:Arial; font-weight: bold; font-size: 20px;">Mercado Saldo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#E8441A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DescuentosApp">
+<meta name="description" content="Las mejores ofertas y descuentos de Argentina. Compará precios en tiempo real.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>DescuentosApp — Ofertas y descuentos</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif !important; }
-
+/* ══════════════════════════════════════════════
+   RESET & TOKENS
+══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --c-bg:         #F5F2EC;
   --c-surface:    #FFFFFF;
@@ -28,846 +37,1687 @@
   --c-green:      #0B7A48;
   --c-green-bg:   #EDFAF3;
   --c-green-b:    #6DDAA0;
+  --c-amber:      #B45309;
+  --c-amber-bg:   #FEF9EC;
   --c-star:       #F59E0B;
-  --c-mp:         #009EE3;
   --c-sponsor:    #7C3AED;
   --c-sponsor-bg: #F5F3FF;
-  --r:            12px;
-  --r-lg:         16px;
-  --f-d:          'Syne', sans-serif;
-  --f-b:          'DM Sans', sans-serif;
-  --sh:           0 2px 8px rgba(0,0,0,0.06);
-  --sh-md:        0 4px 16px rgba(0,0,0,0.08);
-  --max-w:        1200px;
+  --r:    12px; --r-lg: 18px; --r-xl: 24px;
+  --f-d:  'Syne', sans-serif;
+  --f-b:  'DM Sans', sans-serif;
+  --sh:   0 2px 8px rgba(0,0,0,0.06);
+  --sh-md:0 4px 16px rgba(0,0,0,0.08);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
+html, body { font-family: var(--f-b); background: var(--c-bg); color: var(--c-text); height: 100%; overflow: hidden; }
 
-html, body { font-family: var(--f-b); background: var(--c-bg); color: var(--c-text); }
+/* ══ APP SHELL ══ */
+#app { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
 
-/* ─── SPONSOR STRIP ─── */
-.sponsor-strip {
-  background: var(--c-sponsor);
-  color: white;
-  text-align: center;
-  padding: 7px 16px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
+/* ── Sponsor strip ── */
+.sponsor-strip { background: var(--c-sponsor); color: white; text-align: center; padding: 6px 16px; font-size: 11.5px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; flex-shrink: 0; }
 .sponsor-strip strong { font-weight: 700; }
-.sponsor-cta {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 100px;
-  padding: 2px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
+.sponsor-cta { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 100px; padding: 2px 10px; font-size: 10.5px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
-/* ─── TOPBAR ─── */
-.topbar {
-  background: var(--c-surface);
-  border-bottom: 1.5px solid var(--c-border);
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  box-shadow: var(--sh);
-}
-.topbar-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* Logo */
-.logo-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  flex-shrink: 0;
-}
-.logo-powered {
-  font-size: 9px;
-  font-weight: 500;
-  color: var(--c-t3);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.logo-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.logo-icon {
-  width: 30px; height: 30px;
-  background: var(--c-accent);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.logo-name {
-  font-family: var(--f-d);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--c-text);
-  letter-spacing: -0.3px;
-  white-space: nowrap;
-}
+/* ── Topbar ── */
+.topbar { background: var(--c-surface); border-bottom: 1.5px solid var(--c-border); box-shadow: var(--sh); flex-shrink: 0; z-index: 100; }
+.topbar-inner { padding: 0 16px; height: 54px; display: flex; align-items: center; gap: 12px; }
+.logo-wrap { display: flex; flex-direction: column; gap: 1px; flex-shrink: 0; cursor: pointer; }
+.logo-powered { font-size: 8px; font-weight: 500; color: var(--c-t3); letter-spacing: 1px; text-transform: uppercase; }
+.logo-main { display: flex; align-items: center; gap: 7px; }
+.logo-icon { width: 28px; height: 28px; background: var(--c-accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.logo-name { font-family: var(--f-d); font-size: 17px; font-weight: 800; color: var(--c-text); letter-spacing: -0.3px; white-space: nowrap; }
 .logo-name em { color: var(--c-accent); font-style: normal; }
-
-/* Sponsor badge in header */
-.sponsor-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--c-sponsor-bg);
-  border: 1.5px solid #DDD6FE;
-  border-radius: 100px;
-  padding: 4px 12px 4px 6px;
-  cursor: pointer;
-  transition: all 0.14s;
-  flex-shrink: 0;
-}
-.sponsor-badge:hover { background: #EDE9FE; }
-.sponsor-logo {
-  width: 22px; height: 22px;
-  background: var(--c-sponsor);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  color: white;
-  font-weight: 800;
-  font-family: var(--f-d);
-}
-.sponsor-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-.sponsor-label { font-size: 9px; color: var(--c-t3); font-weight: 500; line-height: 1; }
-.sponsor-name { font-size: 12px; font-weight: 700; color: var(--c-sponsor); font-family: var(--f-d); line-height: 1.2; }
-
-/* Search */
-.search-wrap {
-  flex: 1;
-  min-width: 0;
-  max-width: 420px;
-  margin-left: auto;
-}
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--c-s2);
-  border: 1.5px solid var(--c-border);
-  border-radius: 100px;
-  padding: 8px 16px;
-  transition: all 0.14s;
-  cursor: text;
-}
+.search-wrap { flex: 1; min-width: 0; }
+.search-box { display: flex; align-items: center; gap: 8px; background: var(--c-s2); border: 1.5px solid var(--c-border); border-radius: 100px; padding: 8px 14px; transition: all 0.14s; cursor: text; }
 .search-box:focus-within { border-color: var(--c-accent); background: white; box-shadow: 0 0 0 3px var(--c-accent-bg); }
 .search-ico { color: var(--c-t3); flex-shrink: 0; }
-.search-input {
-  border: none;
-  background: transparent;
-  font-family: var(--f-b);
-  font-size: 13px;
-  color: var(--c-text);
-  width: 100%;
-  outline: none;
-}
+.search-input { border: none; background: transparent; font-family: var(--f-b); font-size: 13px; color: var(--c-text); width: 100%; outline: none; }
 .search-input::placeholder { color: var(--c-t3); }
+.topbar-icons { display: flex; gap: 4px; flex-shrink: 0; }
+.topbar-icon-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--c-s2); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 17px; transition: background 0.14s; position: relative; }
+.topbar-icon-btn:hover { background: var(--c-s3); }
+.topbar-badge { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; background: var(--c-accent); color: white; border-radius: 50%; font-size: 8px; font-weight: 700; font-family: var(--f-d); display: flex; align-items: center; justify-content: center; border: 2px solid var(--c-surface); }
 
-/* Nav links */
-.topbar-nav { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
-.nav-link {
-  font-family: var(--f-d);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-t2);
-  padding: 7px 12px;
-  border-radius: var(--r);
-  cursor: pointer;
-  transition: all 0.14s;
-  white-space: nowrap;
-}
-.nav-link:hover { background: var(--c-s2); color: var(--c-text); }
-.nav-link.active { color: var(--c-accent); background: var(--c-accent-bg); }
+/* ── Live indicator ── */
+.live-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--c-green-bg); border: 1px solid var(--c-green-b); border-radius: 100px; padding: 3px 9px; font-size: 10px; font-weight: 700; color: var(--c-green); font-family: var(--f-d); }
+.live-dot { width: 6px; height: 6px; background: var(--c-green); border-radius: 50%; animation: pulse-dot 1.4s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(0.7);} }
 
-/* ─── MAIN CONTENT ─── */
-.main {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 28px 24px 64px;
-}
+/* ── Loading skeleton ── */
+.skeleton { background: linear-gradient(90deg, var(--c-s2) 25%, var(--c-s3) 50%, var(--c-s2) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+@keyframes shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+.skeleton-row { display: flex; gap: 12px; align-items: flex-start; padding: 13px; }
+.skeleton-img { width: 72px; height: 72px; border-radius: var(--r); flex-shrink: 0; }
+.skeleton-body { flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.skeleton-line { height: 12px; border-radius: 6px; }
 
-/* Section header */
-.sec-hdr {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.sec-title {
-  font-family: var(--f-d);
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--c-text);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.sec-title .pill {
-  background: var(--c-accent);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 100px;
-}
-.sec-link {
-  font-family: var(--f-d);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--c-accent);
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: var(--r);
-  transition: background 0.14s;
-}
+/* ── Toast ── */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--c-text); color: white; font-family: var(--f-d); font-size: 12px; font-weight: 600; padding: 9px 18px; border-radius: 100px; z-index: 9999; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Screens ── */
+.screens { flex: 1; overflow: hidden; position: relative; }
+.screen { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--c-bg); display: none; flex-direction: column; }
+.screen.active { display: flex; }
+.screen-body { padding: 16px 16px 0; flex: 1; }
+.screen.slide-in  { animation: slideIn  0.28s cubic-bezier(0.4,0,0.2,1) both; }
+.screen.slide-out { animation: slideOut 0.28s cubic-bezier(0.4,0,0.2,1) both; }
+.screen.slide-back-in  { animation: slideBackIn  0.28s cubic-bezier(0.4,0,0.2,1) both; }
+.screen.slide-back-out { animation: slideBackOut 0.28s cubic-bezier(0.4,0,0.2,1) both; }
+@keyframes slideIn     { from{transform:translateX(100%);opacity:.5} to{transform:translateX(0);opacity:1} }
+@keyframes slideOut    { from{transform:translateX(0);opacity:1} to{transform:translateX(-30%);opacity:.3} }
+@keyframes slideBackIn { from{transform:translateX(-30%);opacity:.3} to{transform:translateX(0);opacity:1} }
+@keyframes slideBackOut{ from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:.5} }
+
+/* ── Bottom nav ── */
+.bottom-nav { background: var(--c-surface); border-top: 1.5px solid var(--c-border); display: flex; padding-bottom: var(--safe-bottom); flex-shrink: 0; z-index: 100; }
+.bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 4px 8px; cursor: pointer; gap: 3px; transition: all 0.14s; -webkit-tap-highlight-color: transparent; }
+.bnav-item .bnav-ico { font-size: 22px; transition: transform 0.14s; }
+.bnav-item .bnav-lbl { font-family: var(--f-d); font-size: 10px; font-weight: 600; color: var(--c-t3); transition: color 0.14s; }
+.bnav-item.active .bnav-lbl { color: var(--c-accent); }
+.bnav-item.active .bnav-ico { transform: scale(1.15); }
+.bnav-item:active .bnav-ico { transform: scale(0.9); }
+
+/* ── Back header ── */
+.back-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px 10px; background: var(--c-surface); border-bottom: 1.5px solid var(--c-border); flex-shrink: 0; }
+.back-btn { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--c-border2); background: var(--c-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 16px; transition: background 0.15s; }
+.back-btn:hover { background: var(--c-s2); }
+.back-header-title { font-family: var(--f-d); font-size: 16px; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.back-header-action { font-family: var(--f-d); font-size: 12px; font-weight: 700; color: var(--c-accent); cursor: pointer; padding: 5px 10px; border-radius: var(--r); transition: background 0.14s; flex-shrink: 0; }
+.back-header-action:hover { background: var(--c-accent-bg); }
+
+/* ══ SHARED COMPONENTS ══ */
+.sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.sec-title { font-family: var(--f-d); font-size: 16px; font-weight: 800; color: var(--c-text); display: flex; align-items: center; gap: 6px; }
+.sec-title .pill { background: var(--c-accent); color: white; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 100px; }
+.sec-link { font-family: var(--f-d); font-size: 12px; font-weight: 700; color: var(--c-accent); cursor: pointer; padding: 5px 8px; border-radius: var(--r); transition: background 0.14s; }
 .sec-link:hover { background: var(--c-accent-bg); }
 
-/* ─── CATEGORY FILTERS ─── */
-.filters-wrap {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
-}
-.chip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 14px;
-  border-radius: 100px;
-  border: 1.5px solid var(--c-border);
-  background: var(--c-surface);
-  font-family: var(--f-d);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-t2);
-  cursor: pointer;
-  transition: all 0.14s;
-  user-select: none;
-  white-space: nowrap;
-}
-.chip:hover { border-color: var(--c-border2); color: var(--c-text); background: var(--c-s2); }
-.chip.on {
-  background: var(--c-accent);
-  border-color: var(--c-accent);
-  color: white;
-}
+.filters-wrap { display: flex; gap: 7px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; scrollbar-width: none; }
+.filters-wrap::-webkit-scrollbar { display: none; }
+.chip { display: flex; align-items: center; gap: 4px; padding: 7px 13px; border-radius: 100px; border: 1.5px solid var(--c-border); background: var(--c-surface); font-family: var(--f-d); font-size: 12px; font-weight: 600; color: var(--c-t2); cursor: pointer; transition: all 0.14s; user-select: none; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.chip.on { background: var(--c-text); border-color: var(--c-text); color: white; }
+.chip:hover:not(.on) { border-color: var(--c-border2); color: var(--c-text); }
 
-/* ─── OFFER CARDS GRID ─── */
-.offers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 14px;
-  margin-bottom: 32px;
-}
-
-.offer-card {
-  background: var(--c-surface);
-  border: 1.5px solid var(--c-border);
-  border-radius: var(--r-lg);
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.16s;
-  position: relative;
-  overflow: hidden;
-}
-.offer-card:hover {
-  border-color: var(--c-border2);
-  box-shadow: var(--sh-md);
-  transform: translateY(-1px);
-}
-.offer-card.ad {
-  border-color: #DDD6FE;
-  background: linear-gradient(135deg, #FDFCFF 0%, var(--c-sponsor-bg) 100%);
-}
-.offer-card.ad:hover { border-color: var(--c-sponsor); }
-
-.ad-tag {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: var(--c-sponsor);
-  color: white;
-  font-size: 9px;
-  font-weight: 800;
-  font-family: var(--f-d);
-  letter-spacing: 1px;
-  padding: 2px 7px;
-  border-radius: 100px;
-}
-
-.card-row { display: flex; gap: 14px; align-items: flex-start; }
-.card-img {
-  width: 56px; height: 56px;
-  border-radius: 10px;
-  background: var(--c-s2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  flex-shrink: 0;
-}
+/* offer cards */
+.offers-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.offer-card { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); padding: 13px; cursor: pointer; transition: all 0.18s; box-shadow: var(--sh); position: relative; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+.offer-card:active { transform: scale(0.98); }
+.offer-card.ad { border: 2px solid var(--c-blue-b); background: linear-gradient(135deg,#FAFCFF,#F0F5FF); }
+.offer-card.my-offer { border: 2px solid var(--c-accent); background: linear-gradient(135deg,#FFFAF8,#FEF0EC); }
+.ad-tag { position: absolute; top: 9px; right: 9px; background: var(--c-blue); color: white; font-size: 8px; font-weight: 700; font-family: var(--f-d); letter-spacing: 1px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+.my-tag { position: absolute; top: 9px; right: 9px; background: var(--c-accent); color: white; font-size: 8px; font-weight: 700; font-family: var(--f-d); letter-spacing: 1px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+.card-row { display: flex; gap: 12px; align-items: flex-start; }
+.card-img { width: 72px; height: 72px; border-radius: var(--r); background: var(--c-s2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 30px; }
 .card-body { flex: 1; min-width: 0; }
-.card-title {
-  font-family: var(--f-d);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
-.card-desc {
-  font-size: 12px;
-  color: var(--c-t2);
-  line-height: 1.45;
-  margin-bottom: 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.badge {
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--f-d);
-  padding: 2px 9px;
-  border-radius: 100px;
-}
-.b-blue   { background: var(--c-blue-bg); color: var(--c-blue); border: 1px solid var(--c-blue-b); }
-.b-red    { background: var(--c-accent-bg); color: var(--c-accent); border: 1px solid #F9B8A8; }
-.b-green  { background: var(--c-green-bg); color: var(--c-green); border: 1px solid var(--c-green-b); }
-.b-purple { background: var(--c-sponsor-bg); color: var(--c-sponsor); border: 1px solid #DDD6FE; }
-.b-amber  { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
-.b-gray   { background: var(--c-s2); color: var(--c-t2); border: 1px solid var(--c-border); }
+.card-title { font-family: var(--f-d); font-size: 14px; font-weight: 700; color: var(--c-text); margin-bottom: 3px; line-height: 1.3; }
+.card-desc { font-size: 12px; color: var(--c-t2); line-height: 1.4; margin-bottom: 7px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 5px; }
 
-.price-row { display: flex; align-items: baseline; gap: 6px; }
-.p-now { font-family: var(--f-d); font-size: 16px; font-weight: 800; color: var(--c-text); }
-.p-old { font-size: 12px; color: var(--c-t3); text-decoration: line-through; }
-.p-pct {
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--f-d);
-  background: var(--c-green-bg);
-  color: var(--c-green);
-  padding: 1px 7px;
-  border-radius: 100px;
-}
+/* badges */
+.badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; font-family: var(--f-d); letter-spacing: 0.4px; text-transform: uppercase; }
+.b-red    { background: #FEE2DC; color: #9B2313; }
+.b-blue   { background: var(--c-blue-bg); color: #1038A8; }
+.b-green  { background: var(--c-green-bg); color: #065733; }
+.b-amber  { background: #FEF3C7; color: #92400E; }
+.b-purple { background: #F0EBFE; color: #5B21B6; }
+.b-orange { background: var(--c-accent-bg); color: var(--c-accent2); }
 
-/* ─── SPONSORED SECTION HEADER ─── */
-.sec-sponsored {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.sec-sponsored .sec-title { flex: 1; }
-.sponsored-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--c-sponsor-bg);
-  border: 1px solid #DDD6FE;
-  border-radius: 100px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--c-sponsor);
-  font-family: var(--f-d);
-}
+/* price */
+.price-row { display: flex; align-items: baseline; gap: 5px; }
+.p-now { font-family: var(--f-d); font-size: 15px; font-weight: 800; color: var(--c-accent); }
+.p-old { font-size: 11px; color: var(--c-t3); text-decoration: line-through; }
+.p-pct { background: var(--c-accent-bg); color: var(--c-accent); font-size: 10px; font-weight: 700; font-family: var(--f-d); padding: 1px 6px; border-radius: 100px; }
+.stars { color: var(--c-star); font-size: 11px; letter-spacing: -1px; }
+.section-label { font-family: var(--f-d); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--c-t3); padding: 4px 0 6px; }
 
-/* ─── PRICE COMPARISON TABLE ─── */
-.compare-wrap {
-  background: var(--c-surface);
-  border: 1.5px solid var(--c-border);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  margin-bottom: 32px;
-}
-.compare-hdr {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  background: var(--c-text);
-  color: white;
-  padding: 12px 20px;
-  gap: 8px;
-}
-.compare-hdr-cell {
-  font-family: var(--f-d);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-}
+/* ══ SCREEN HOME ══ */
+.hero-banner { background: linear-gradient(135deg, var(--c-accent) 0%, #c03610 100%); border-radius: var(--r-lg); padding: 16px; color: white; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; position: relative; }
+.hero-banner::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='100' cy='20' r='60' fill='rgba(255,255,255,0.06)'/%3E%3Ccircle cx='20' cy='100' r='40' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E") no-repeat right -20px top -20px; }
+.hero-content { position: relative; z-index: 1; }
+.hero-title { font-family: var(--f-d); font-size: 20px; font-weight: 800; margin-bottom: 4px; line-height: 1.2; }
+.hero-sub { font-size: 13px; opacity: .85; margin-bottom: 12px; }
+.hero-btn { display: inline-flex; align-items: center; gap: 5px; background: white; color: var(--c-accent); font-family: var(--f-d); font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 100px; cursor: pointer; transition: transform 0.14s; }
+.hero-btn:active { transform: scale(0.96); }
+.hero-emoji { font-size: 56px; position: relative; z-index: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
+
+.quick-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r); padding: 12px 10px; text-align: center; }
+.stat-num { font-family: var(--f-d); font-size: 20px; font-weight: 800; color: var(--c-accent); }
+.stat-lbl { font-size: 10px; color: var(--c-t2); margin-top: 2px; }
+
+/* ══ SCREEN DETALLE OFERTA (comparativa tiendas) ══ */
+.product-hero-card { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); padding: 16px; margin-bottom: 16px; box-shadow: var(--sh); }
+.product-hero-top { display: flex; gap: 14px; margin-bottom: 12px; }
+.product-hero-img { width: 90px; height: 90px; border-radius: var(--r); background: var(--c-s2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; }
+.product-hero-img .stock-badge { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: var(--c-green); color: white; font-size: 8px; font-weight: 700; font-family: var(--f-d); padding: 1px 7px; border-radius: 100px; white-space: nowrap; }
+.product-hero-info { flex: 1; }
+.product-brand { font-size: 11px; font-weight: 600; color: var(--c-t3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.product-title { font-family: var(--f-d); font-size: 17px; font-weight: 800; color: var(--c-text); margin-bottom: 5px; line-height: 1.2; }
+.stars-row { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+.star { color: var(--c-star); font-size: 13px; }
+.star-count { font-size: 11px; color: var(--c-t2); }
+.product-price-row { display: flex; align-items: baseline; gap: 7px; }
+.product-price { font-family: var(--f-d); font-size: 22px; font-weight: 800; color: var(--c-accent); }
+.product-price-old { font-size: 13px; color: var(--c-t3); text-decoration: line-through; }
+.product-discount { background: var(--c-accent-bg); color: var(--c-accent); font-size: 11px; font-weight: 700; font-family: var(--f-d); padding: 2px 8px; border-radius: 100px; }
+.installments-banner { background: var(--c-green-bg); border: 1px solid var(--c-green-b); border-radius: var(--r); padding: 9px 12px; font-size: 12px; color: var(--c-green); font-weight: 600; }
+
+/* compare table */
+.compare-wrap { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 16px; box-shadow: var(--sh); }
+.compare-product-banner { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--c-border); background: var(--c-s2); }
+.compare-prod-img { width: 40px; height: 40px; border-radius: 8px; background: var(--c-surface); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--c-border); flex-shrink: 0; }
+.compare-prod-name { font-family: var(--f-d); font-size: 13px; font-weight: 800; color: var(--c-text); }
+.compare-prod-sub { font-size: 11px; color: var(--c-t2); margin-top: 2px; }
+.compare-update { margin-left: auto; font-size: 10px; color: var(--c-t3); text-align: right; white-space: nowrap; }
+.compare-hdr { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; background: var(--c-text); color: white; padding: 10px 16px; gap: 6px; }
+.compare-hdr-cell { font-family: var(--f-d); font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.65); }
 .compare-hdr-cell:first-child { color: white; }
-
-.compare-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  padding: 14px 20px;
-  gap: 8px;
-  align-items: center;
-  border-bottom: 1px solid var(--c-border);
-  transition: background 0.12s;
-  cursor: pointer;
-}
+.compare-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; padding: 12px 16px; gap: 6px; align-items: center; border-bottom: 1px solid var(--c-border); cursor: pointer; transition: background 0.12s; }
 .compare-row:last-child { border-bottom: none; }
 .compare-row:hover { background: var(--c-s2); }
-.compare-row.best { background: var(--c-green-bg); }
-.compare-row.best:hover { background: #D9F5E9; }
-
-.store-cell { display: flex; align-items: center; gap: 10px; }
-.store-icon {
-  width: 34px; height: 34px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px;
-  flex-shrink: 0;
-}
-.store-name {
-  font-family: var(--f-d);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-}
-.store-sub {
-  font-size: 11px;
-  color: var(--c-t3);
-  margin-top: 1px;
-}
-
-.compare-price {
-  font-family: var(--f-d);
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--c-text);
-}
-.compare-row.best .compare-price { color: var(--c-green); }
-.compare-best-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--c-green);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: var(--f-d);
-  padding: 2px 8px;
-  border-radius: 100px;
-  margin-top: 3px;
-}
-
-.compare-ship {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-t2);
-}
+.compare-row.best { background: var(--c-accent-bg); border-left: 3px solid var(--c-accent); }
+.compare-row.best:hover { background: #FCE4DC; }
+.compare-row.comp { background: var(--c-green-bg); }
+.compare-row.comp:hover { background: #D9F5E9; }
+.store-cell { display: flex; align-items: center; gap: 9px; }
+.store-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.store-name { font-family: var(--f-d); font-size: 13px; font-weight: 700; color: var(--c-text); }
+.store-sub { font-size: 10px; color: var(--c-t3); margin-top: 1px; }
+.best-tag { display: inline-flex; background: var(--c-accent); color: white; font-size: 8px; font-weight: 800; font-family: var(--f-d); padding: 1px 6px; border-radius: 100px; margin-top: 2px; }
+.comp-tag { display: inline-flex; background: var(--c-green); color: white; font-size: 8px; font-weight: 800; font-family: var(--f-d); padding: 1px 6px; border-radius: 100px; margin-top: 2px; }
+.compare-price { font-family: var(--f-d); font-size: 15px; font-weight: 800; color: var(--c-text); }
+.compare-row.best .compare-price { color: var(--c-accent); }
+.compare-row.comp .compare-price { color: var(--c-green); }
+.compare-saving { font-size: 10px; color: var(--c-accent); font-weight: 600; }
+.compare-cheaper { font-size: 10px; color: var(--c-green); font-weight: 600; }
+.compare-plus { font-size: 10px; color: var(--c-t3); }
+.compare-ship { font-size: 11px; font-weight: 600; color: var(--c-t2); }
 .compare-ship.free { color: var(--c-green); font-weight: 700; }
-
-.compare-installments {
-  font-size: 12px;
-  color: var(--c-t2);
-}
-
-.compare-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-family: var(--f-d);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.14s;
-  white-space: nowrap;
-  border: none;
-}
-.compare-btn.primary {
-  background: var(--c-accent);
-  color: white;
-}
+.compare-inst { font-size: 11px; color: var(--c-t2); line-height: 1.3; }
+.compare-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 10px; border-radius: 7px; font-family: var(--f-d); font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.14s; white-space: nowrap; border: none; text-decoration: none; }
+.compare-btn.primary { background: var(--c-accent); color: white; }
 .compare-btn.primary:hover { background: var(--c-accent2); }
-.compare-btn.secondary {
-  background: transparent;
-  border: 1.5px solid var(--c-border2);
-  color: var(--c-t2);
-}
+.compare-btn.secondary { background: transparent; border: 1.5px solid var(--c-border2); color: var(--c-t2); }
 .compare-btn.secondary:hover { background: var(--c-s2); color: var(--c-text); }
 
-.compare-product-banner {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-bottom: 1.5px solid var(--c-border);
-  background: var(--c-s2);
-}
-.compare-prod-img {
-  width: 46px; height: 46px;
-  border-radius: 10px;
-  background: var(--c-surface);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  border: 1px solid var(--c-border);
-  flex-shrink: 0;
-}
-.compare-prod-name {
-  font-family: var(--f-d);
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--c-text);
-}
-.compare-prod-sub { font-size: 12px; color: var(--c-t2); margin-top: 2px; }
-.compare-update {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--c-t3);
-  text-align: right;
-  white-space: nowrap;
-}
+/* ══ SCREEN DETALLE PRODUCTO ══ */
+.detail-hero { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); padding: 16px; margin-bottom: 14px; box-shadow: var(--sh); }
+.detail-img { width: 100%; aspect-ratio: 1.6; background: var(--c-s2); border-radius: var(--r); display: flex; align-items: center; justify-content: center; font-size: 72px; margin-bottom: 14px; position: relative; overflow: hidden; }
+.detail-img-badge { position: absolute; top: 10px; right: 10px; background: var(--c-green); color: white; font-size: 10px; font-weight: 700; font-family: var(--f-d); padding: 4px 10px; border-radius: 100px; }
+.detail-brand { font-size: 11px; font-weight: 600; color: var(--c-t3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.detail-title { font-family: var(--f-d); font-size: 20px; font-weight: 800; color: var(--c-text); margin-bottom: 8px; line-height: 1.2; }
+.detail-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.detail-price { font-family: var(--f-d); font-size: 26px; font-weight: 800; color: var(--c-accent); }
+.detail-price-old { font-size: 15px; color: var(--c-t3); text-decoration: line-through; }
+.detail-discount { background: var(--c-accent-bg); color: var(--c-accent); font-size: 12px; font-weight: 700; font-family: var(--f-d); padding: 3px 10px; border-radius: 100px; }
+.detail-installments { background: var(--c-green-bg); border: 1px solid var(--c-green-b); border-radius: var(--r); padding: 10px 14px; font-size: 13px; color: var(--c-green); font-weight: 600; }
 
-/* Rating stars */
-.stars { color: var(--c-star); font-size: 11px; letter-spacing: -1px; }
+.spec-list { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 14px; box-shadow: var(--sh); }
+.spec-row { display: flex; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--c-border); gap: 10px; }
+.spec-row:last-child { border-bottom: none; }
+.spec-key { font-size: 12px; color: var(--c-t2); width: 110px; flex-shrink: 0; }
+.spec-val { font-size: 12px; font-weight: 600; color: var(--c-text); flex: 1; }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .topbar-nav { display: none; }
-  .compare-hdr, .compare-row {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-  }
-  .compare-hdr-cell:nth-child(4), .compare-row > *:nth-child(4) { display: none; }
+.advantage-card { display: flex; align-items: flex-start; gap: 12px; background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r); padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--sh); }
+.adv-icon { font-size: 22px; flex-shrink: 0; }
+.adv-title { font-family: var(--f-d); font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.adv-desc { font-size: 12px; color: var(--c-t2); }
+
+.compare-table-wrap { overflow-x: auto; border-radius: var(--r); border: 1.5px solid var(--c-border); margin-bottom: 14px; box-shadow: var(--sh); }
+.compare-table { width: 100%; border-collapse: collapse; background: var(--c-surface); font-size: 12px; }
+.compare-table th { background: var(--c-text); color: white; font-family: var(--f-d); font-size: 10px; font-weight: 700; padding: 9px 12px; text-align: center; letter-spacing: 0.5px; }
+.compare-table th:first-child { text-align: left; }
+.compare-table td { padding: 9px 12px; text-align: center; border-bottom: 1px solid var(--c-border); color: var(--c-t2); font-weight: 500; }
+.compare-table td:first-child { text-align: left; color: var(--c-text); font-weight: 600; }
+.compare-table tr:last-child td { border-bottom: none; }
+.highlight-col { background: var(--c-accent-bg) !important; font-weight: 700 !important; }
+.compare-table .check { color: var(--c-green); font-weight: 700; }
+.compare-table .cross { color: #e05252; font-weight: 700; }
+
+.social-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.social-btn { display: flex; align-items: center; gap: 5px; background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: 100px; padding: 7px 12px; font-size: 12px; font-weight: 600; font-family: var(--f-d); cursor: pointer; transition: all 0.14s; color: var(--c-t2); }
+
+.related-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 14px; }
+.related-scroll::-webkit-scrollbar { display: none; }
+.related-card { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r); padding: 10px; min-width: 100px; max-width: 100px; cursor: pointer; transition: box-shadow 0.14s; flex-shrink: 0; text-align: center; }
+.related-img { font-size: 28px; margin-bottom: 5px; }
+.related-name { font-family: var(--f-d); font-size: 10px; font-weight: 700; color: var(--c-text); margin-bottom: 3px; line-height: 1.2; }
+.related-price { font-size: 11px; font-weight: 700; color: var(--c-accent); font-family: var(--f-d); }
+
+.btn-buy { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: var(--c-accent); color: white; font-family: var(--f-d); font-size: 15px; font-weight: 800; border-radius: var(--r-lg); cursor: pointer; border: none; margin-bottom: 14px; text-decoration: none; transition: all 0.14s; box-shadow: 0 4px 12px rgba(232,68,26,0.35); -webkit-tap-highlight-color: transparent; }
+.btn-buy:active { transform: scale(0.98); box-shadow: none; }
+
+/* ══ EXIT SCREEN ══ */
+#screen-exit .screen-body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: calc(100dvh - 120px); padding: 24px; text-align: center; }
+.exit-icon { font-size: 52px; }
+.exit-title { font-family: var(--f-d); font-size: 20px; font-weight: 800; }
+.exit-sub { font-size: 13px; color: var(--c-t2); line-height: 1.5; }
+.exit-destination { width: 100%; background: var(--c-surface); border-radius: var(--r); border: 1.5px solid var(--c-border); padding: 14px; }
+.exit-dest-label { font-size: 10px; color: var(--c-t3); font-family: var(--f-d); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.exit-dest-row { display: flex; align-items: center; gap: 10px; }
+.exit-dest-icon { width: 38px; height: 38px; background: var(--c-blue-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.exit-dest-name { font-size: 13px; font-weight: 700; font-family: var(--f-d); }
+.exit-dest-url { font-size: 11px; color: var(--c-blue); }
+.exit-dest-secure { margin-left: auto; font-size: 11px; color: var(--c-green); font-weight: 700; }
+.progress-bar-wrap { width: 100%; height: 4px; background: var(--c-border); border-radius: 100px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--c-accent); border-radius: 100px; animation: progress 2s linear forwards; }
+@keyframes progress { from{width:0} to{width:100%} }
+.btn-continue { display: flex; align-items: center; justify-content: center; width: 100%; padding: 14px; background: var(--c-accent); color: white; font-family: var(--f-d); font-size: 14px; font-weight: 700; border-radius: var(--r); cursor: pointer; border: none; text-decoration: none; transition: all 0.14s; box-shadow: 0 4px 12px rgba(232,68,26,0.3); }
+.btn-cancel { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background: var(--c-surface); color: var(--c-t2); font-family: var(--f-d); font-size: 13px; font-weight: 600; border-radius: var(--r); cursor: pointer; border: 1.5px solid var(--c-border); transition: all 0.14s; }
+.exit-disclaimer { font-size: 11px; color: var(--c-t3); line-height: 1.5; }
+
+/* ══ ALERTAS ══ */
+.alert-card { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r); padding: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; box-shadow: var(--sh); }
+.alert-ico { font-size: 28px; flex-shrink: 0; }
+.alert-info { flex: 1; }
+.alert-name { font-family: var(--f-d); font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.alert-target { font-size: 11px; color: var(--c-green); font-weight: 600; }
+.alert-current { font-size: 11px; color: var(--c-t2); }
+.alert-status { font-size: 20px; flex-shrink: 0; cursor: pointer; }
+
+/* ══ CUENTA ══ */
+.account-header { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); padding: 20px 16px; margin-bottom: 16px; text-align: center; box-shadow: var(--sh); }
+.account-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--c-accent); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 10px; }
+.account-name { font-family: var(--f-d); font-size: 18px; font-weight: 800; margin-bottom: 3px; }
+.account-email { font-size: 13px; color: var(--c-t2); margin-bottom: 12px; }
+.account-stats { display: flex; gap: 16px; justify-content: center; }
+.acc-stat { text-align: center; }
+.acc-stat-num { font-family: var(--f-d); font-size: 18px; font-weight: 800; color: var(--c-accent); }
+.acc-stat-lbl { font-size: 10px; color: var(--c-t3); }
+.settings-list { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--sh); margin-bottom: 16px; }
+.settings-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--c-border); cursor: pointer; transition: background 0.12s; }
+.settings-item:last-child { border-bottom: none; }
+.settings-item:hover { background: var(--c-s2); }
+.settings-ico { font-size: 20px; flex-shrink: 0; }
+.settings-lbl { font-family: var(--f-d); font-size: 14px; font-weight: 600; flex: 1; }
+.settings-arr { color: var(--c-t3); font-size: 16px; }
+
+/* ══ ADMIN PANEL ══ */
+#screen-admin { background: var(--c-bg); }
+.admin-login { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; height: 100%; padding: 40px 24px; text-align: center; }
+.admin-login-icon { font-size: 48px; }
+.admin-login-title { font-family: var(--f-d); font-size: 20px; font-weight: 800; }
+.admin-login-sub { font-size: 13px; color: var(--c-t2); }
+.admin-input-wrap { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.admin-input { width: 100%; padding: 13px 16px; background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r); font-family: var(--f-b); font-size: 14px; color: var(--c-text); outline: none; transition: border-color 0.14s; }
+.admin-input:focus { border-color: var(--c-accent); }
+.admin-input-label { font-family: var(--f-d); font-size: 11px; font-weight: 700; color: var(--c-t2); text-transform: uppercase; letter-spacing: 0.5px; }
+.admin-btn { width: 100%; padding: 14px; background: var(--c-accent); color: white; font-family: var(--f-d); font-size: 14px; font-weight: 700; border: none; border-radius: var(--r); cursor: pointer; transition: all 0.14s; }
+.admin-btn:active { transform: scale(0.98); }
+.admin-btn.secondary { background: var(--c-surface); color: var(--c-t2); border: 1.5px solid var(--c-border); }
+
+.admin-panel { display: flex; flex-direction: column; }
+.admin-panel-header { background: var(--c-text); color: white; padding: 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.admin-panel-title { font-family: var(--f-d); font-size: 16px; font-weight: 800; flex: 1; }
+.admin-panel-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+.admin-product-selector { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); overflow: hidden; }
+.admin-product-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--c-border); cursor: pointer; transition: background 0.12s; }
+.admin-product-item:last-child { border-bottom: none; }
+.admin-product-item:hover { background: var(--c-s2); }
+.admin-product-item.selected { background: var(--c-accent-bg); border-left: 3px solid var(--c-accent); }
+.admin-product-ico { font-size: 24px; flex-shrink: 0; }
+.admin-product-name { font-family: var(--f-d); font-size: 13px; font-weight: 700; }
+.admin-product-price { font-size: 12px; color: var(--c-accent); font-weight: 600; margin-top: 2px; }
+.admin-product-arrow { margin-left: auto; color: var(--c-t3); }
+
+.admin-form-card { background: var(--c-surface); border: 1.5px solid var(--c-border); border-radius: var(--r-lg); padding: 16px; }
+.admin-form-title { font-family: var(--f-d); font-size: 14px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.admin-field { margin-bottom: 12px; }
+.admin-field label { display: block; font-family: var(--f-d); font-size: 10px; font-weight: 700; color: var(--c-t2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.admin-field input, .admin-field select, .admin-field textarea {
+  width: 100%; padding: 11px 13px; background: var(--c-s2); border: 1.5px solid var(--c-border);
+  border-radius: var(--r); font-family: var(--f-b); font-size: 13px; color: var(--c-text);
+  outline: none; transition: border-color 0.14s;
 }
-@media (max-width: 640px) {
-  .topbar-inner { padding: 0 14px; gap: 10px; }
-  .main { padding: 18px 14px 48px; }
-  .sponsor-badge .sponsor-text { display: none; }
-  .compare-hdr, .compare-row {
-    grid-template-columns: 2fr 1fr 1fr;
-  }
-  .compare-hdr-cell:nth-child(3), .compare-row > *:nth-child(3),
-  .compare-hdr-cell:nth-child(4), .compare-row > *:nth-child(4) { display: none; }
-  .offers-grid { grid-template-columns: 1fr; }
+.admin-field input:focus, .admin-field select:focus, .admin-field textarea:focus { border-color: var(--c-accent); background: white; }
+.admin-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.admin-save-btn { width: 100%; padding: 14px; background: var(--c-accent); color: white; font-family: var(--f-d); font-size: 14px; font-weight: 700; border: none; border-radius: var(--r); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.14s; }
+.admin-save-btn:active { transform: scale(0.98); }
+
+.sheets-config { background: var(--c-blue-bg); border: 1.5px solid var(--c-blue-b); border-radius: var(--r); padding: 12px 14px; font-size: 12px; color: var(--c-blue); line-height: 1.6; }
+.sheets-config strong { font-weight: 700; }
+.sheets-status { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--r); font-size: 12px; font-weight: 600; font-family: var(--f-d); margin-top: 8px; }
+.sheets-status.ok { background: var(--c-green-bg); color: var(--c-green); border: 1px solid var(--c-green-b); }
+.sheets-status.err { background: #FEE2DC; color: #9B2313; border: 1px solid #FECACA; }
+.sheets-status.loading { background: var(--c-s2); color: var(--c-t2); border: 1px solid var(--c-border); }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 400px) {
+  .compare-hdr { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  .compare-row { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  .compare-hdr-cell:nth-child(3), .compare-row > *:nth-child(3) { display: none; }
 }
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- Sponsor strip -->
-<div class="sponsor-strip">
-  <span>🎉 <strong>Banco Nación</strong> · 30% de descuento con tu tarjeta todos los miércoles en más de 2.400 comercios</span>
-  <span class="sponsor-cta">Ver más →</span>
-</div>
-
-<!-- Topbar -->
-<header class="topbar" style="background-color: #e90f9f;">
-  <div class="topbar-inner">
-
-    <!-- Logo + powered by -->
-    <div class="logo-wrap">
-      <span class="logo-powered" style="color: white;">Powered by Pela y Jaim</span>
-      <div class="logo-main">
-        <div class="logo-name" style="font-family: Arial Narrow Bold, sans-serif; font-size: 23px; color: #fff; letter-spacing: -1px;">MERCADO <b>SALDO</b></div>
-      </div>
-    </div>
-
-    <!-- Sponsor badge -->
-    <div class="sponsor-badge" title="Patrocinado por Banco Nación">
-      <div class="sponsor-logo">B</div>
-      <div class="sponsor-text">
-        <span class="sponsor-label">Sponsor oficial</span>
-        <span class="sponsor-name">Banco Nación</span>
-      </div>
-    </div>
-
-    <!-- Search -->
-    <div class="search-wrap">
-      <div class="search-box">
-        <svg class="search-ico" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <input class="search-input" type="search" placeholder="Buscar ofertas, tiendas, productos…">
-      </div>
-    </div>
-
-    <!-- Nav -->
-    <nav class="topbar-nav">
-      <div class="nav-link active">Inicio</div>
-      <div class="nav-link">Comparar</div>
-      <div class="nav-link">Alertas</div>
-      <div class="nav-link">Mi cuenta</div>
-    </nav>
-
-  </div>
-</header>
-
-<!-- Main content -->
-<main class="main">
-
-  <!-- Category filters -->
-  <div class="sec-hdr">
-    <div class="sec-title">Categorías</div>
-  </div>
-  <div class="filters-wrap" id="filters">
-    <div class="chip on" data-cat="all">Todos</div>
-    <div class="chip" data-cat="tech">📱 Electrónica</div>
-    <div class="chip" data-cat="hogar">🏠 Hogar</div>
-    <div class="chip" data-cat="moda">👗 Moda</div>
-    <div class="chip" data-cat="deporte">🏃 Deporte</div>
-    <div class="chip" data-cat="food">🍔 Alimentos</div>
-    <div class="chip" data-cat="salud">💊 Salud</div>
-    <div class="chip" data-cat="autos">🚗 Autos</div>
-    <div class="chip" data-cat="viajes">✈️ Viajes</div>
-    <div class="chip" data-cat="banco">🏦 Bancos</div>
+  <!-- SPONSOR STRIP -->
+  <div class="sponsor-strip">
+    <span>🎉 <strong>Banco Nación</strong> · 30% OFF los miércoles en +2.400 comercios</span>
+    <span class="sponsor-cta">Ver más →</span>
   </div>
 
-  <!-- Destacados del día -->
-  <div class="sec-hdr">
-    <div class="sec-title">
-      🔥 Destacados del día
-      <span class="pill">12 nuevas</span>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo-wrap" onclick="goHome()">
+        <span class="logo-powered">Powered by DescuentosAR</span>
+        <div class="logo-main">
+          <div class="logo-icon">🏷️</div>
+          <div class="logo-name">Descuentos<em>App</em></div>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg class="search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input class="search-input" type="search" placeholder="Buscar ofertas…" oninput="filterOffers(this.value)">
+        </div>
+      </div>
+      <div class="topbar-icons">
+        <button class="topbar-icon-btn" onclick="navigate('alertas')">
+          🔔<span class="topbar-badge" id="alert-badge">3</span>
+        </button>
+      </div>
     </div>
-    <div class="sec-link">Ver todas →</div>
-  </div>
-  <div class="offers-grid">
+  </header>
 
-    <div class="offer-card" onclick="showCompare()">
-      <div class="card-row">
-        <div class="card-img">💻</div>
-        <div class="card-body">
-          <div class="card-title">Notebook Lenovo IdeaPad 3</div>
-          <div class="card-desc">Intel Core i5, 16GB RAM, SSD 512GB. Windows 11 Home. Envío gratis.</div>
-          <div class="card-foot">
-            <span class="badge b-red">MercadoLibre</span>
-            <div class="price-row">
-              <span class="p-now">$749.999</span>
-              <span class="p-old">$899.999</span>
-              <span class="p-pct">−17%</span>
+  <!-- SCREENS -->
+  <div class="screens">
+
+    <!-- ══ HOME ══ -->
+    <div class="screen active" id="screen-home">
+      <div class="screen-body">
+        <div class="hero-banner">
+          <div class="hero-content">
+            <div class="hero-title">¡Descuentos del día! 🔥</div>
+            <div class="hero-sub">Precios actualizados en tiempo real</div>
+            <div class="hero-btn" onclick="navigate('alertas')">🔔 Activar alertas</div>
+          </div>
+          <div class="hero-emoji">🛍️</div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-offers">—</div>
+            <div class="stat-lbl">Ofertas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-stores">—</div>
+            <div class="stat-lbl">Tiendas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-best">—</div>
+            <div class="stat-lbl">Mejor desc.</div>
+          </div>
+        </div>
+
+        <div class="sec-hdr"><div class="sec-title">Categorías</div></div>
+        <div class="filters-wrap" id="home-filters">
+          <div class="chip on" data-cat="all">Todos</div>
+          <div class="chip" data-cat="tech">📱 Electrónica</div>
+          <div class="chip" data-cat="hogar">🏠 Hogar</div>
+          <div class="chip" data-cat="moda">👗 Moda</div>
+          <div class="chip" data-cat="deporte">🏃 Deporte</div>
+          <div class="chip" data-cat="food">🍔 Alimentos</div>
+          <div class="chip" data-cat="salud">💊 Salud</div>
+          <div class="chip" data-cat="autos">🚗 Autos</div>
+          <div class="chip" data-cat="viajes">✈️ Viajes</div>
+          <div class="chip" data-cat="banco">🏦 Bancos</div>
+        </div>
+
+        <div class="sec-hdr">
+          <div class="sec-title">🔥 Mis Ofertas
+            <span class="pill" id="home-offer-count">0</span>
+          </div>
+          <div class="live-badge"><div class="live-dot"></div>En vivo</div>
+        </div>
+        <div class="offers-grid" id="home-offers-grid">
+          <!-- skeleton while loading -->
+          <div class="offer-card" id="skeleton-1">
+            <div class="skeleton-row">
+              <div class="skeleton skeleton-img"></div>
+              <div class="skeleton-body">
+                <div class="skeleton skeleton-line" style="width:75%"></div>
+                <div class="skeleton skeleton-line" style="width:55%"></div>
+                <div class="skeleton skeleton-line" style="width:40%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="offer-card" id="skeleton-2">
+            <div class="skeleton-row">
+              <div class="skeleton skeleton-img"></div>
+              <div class="skeleton-body">
+                <div class="skeleton skeleton-line" style="width:80%"></div>
+                <div class="skeleton skeleton-line" style="width:60%"></div>
+                <div class="skeleton skeleton-line" style="width:35%"></div>
+              </div>
             </div>
           </div>
         </div>
+
+        <div style="height:8px;"></div>
       </div>
     </div>
 
-    <div class="offer-card" onclick="window.location.href='detalle-oferta.html'">
-      <div class="card-row">
-        <div class="card-img">📱</div>
-        <div class="card-body">
-          <div class="card-title">Samsung Galaxy A55 5G 128GB</div>
-          <div class="card-desc">Triple cámara 50MP, AMOLED 6.6". 12 cuotas sin interés disponibles.</div>
-          <div class="card-foot">
-            <span class="badge b-blue">Samsung</span>
-            <div class="price-row">
-              <span class="p-now">$479.999</span>
-              <span class="p-old">$559.999</span>
-              <span class="p-pct">−14%</span>
+    <!-- ══ DETALLE OFERTA ══ -->
+    <div class="screen" id="screen-detalle-oferta">
+      <div class="back-header">
+        <div class="back-btn" onclick="goBack()">←</div>
+        <div class="back-header-title" id="detail-header-title">Cargando…</div>
+        <div class="back-header-action" onclick="navigate('detalle-producto')">Ver detalle →</div>
+      </div>
+      <div class="screen-body">
+
+        <!-- My offer hero -->
+        <div class="product-hero-card">
+          <div class="product-hero-top">
+            <div class="product-hero-img">
+              <span id="detail-emoji">📦</span>
+              <div class="stock-badge">EN STOCK ✓</div>
+            </div>
+            <div class="product-hero-info">
+              <div class="product-brand" id="detail-brand">—</div>
+              <div class="product-title" id="detail-name">—</div>
+              <div class="stars-row">
+                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star" style="opacity:.35">★</span>
+                <span class="star-count">4.5 · reseñas</span>
+              </div>
+              <div class="product-price-row">
+                <span class="product-price" id="detail-my-price">$—</span>
+                <span class="product-price-old" id="detail-old-price"></span>
+                <span class="product-discount" id="detail-discount"></span>
+              </div>
             </div>
           </div>
+          <div class="installments-banner" id="detail-installments">💳 Cargando…</div>
         </div>
-      </div>
-    </div>
 
-    <div class="offer-card" onclick="showCompare()">
-      <div class="card-row">
-        <div class="card-img">👟</div>
-        <div class="card-body">
-          <div class="card-title">Adidas Ultraboost 22</div>
-          <div class="card-desc">Zapatillas running con tecnología BOOST. Tallas 38–46. Stock limitado.</div>
-          <div class="card-foot">
-            <span class="badge b-green">Adidas Store</span>
-            <div class="price-row">
-              <span class="p-now">$89.999</span>
-              <span class="p-old">$129.999</span>
-              <span class="p-pct">−31%</span>
+        <!-- Compare section -->
+        <div class="sec-hdr">
+          <div class="sec-title">📊 Comparativa
+            <span class="pill" id="compare-store-count" style="background:var(--c-blue);">—</span>
+          </div>
+          <div class="live-badge"><div class="live-dot"></div>En vivo</div>
+        </div>
+
+        <div class="compare-wrap">
+          <div class="compare-product-banner">
+            <div class="compare-prod-img" id="compare-prod-emoji">📦</div>
+            <div>
+              <div class="compare-prod-name" id="compare-prod-name">Cargando…</div>
+              <div class="compare-prod-sub">Precio final con envío incluido</div>
+            </div>
+            <div class="compare-update">
+              <div style="font-size:10px;color:var(--c-t3);">Última actualización</div>
+              <div style="font-size:12px;font-weight:700;font-family:var(--f-d);color:var(--c-t2);" id="compare-last-update">—</div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="offer-card" onclick="showCompare()">
-      <div class="card-row">
-        <div class="card-img">🎮</div>
-        <div class="card-body">
-          <div class="card-title">PlayStation 5 Slim + 2 Joysticks</div>
-          <div class="card-desc">Consola digital, SSD ultra-rápido. DualSense incluido. Stock mínimo.</div>
-          <div class="card-foot">
-            <span class="badge b-purple">Frávega</span>
-            <div class="price-row">
-              <span class="p-now">$1.199.999</span>
-              <span class="p-old">$1.399.999</span>
-              <span class="p-pct">−14%</span>
-            </div>
+          <div class="compare-hdr">
+            <div class="compare-hdr-cell">Tienda</div>
+            <div class="compare-hdr-cell">Precio</div>
+            <div class="compare-hdr-cell">Envío</div>
+            <div class="compare-hdr-cell">Cuotas</div>
+            <div class="compare-hdr-cell">Ir</div>
+          </div>
+          <div id="compare-rows-container">
+            <!-- rows rendered by JS -->
           </div>
         </div>
+
+        <div style="height:12px;"></div>
       </div>
     </div>
 
-    <div class="offer-card" onclick="showCompare()">
-      <div class="card-row">
-        <div class="card-img">🧴</div>
-        <div class="card-body">
-          <div class="card-title">Kit Skincare Nivea Premium</div>
-          <div class="card-desc">Crema facial + sérum vitamina C + contorno de ojos. Hidratación 24hs.</div>
-          <div class="card-foot">
-            <span class="badge b-red">Farmacity</span>
-            <div class="price-row">
-              <span class="p-now">$18.990</span>
-              <span class="p-old">$26.900</span>
-              <span class="p-pct">−29%</span>
+    <!-- ══ DETALLE PRODUCTO ══ -->
+    <div class="screen" id="screen-detalle-producto">
+      <div class="back-header">
+        <div class="back-btn" onclick="goBack()">←</div>
+        <div class="back-header-title">Detalle del producto</div>
+        <div class="back-header-action">♡ Guardar</div>
+      </div>
+      <div class="screen-body">
+        <div class="detail-hero">
+          <div class="detail-img">
+            <span id="prod-emoji">📦</span>
+            <div class="detail-img-badge">EN STOCK ✓</div>
+          </div>
+          <div class="detail-brand" id="prod-brand">—</div>
+          <div class="detail-title" id="prod-name">—</div>
+          <div class="stars-row">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star" style="opacity:.35">★</span>
+            <span class="star-count">4.5 · reseñas verificadas</span>
+          </div>
+          <div class="detail-price-row">
+            <span class="detail-price" id="prod-price">$—</span>
+            <span class="detail-price-old" id="prod-old-price"></span>
+            <span class="detail-discount" id="prod-discount"></span>
+          </div>
+          <div class="detail-installments" id="prod-installments">💳 Cargando…</div>
+        </div>
+
+        <div class="section-label">Especificaciones técnicas</div>
+        <div class="spec-list" id="prod-specs">
+          <!-- rendered by JS from product data -->
+        </div>
+
+        <div class="section-label">Comparativa rápida</div>
+        <div class="compare-table-wrap">
+          <table class="compare-table" id="prod-compare-table">
+            <thead><tr>
+              <th style="text-align:left;">Característica</th>
+              <th class="highlight-col">Nuestra oferta</th>
+              <th id="comp-th-1">—</th>
+              <th id="comp-th-2">—</th>
+            </tr></thead>
+            <tbody id="prod-compare-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="section-label">Por qué comprarlo acá</div>
+        <div class="advantage-card"><div class="adv-icon">💸</div><div><div class="adv-title">El precio más bajo</div><div class="adv-desc" id="prod-advantage-price">Siempre más barato que la competencia.</div></div></div>
+        <div class="advantage-card"><div class="adv-icon">🔄</div><div><div class="adv-title">Devolución garantizada</div><div class="adv-desc">30 días para devolverlo sin preguntas. 100% seguro.</div></div></div>
+        <div class="advantage-card"><div class="adv-icon">✅</div><div><div class="adv-title">Producto verificado</div><div class="adv-desc">Garantía oficial. Sin intermediarios.</div></div></div>
+
+        <div class="section-label">Seguir al vendedor</div>
+        <div class="social-row">
+          <div class="social-btn">📸 Instagram</div>
+          <div class="social-btn">📘 Facebook</div>
+          <div class="social-btn">▶️ YouTube</div>
+          <div class="social-btn">🐦 Twitter/X</div>
+        </div>
+
+        <button class="btn-buy" onclick="navigate('exit')">🛒 Comprar ahora</button>
+
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ══ EXIT ══ -->
+    <div class="screen" id="screen-exit">
+      <div class="back-header">
+        <div class="back-btn" onclick="goBack()">←</div>
+        <div class="back-header-title">Saliendo de DescuentosApp</div>
+      </div>
+      <div class="screen-body">
+        <div class="exit-icon">⚠️</div>
+        <div class="exit-title">Está saliendo de DescuentosApp</div>
+        <div class="exit-sub" id="exit-sub-text">Será redirigido al sitio del vendedor para completar su compra de forma segura.</div>
+        <div class="exit-destination">
+          <div class="exit-dest-label">Será redirigido a</div>
+          <div class="exit-dest-row">
+            <div class="exit-dest-icon">🏪</div>
+            <div>
+              <div class="exit-dest-name" id="exit-vendor-name">Vendedor</div>
+              <div class="exit-dest-url" id="exit-vendor-url">—</div>
             </div>
+            <div class="exit-dest-secure">🔒 Seguro</div>
           </div>
         </div>
+        <div style="width:100%;">
+          <div style="font-size:11px;color:var(--c-t2);margin-bottom:6px;text-align:center;">Redirigiendo en 2 segundos…</div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+        </div>
+        <a href="https://wa.me/5491137991082" class="btn-continue" id="exit-cta">💬 Contactar al vendedor →</a>
+        <button class="btn-cancel" onclick="goBack()">← Volver a DescuentosApp</button>
+        <div class="exit-disclaimer">No somos responsables por el contenido de sitios externos. Verificá siempre la URL antes de ingresar datos.</div>
       </div>
     </div>
 
-    <div class="offer-card" onclick="showCompare()">
-      <div class="card-row">
-        <div class="card-img">🖥️</div>
-        <div class="card-body">
-          <div class="card-title">Smart TV LG 55" OLED 4K</div>
-          <div class="card-desc">OLED evo, 120Hz, Dolby Vision & Atmos. webOS 23. HDMI 2.1.</div>
-          <div class="card-foot">
-            <span class="badge b-blue">Garbarino</span>
-            <div class="price-row">
-              <span class="p-now">$1.349.999</span>
-              <span class="p-old">$1.699.999</span>
-              <span class="p-pct">−21%</span>
-            </div>
+    <!-- ══ ALERTAS ══ -->
+    <div class="screen" id="screen-alertas">
+      <div class="screen-body">
+        <div class="sec-hdr" style="margin-bottom:16px;">
+          <div class="sec-title">🔔 Mis alertas <span class="pill" id="alert-count-badge">0</span></div>
+          <div class="sec-link" onclick="showToast('Próximamente: crear alertas 🔔')">+ Nueva</div>
+        </div>
+        <div id="alerts-list">
+          <!-- rendered dynamically from products -->
+        </div>
+        <div style="background:var(--c-accent-bg);border:1.5px solid var(--c-accent);border-radius:var(--r);padding:14px;text-align:center;margin-top:8px;">
+          <div style="font-family:var(--f-d);font-size:13px;font-weight:700;color:var(--c-accent);margin-bottom:4px;">🔔 Activá notificaciones push</div>
+          <div style="font-size:12px;color:var(--c-t2);">Recibí alertas al instante cuando el precio baje</div>
+        </div>
+        <div style="height:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ══ MI CUENTA ══ -->
+    <div class="screen" id="screen-cuenta">
+      <div class="screen-body">
+        <div class="account-header">
+          <div class="account-avatar">👤</div>
+          <div class="account-name">Mi Cuenta</div>
+          <div class="account-email">usuario@mail.com</div>
+          <div class="account-stats">
+            <div class="acc-stat"><div class="acc-stat-num" id="acc-saved">0</div><div class="acc-stat-lbl">Guardados</div></div>
+            <div class="acc-stat"><div class="acc-stat-num" id="acc-alerts">3</div><div class="acc-stat-lbl">Alertas</div></div>
+            <div class="acc-stat"><div class="acc-stat-num">$0</div><div class="acc-stat-lbl">Ahorrado</div></div>
           </div>
         </div>
+        <div class="settings-list">
+          <div class="settings-item" onclick="navigate('admin')"><div class="settings-ico">⚙️</div><div class="settings-lbl">Panel Admin</div><div class="settings-arr">›</div></div>
+          <div class="settings-item" onclick="showToast('Próximamente 🔔')"><div class="settings-ico">🔔</div><div class="settings-lbl">Notificaciones</div><div class="settings-arr">›</div></div>
+          <div class="settings-item" onclick="showToast('Próximamente ❤️')"><div class="settings-ico">❤️</div><div class="settings-lbl">Productos guardados</div><div class="settings-arr">›</div></div>
+          <div class="settings-item" onclick="showToast('Próximamente 📊')"><div class="settings-ico">📊</div><div class="settings-lbl">Historial de precios</div><div class="settings-arr">›</div></div>
+          <div class="settings-item" onclick="showToast('Próximamente 💳')"><div class="settings-ico">💳</div><div class="settings-lbl">Métodos de pago</div><div class="settings-arr">›</div></div>
+          <div class="settings-item" onclick="showToast('Próximamente ❓')"><div class="settings-ico">❓</div><div class="settings-lbl">Ayuda y soporte</div><div class="settings-arr">›</div></div>
+        </div>
+        <div style="text-align:center;padding:8px 0 16px;"><div style="font-size:12px;color:var(--c-t3);">DescuentosApp v2.1.0 · Powered by DescuentosAR</div></div>
       </div>
     </div>
 
-  </div>
+    <!-- ══ ADMIN PANEL ══ -->
+    <div class="screen" id="screen-admin">
 
-  <!-- Ofertas patrocinadas -->
-  <div class="sec-sponsored">
-    <div class="sec-title">⚡ Ofertas patrocinadas</div>
-    <div class="sponsored-badge">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5.5" stroke="currentColor" stroke-width="1"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Publicidad
-    </div>
-    <div class="sec-link">Ver todas →</div>
-  </div>
-  <div class="offers-grid">
+      <!-- LOGIN STATE -->
+      <div id="admin-login-view" class="admin-login">
+        <div class="admin-login-icon">🔐</div>
+        <div class="admin-login-title">Panel Admin</div>
+        <div class="admin-login-sub">Ingresá tu contraseña para administrar ofertas</div>
+        <div class="admin-input-wrap">
+          <div class="admin-input-label">Contraseña</div>
+          <input class="admin-input" type="password" id="admin-pass-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
+        </div>
+        <button class="admin-btn" onclick="adminLogin()">🔓 Ingresar</button>
+        <button class="admin-btn secondary" onclick="goBack()">← Volver</button>
+      </div>
 
-    <div class="offer-card ad" onclick="showCompare()">
-      <div class="ad-tag">AD</div>
-      <div class="card-row">
-        <div class="card-img" style="background:#EEF4FF;">📱</div>
-        <div class="card-body">
-          <div class="card-title">Samsung Galaxy S24 FE 256GB</div>
-          <div class="card-desc">Snapdragon 8 Gen 1, cámara de 50MP, batería 4.600mAh. Hasta 24 cuotas.</div>
-          <div class="card-foot">
-            <span class="badge b-blue">Samsung · Oficial</span>
-            <div class="price-row">
-              <span class="p-now">$699.999</span>
-              <span class="p-old">$849.999</span>
-              <span class="p-pct">−18%</span>
+      <!-- PANEL STATE (hidden until auth) -->
+      <div id="admin-panel-view" class="admin-panel" style="display:none; height:100%;">
+        <div class="admin-panel-header">
+          <div style="font-size:22px;">⚙️</div>
+          <div class="admin-panel-title">Panel Admin</div>
+          <div style="font-size:12px;opacity:.7;cursor:pointer;" onclick="adminLogout()">Salir ×</div>
+        </div>
+        <div class="admin-panel-body">
+
+          <!-- Google Sheets config -->
+          <div class="admin-form-card">
+            <div class="admin-form-title">📊 Google Sheets — Precios competencia</div>
+            <div class="admin-field">
+              <label>ID del Google Sheet (competencia)</label>
+              <input type="text" id="1lceZX0w-pu5_ZSxTghIHGlHXv9qSwyeaHmoVEigRqlk" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" oninput="saveConfig()">
+            </div>
+            <div class="admin-field">
+              <label>Nombre de la hoja (pestaña)</label>
+              <input type="text" id="Precios" placeholder="Precios" oninput="saveConfig()">
+            </div>
+            <div id="sheets-status" class="sheets-status loading">⏳ Sin conectar — ingresá el ID del Sheet</div>
+            <div class="sheets-config" style="margin-top:10px;">
+              <strong>Estructura requerida del Sheet:</strong><br>
+              Columna A: <strong>producto_id</strong> (debe coincidir con los IDs de abajo)<br>
+              Columna B: <strong>tienda</strong> (ej: MercadoLibre)<br>
+              Columna C: <strong>precio</strong> (número sin $, ej: 479999)<br>
+              Columna D: <strong>envio</strong> (0 = gratis, o monto)<br>
+              Columna E: <strong>cuotas</strong> (ej: 12x sin interés)<br>
+              Columna F: <strong>url</strong> (link al producto)<br>
+              Columna G: <strong>emoji_tienda</strong> (opcional)<br>
+              <strong>Fila 1 = encabezados</strong> (se ignora).
+            </div>
+            <button class="admin-save-btn" onclick="testSheetsConnection()" style="margin-top:12px;background:var(--c-blue);">
+              🔗 Probar conexión
+            </button>
+          </div>
+
+          <!-- My offers -->
+          <div class="admin-form-card">
+            <div class="admin-form-title">🏷️ Mis Ofertas
+              <span style="font-size:11px;font-weight:500;color:var(--c-t2);">(las tuyas — siempre en 1er lugar)</span>
+            </div>
+
+            <!-- Product selector -->
+            <div class="admin-product-selector" id="admin-product-list">
+              <!-- rendered dynamically -->
+            </div>
+
+            <button class="admin-save-btn" onclick="addNewProduct()" style="margin-top:12px;background:var(--c-green);">
+              + Agregar nuevo producto
+            </button>
+          </div>
+
+          <!-- Edit form -->
+          <div class="admin-form-card" id="admin-edit-form" style="display:none;">
+            <div class="admin-form-title">✏️ Editar oferta: <span id="edit-form-product-name">—</span></div>
+
+            <div class="admin-field-row">
+              <div class="admin-field">
+                <label>Nombre del producto</label>
+                <input type="text" id="ef-name" placeholder="Samsung Galaxy A55">
+              </div>
+              <div class="admin-field">
+                <label>Emoji / Ícono</label>
+                <input type="text" id="ef-emoji" placeholder="📱" maxlength="2">
+              </div>
+            </div>
+            <div class="admin-field">
+              <label>Categoría</label>
+              <select id="ef-category">
+                <option value="tech">📱 Electrónica</option>
+                <option value="hogar">🏠 Hogar</option>
+                <option value="moda">👗 Moda</option>
+                <option value="deporte">🏃 Deporte</option>
+                <option value="food">🍔 Alimentos</option>
+                <option value="salud">💊 Salud</option>
+                <option value="autos">🚗 Autos</option>
+                <option value="viajes">✈️ Viajes</option>
+                <option value="banco">🏦 Bancos</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label>Descripción corta</label>
+              <textarea id="ef-desc" rows="2" placeholder="Triple cámara 50MP, AMOLED 6.6"…"></textarea>
+            </div>
+            <div class="admin-field-row">
+              <div class="admin-field">
+                <label>Tu precio ($)</label>
+                <input type="number" id="ef-price" placeholder="479999">
+              </div>
+              <div class="admin-field">
+                <label>Precio original ($)</label>
+                <input type="number" id="ef-old-price" placeholder="559999">
+              </div>
+            </div>
+            <div class="admin-field-row">
+              <div class="admin-field">
+                <label>Cuotas sin interés</label>
+                <input type="number" id="ef-installments" placeholder="12" min="0">
+              </div>
+              <div class="admin-field">
+                <label>Envío (0 = gratis)</label>
+                <input type="number" id="ef-shipping" placeholder="0" min="0">
+              </div>
+            </div>
+            <div class="admin-field">
+              <label>Marca / Tienda</label>
+              <input type="text" id="ef-brand" placeholder="Samsung">
+            </div>
+            <div class="admin-field">
+              <label>Link WhatsApp o URL de compra</label>
+              <input type="url" id="ef-url" placeholder="https://wa.me/5491137991082">
+            </div>
+            <div class="admin-field">
+              <label>Especificaciones técnicas (una por línea, formato "Clave: Valor")</label>
+              <textarea id="ef-specs" rows="5" placeholder="Pantalla: AMOLED 6.6&#10;RAM: 8 GB&#10;Batería: 5000 mAh"></textarea>
+            </div>
+            <div class="admin-field">
+              <label>ID único del producto (no cambiar)</label>
+              <input type="text" id="ef-id" placeholder="prod_001" readonly style="opacity:.5">
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:4px;">
+              <button class="admin-save-btn" onclick="saveProduct()" style="flex:1;">💾 Guardar oferta</button>
+              <button class="admin-save-btn" onclick="deleteProduct()" style="flex:0 0 auto;background:var(--c-s3);color:var(--c-text);width:48px;" title="Eliminar">🗑️</button>
             </div>
           </div>
-        </div>
-      </div>
+
+        </div><!-- /panel-body -->
+      </div><!-- /panel-view -->
+
+    </div><!-- /screen-admin -->
+
+  </div><!-- /screens -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="bnav-item active" id="bnav-inicio" onclick="navigate('home')">
+      <div class="bnav-ico">🏠</div><div class="bnav-lbl">Inicio</div>
     </div>
-
-    <div class="offer-card ad" onclick="showCompare()">
-      <div class="ad-tag">AD</div>
-      <div class="card-row">
-        <div class="card-img" style="background:#FEF9EC;">🍕</div>
-        <div class="card-body">
-          <div class="card-title">Combo Pizza + Bebida 2×1</div>
-          <div class="card-desc">2×1 en todas las pizzas grandes. Delivery gratis incluido. Solo hasta las 23:59.</div>
-          <div class="card-foot">
-            <span class="badge b-amber">PedidosYa</span>
-            <div class="price-row">
-              <span class="p-now">$4.500</span>
-              <span class="p-old">$9.000</span>
-              <span class="p-pct">−50%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="bnav-item" id="bnav-comparar" onclick="if(appState.selectedProduct) navigate('detalle-oferta'); else showToast('Seleccioná un producto primero')">
+      <div class="bnav-ico">📊</div><div class="bnav-lbl">Comparar</div>
     </div>
-
-    <div class="offer-card ad" onclick="showCompare()">
-      <div class="ad-tag">AD</div>
-      <div class="card-row">
-        <div class="card-img" style="background:#ECFDF5;">🏋️</div>
-        <div class="card-body">
-          <div class="card-title">Membresía Gym Premium 3 meses</div>
-          <div class="card-desc">Acceso ilimitado a todas las sedes. Clases de yoga, crossfit y natación incluidas.</div>
-          <div class="card-foot">
-            <span class="badge b-green">FitZone · Oficial</span>
-            <div class="price-row">
-              <span class="p-now">$39.999</span>
-              <span class="p-old">$59.999</span>
-              <span class="p-pct">−33%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="bnav-item" id="bnav-alertas" onclick="navigate('alertas')">
+      <div class="bnav-ico">🔔</div><div class="bnav-lbl">Alertas</div>
     </div>
+    <div class="bnav-item" id="bnav-cuenta" onclick="navigate('cuenta')">
+      <div class="bnav-ico">👤</div><div class="bnav-lbl">Mi cuenta</div>
+    </div>
+  </nav>
 
-  </div>
+</div><!-- /app -->
 
-  
-
-</main>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-// Filter chips
-document.querySelectorAll('#filters .chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('#filters .chip').forEach(c => c.classList.remove('on'));
-    chip.classList.add('on');
-  });
-});
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+const ADMIN_PASSWORD = 'admin123'; // ← Cambiá esto
+const STORAGE_KEY    = 'descuentosapp_data';
+const POLL_INTERVAL  = 60000; // 60s
 
-// Nav links
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    link.classList.add('active');
-    if (link.textContent.trim() === 'Comparar') showCompare();
-  });
-});
+const appState = {
+  products: [],          // mis productos (admin)
+  competitorPrices: {},  // { prod_id: [ {tienda, precio, envio, cuotas, url, emoji} ] }
+  selectedProduct: null, // producto seleccionado al navegar
+  config: { sheetId: '', sheetTab: 'Precios' },
+  adminAuth: false,
+  editingProductId: null,
+  pollTimer: null,
+  lastUpdate: null,
+};
 
-function showCompare() {
-  document.getElementById('compare-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  // Briefly highlight the table
-  const wrap = document.querySelector('.compare-wrap');
-  wrap.style.boxShadow = '0 0 0 3px #1B4FD840';
-  setTimeout(() => { wrap.style.boxShadow = ''; }, 900);
+/* ── Default products (editable from admin) ── */
+const DEFAULT_PRODUCTS = [
+  {
+    id: 'prod_001',
+    name: 'Samsung Galaxy A55 5G 128GB',
+    emoji: '📱',
+    brand: 'Samsung',
+    category: 'tech',
+    desc: 'Triple cámara 50MP, AMOLED 6.6", 12 cuotas sin interés disponibles.',
+    price: 479999,
+    oldPrice: 559999,
+    installments: 12,
+    shipping: 0,
+    url: 'https://wa.me/5491137991082',
+    specs: [
+      ['Pantalla','AMOLED 6.6" FHD+ 120Hz'],
+      ['Procesador','Exynos 1480 (4nm)'],
+      ['RAM','8 GB LPDDR5'],
+      ['Almacenamiento','128 GB UFS 2.2 (ampliable)'],
+      ['Cámara','50MP + 12MP + 5MP'],
+      ['Frontal','32 MP f/2.2'],
+      ['Batería','5.000 mAh, carga 25W'],
+      ['Conectividad','5G, WiFi 6, Bluetooth 5.3'],
+      ['Sistema','Android 14 / One UI 6.1'],
+    ]
+  },
+  {
+    id: 'prod_002',
+    name: 'Notebook Lenovo IdeaPad 3',
+    emoji: '💻',
+    brand: 'Lenovo',
+    category: 'tech',
+    desc: 'Intel Core i5, 16GB RAM, SSD 512GB. Windows 11 Home. Envío gratis.',
+    price: 749999,
+    oldPrice: 899999,
+    installments: 18,
+    shipping: 0,
+    url: 'https://wa.me/5491137991082',
+    specs: [
+      ['Procesador','Intel Core i5-1235U'],
+      ['RAM','16 GB DDR4'],
+      ['Almacenamiento','SSD 512 GB NVMe'],
+      ['Pantalla','15.6" FHD IPS'],
+      ['Sistema','Windows 11 Home'],
+      ['Batería','45 Wh, hasta 8hs'],
+      ['Puertos','USB 3.0 x3, HDMI, USB-C'],
+    ]
+  },
+  {
+    id: 'prod_003',
+    name: 'Adidas Ultraboost 22',
+    emoji: '👟',
+    brand: 'Adidas',
+    category: 'deporte',
+    desc: 'Zapatillas running con tecnología BOOST. Tallas 38–46. Stock limitado.',
+    price: 89999,
+    oldPrice: 129999,
+    installments: 6,
+    shipping: 0,
+    url: 'https://wa.me/5491137991082',
+    specs: [
+      ['Tallas disponibles','38 a 46'],
+      ['Tecnología','BOOST + Primeknit'],
+      ['Drop','10mm'],
+      ['Peso','311g (talla 42)'],
+      ['Tipo','Running neutro'],
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════════
+   PERSISTENCE
+═══════════════════════════════════════════════════════ */
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved.products?.length) appState.products = saved.products;
+      if (saved.config) appState.config = { ...appState.config, ...saved.config };
+    }
+  } catch(e) {}
+  if (!appState.products.length) appState.products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
 }
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      products: appState.products,
+      config: appState.config
+    }));
+  } catch(e) {}
+}
+
+/* ═══════════════════════════════════════════════════════
+   GOOGLE SHEETS FETCHER
+   Uses the public CSV export endpoint — no API key needed
+   Sheet must be published: File → Share → Publish to web → CSV
+═══════════════════════════════════════════════════════ */
+async function fetchCompetitorPrices() {
+  const { sheetId, sheetTab } = appState.config;
+  if (!sheetId) return;
+
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetTab || 'Precios')}`;
+
+  try {
+    const resp = await fetch(url, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const text = await resp.text();
+    parseSheetCSV(text);
+    appState.lastUpdate = new Date();
+    updateTimestamp();
+    updateSheetsStatus('ok', '✅ Conectado — ' + formatTime(appState.lastUpdate));
+    renderAllScreens();
+  } catch(err) {
+    console.warn('Sheets fetch error:', err);
+    updateSheetsStatus('err', '❌ Error de conexión: ' + err.message);
+  }
+}
+
+function parseSheetCSV(csvText) {
+  const lines = csvText.trim().split('\n').slice(1); // skip header
+  const newPrices = {};
+  for (const line of lines) {
+    const cols = parseCSVLine(line);
+    if (cols.length < 3) continue;
+    const [prodId, tienda, precioRaw, envioRaw, cuotas, url, emoji] = cols;
+    const precio = parseFloat(precioRaw.replace(/[^0-9.]/g,''));
+    const envio  = parseFloat(envioRaw?.replace(/[^0-9.]/g,'')) || 0;
+    if (!prodId || !tienda || isNaN(precio)) continue;
+    if (!newPrices[prodId]) newPrices[prodId] = [];
+    newPrices[prodId].push({
+      tienda: tienda.trim(),
+      precio,
+      envio,
+      cuotas: cuotas?.trim() || '—',
+      url: url?.trim() || '#',
+      emoji: emoji?.trim() || '🏪',
+    });
+  }
+  // Sort each product by price asc
+  for (const id in newPrices) {
+    newPrices[id].sort((a,b) => a.precio - b.precio);
+  }
+  appState.competitorPrices = newPrices;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (c === ',' && !inQ) { result.push(cur.trim()); cur = ''; continue; }
+    cur += c;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function updateSheetsStatus(type, msg) {
+  const el = document.getElementById('sheets-status');
+  if (!el) return;
+  el.className = 'sheets-status ' + type;
+  el.textContent = msg;
+}
+
+function formatTime(d) {
+  return d ? d.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' }) : '—';
+}
+
+function updateTimestamp() {
+  const el = document.getElementById('compare-last-update');
+  if (el && appState.lastUpdate) el.textContent = 'Hoy ' + formatTime(appState.lastUpdate);
+}
+
+async function testSheetsConnection() {
+  updateSheetsStatus('loading', '⏳ Conectando…');
+  await fetchCompetitorPrices();
+}
+
+function startPolling() {
+  if (appState.pollTimer) clearInterval(appState.pollTimer);
+  fetchCompetitorPrices();
+  appState.pollTimer = setInterval(fetchCompetitorPrices, POLL_INTERVAL);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: HOME OFFERS GRID
+═══════════════════════════════════════════════════════ */
+function renderHomeGrid(filterCat = 'all', search = '') {
+  const grid = document.getElementById('home-offers-grid');
+  if (!grid) return;
+
+  // Remove skeletons
+  document.getElementById('skeleton-1')?.remove();
+  document.getElementById('skeleton-2')?.remove();
+
+  const filtered = appState.products.filter(p => {
+    const matchCat = filterCat === 'all' || p.category === filterCat;
+    const matchQ   = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.brand?.toLowerCase().includes(search.toLowerCase());
+    return matchCat && matchQ;
+  });
+
+  grid.innerHTML = '';
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:32px;color:var(--c-t3);font-family:var(--f-d);font-size:13px;">No se encontraron ofertas 🔍</div>';
+    return;
+  }
+
+  filtered.forEach(p => {
+    const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+    const card = document.createElement('div');
+    card.className = 'offer-card my-offer';
+    card.innerHTML = `
+      <div class="my-tag">MÍO</div>
+      <div class="card-row">
+        <div class="card-img">${p.emoji}</div>
+        <div class="card-body">
+          <div class="card-title">${p.name}</div>
+          <div class="card-desc">${p.desc}</div>
+          <div class="card-foot">
+            <span class="badge b-orange">${p.brand}</span>
+            <div class="price-row">
+              <span class="p-now">${fmtPrice(p.price)}</span>
+              ${p.oldPrice ? `<span class="p-old">${fmtPrice(p.oldPrice)}</span>` : ''}
+              ${disc > 0 ? `<span class="p-pct">−${disc}%</span>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => {
+      appState.selectedProduct = p;
+      navigate('detalle-oferta');
+    });
+    grid.appendChild(card);
+  });
+
+  // Stats
+  const totalStores = new Set(
+    Object.values(appState.competitorPrices).flat().map(r => r.tienda)
+  ).size;
+  const maxDisc = Math.max(...appState.products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
+  document.getElementById('stat-offers').textContent = filtered.length;
+  document.getElementById('stat-stores').textContent = totalStores || '—';
+  document.getElementById('stat-best').textContent = maxDisc > 0 ? `−${maxDisc}%` : '—';
+  document.getElementById('home-offer-count').textContent = filtered.length;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: DETALLE OFERTA (comparativa)
+═══════════════════════════════════════════════════════ */
+function renderDetalleOferta() {
+  const p = appState.selectedProduct;
+  if (!p) return;
+
+  const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+  const cuotaAmt = p.installments ? Math.round(p.price / p.installments) : null;
+
+  // Header
+  document.getElementById('detail-header-title').textContent = p.name;
+  document.getElementById('detail-emoji').textContent = p.emoji;
+  document.getElementById('detail-brand').textContent = p.brand + ' · Producto';
+  document.getElementById('detail-name').textContent = p.name;
+  document.getElementById('detail-my-price').textContent = fmtPrice(p.price);
+  document.getElementById('detail-old-price').textContent = p.oldPrice ? fmtPrice(p.oldPrice) : '';
+  document.getElementById('detail-discount').textContent = disc > 0 ? `−${disc}%` : '';
+  document.getElementById('detail-installments').innerHTML = cuotaAmt
+    ? `💳 ${p.installments} cuotas sin interés de <strong>${fmtPrice(cuotaAmt)}</strong>`
+    : '🚚 ' + (p.shipping === 0 ? 'Envío gratis' : `Envío $${fmtPrice(p.shipping)}`);
+  document.getElementById('compare-prod-emoji').textContent = p.emoji;
+  document.getElementById('compare-prod-name').textContent = p.name;
+  updateTimestamp();
+
+  // Build rows
+  const competitors = appState.competitorPrices[p.id] || [];
+  document.getElementById('compare-store-count').textContent = (competitors.length + 1) + ' tiendas';
+
+  const container = document.getElementById('compare-rows-container');
+  container.innerHTML = '';
+
+  // MY row (always first, always best)
+  const myRow = document.createElement('div');
+  myRow.className = 'compare-row best';
+  myRow.innerHTML = `
+    <div class="store-cell">
+      <div class="store-icon" style="background:var(--c-accent-bg);">🏷️</div>
+      <div>
+        <div class="store-name">Nuestra oferta</div>
+        <div class="store-sub">⭐ Verificado · Envío ${p.shipping === 0 ? 'gratis' : fmtPrice(p.shipping)}</div>
+        <span class="best-tag">✓ MEJOR PRECIO</span>
+      </div>
+    </div>
+    <div>
+      <div class="compare-price">${fmtPrice(p.price)}</div>
+      ${competitors.length ? `<div class="compare-saving">Ahorrás ${fmtPrice(competitors[0].precio - p.price)}</div>` : ''}
+    </div>
+    <div class="compare-ship ${p.shipping === 0 ? 'free' : ''}">${p.shipping === 0 ? '✓ Gratis' : fmtPrice(p.shipping)}</div>
+    <div class="compare-inst">${cuotaAmt ? `${p.installments}x ${fmtPrice(cuotaAmt)}<br><span style="color:var(--c-green);font-size:10px;">Sin interés</span>` : '—'}</div>
+    <div><a href="${p.url}" class="compare-btn primary" onclick="event.stopPropagation();">Ver →</a></div>`;
+  myRow.addEventListener('click', () => navigate('detalle-producto'));
+  container.appendChild(myRow);
+
+  // Competitor rows
+  competitors.forEach(comp => {
+    const diff = comp.precio - p.price;
+    const row = document.createElement('div');
+    row.className = 'compare-row';
+    row.innerHTML = `
+      <div class="store-cell">
+        <div class="store-icon" style="background:var(--c-s2);">${comp.emoji}</div>
+        <div>
+          <div class="store-name">${comp.tienda}</div>
+          <div class="store-sub">${comp.envio === 0 ? '✓ Envío gratis' : 'Envío ' + fmtPrice(comp.envio)}</div>
+        </div>
+      </div>
+      <div>
+        <div class="compare-price">${fmtPrice(comp.precio)}</div>
+        <div class="compare-plus">+${fmtPrice(diff)}</div>
+      </div>
+      <div class="compare-ship ${comp.envio === 0 ? 'free' : ''}">${comp.envio === 0 ? '✓ Gratis' : fmtPrice(comp.envio)}</div>
+      <div class="compare-inst">${comp.cuotas || '—'}</div>
+      <div><a href="${comp.url || '#'}" target="_blank" class="compare-btn secondary" onclick="event.stopPropagation();">Ver →</a></div>`;
+    container.appendChild(row);
+  });
+
+  if (!competitors.length) {
+    const noData = document.createElement('div');
+    noData.style.cssText = 'padding:20px;text-align:center;color:var(--c-t3);font-size:13px;';
+    noData.innerHTML = '📊 Configurá Google Sheets para ver precios de competencia en tiempo real';
+    container.appendChild(noData);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: DETALLE PRODUCTO
+═══════════════════════════════════════════════════════ */
+function renderDetalleProducto() {
+  const p = appState.selectedProduct;
+  if (!p) return;
+
+  const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+  const cuotaAmt = p.installments ? Math.round(p.price / p.installments) : null;
+  const competitors = (appState.competitorPrices[p.id] || []).slice(0,2);
+
+  document.getElementById('prod-emoji').textContent = p.emoji;
+  document.getElementById('prod-brand').textContent = p.brand + ' · Producto';
+  document.getElementById('prod-name').textContent = p.name;
+  document.getElementById('prod-price').textContent = fmtPrice(p.price);
+  document.getElementById('prod-old-price').textContent = p.oldPrice ? fmtPrice(p.oldPrice) : '';
+  document.getElementById('prod-discount').textContent = disc > 0 ? `−${disc}%` : '';
+  document.getElementById('prod-installments').innerHTML = cuotaAmt
+    ? `💳 ${p.installments} cuotas sin interés de <strong>${fmtPrice(cuotaAmt)}</strong>`
+    : '🚚 ' + (p.shipping === 0 ? 'Envío gratis incluido' : `Envío ${fmtPrice(p.shipping)}`);
+
+  // Specs
+  const specList = document.getElementById('prod-specs');
+  specList.innerHTML = '';
+  (p.specs || []).forEach(([k,v]) => {
+    const row = document.createElement('div');
+    row.className = 'spec-row';
+    row.innerHTML = `<span class="spec-key">${k}</span><span class="spec-val">${v}</span>`;
+    specList.appendChild(row);
+  });
+  if (!(p.specs || []).length) {
+    specList.innerHTML = '<div class="spec-row"><span class="spec-key" style="color:var(--c-t3)">—</span><span class="spec-val" style="color:var(--c-t3)">Sin especificaciones cargadas</span></div>';
+  }
+
+  // Compare table headers
+  document.getElementById('comp-th-1').textContent = competitors[0]?.tienda || '—';
+  document.getElementById('comp-th-2').textContent = competitors[1]?.tienda || '—';
+
+  // Compare table body
+  const tbody = document.getElementById('prod-compare-tbody');
+  tbody.innerHTML = `
+    <tr><td>Precio</td>
+      <td class="highlight-col" style="color:var(--c-accent);font-weight:800;">${fmtPrice(p.price)}</td>
+      <td>${competitors[0] ? fmtPrice(competitors[0].precio) : '—'}</td>
+      <td>${competitors[1] ? fmtPrice(competitors[1].precio) : '—'}</td>
+    </tr>
+    <tr><td>Cuotas s/int.</td>
+      <td class="highlight-col"><span class="check">✓</span> ${p.installments || '—'}</td>
+      <td>${competitors[0]?.cuotas || '—'}</td>
+      <td>${competitors[1]?.cuotas || '—'}</td>
+    </tr>
+    <tr><td>Envío gratis</td>
+      <td class="highlight-col">${p.shipping === 0 ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+      <td>${competitors[0]?.envio === 0 ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+      <td>${competitors[1]?.envio === 0 ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+    </tr>
+    <tr><td>Garantía oficial</td>
+      <td class="highlight-col"><span class="check">✓</span> 1 año</td>
+      <td><span class="check">✓</span> 1 año</td>
+      <td><span class="check">✓</span> 1 año</td>
+    </tr>`;
+
+  // Advantage text
+  if (competitors.length) {
+    const diff = competitors[0].precio - p.price;
+    document.getElementById('prod-advantage-price').textContent =
+      `${fmtPrice(diff)} más barato que ${competitors[0].tienda}. Sin cargos ocultos.`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: ALERTAS
+═══════════════════════════════════════════════════════ */
+function renderAlertas() {
+  const list = document.getElementById('alerts-list');
+  if (!list) return;
+  list.innerHTML = '';
+  appState.products.forEach(p => {
+    const competitors = appState.competitorPrices[p.id] || [];
+    const card = document.createElement('div');
+    const isWin = competitors.length && p.price < competitors[0].precio;
+    card.className = 'alert-card';
+    if (isWin) card.style.cssText = 'border-color:var(--c-green-b);background:var(--c-green-bg);';
+    card.innerHTML = `
+      <div class="alert-ico">${p.emoji}</div>
+      <div class="alert-info">
+        <div class="alert-name">${p.name}</div>
+        ${isWin
+          ? `<div class="alert-target" style="color:var(--c-green);font-weight:700;">✓ Precio más bajo del mercado</div>`
+          : `<div class="alert-target">Monitoreando precio…</div>`}
+        <div class="alert-current">Tu precio: ${fmtPrice(p.price)} ${competitors.length ? `· Siguiente: ${fmtPrice(competitors[0].precio)} (${competitors[0].tienda})` : ''}</div>
+      </div>
+      <div class="alert-status" onclick="appState.selectedProduct=appState.products.find(x=>x.id==='${p.id}');navigate('detalle-oferta');">→</div>`;
+    list.appendChild(card);
+  });
+  document.getElementById('alert-count-badge').textContent = appState.products.length;
+  document.getElementById('alert-badge').textContent = appState.products.length;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════════════════════════ */
+function renderAllScreens() {
+  renderHomeGrid(appState._currentCat || 'all', appState._currentSearch || '');
+  if (appState.selectedProduct) {
+    renderDetalleOferta();
+    renderDetalleProducto();
+  }
+  renderAlertas();
+}
+
+/* ═══════════════════════════════════════════════════════
+   ADMIN
+═══════════════════════════════════════════════════════ */
+function adminLogin() {
+  const pass = document.getElementById('admin-pass-input').value;
+  if (pass === ADMIN_PASSWORD) {
+    appState.adminAuth = true;
+    document.getElementById('admin-login-view').style.display = 'none';
+    document.getElementById('admin-panel-view').style.display = 'flex';
+    loadAdminPanel();
+  } else {
+    showToast('❌ Contraseña incorrecta');
+    document.getElementById('admin-pass-input').value = '';
+  }
+}
+
+function adminLogout() {
+  appState.adminAuth = false;
+  document.getElementById('admin-login-view').style.display = '';
+  document.getElementById('admin-panel-view').style.display = 'none';
+  document.getElementById('admin-pass-input').value = '';
+  goBack();
+}
+
+function loadAdminPanel() {
+  // Config fields
+  document.getElementById('admin-sheet-id').value  = appState.config.sheetId || '';
+  document.getElementById('admin-sheet-tab').value = appState.config.sheetTab || 'Precios';
+  renderAdminProductList();
+}
+
+function saveConfig() {
+  appState.config.sheetId  = document.getElementById('admin-sheet-id').value.trim();
+  appState.config.sheetTab = document.getElementById('admin-sheet-tab').value.trim() || 'Precios';
+  saveData();
+  if (appState.config.sheetId) startPolling();
+}
+
+function renderAdminProductList() {
+  const list = document.getElementById('admin-product-list');
+  if (!list) return;
+  list.innerHTML = '';
+  appState.products.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'admin-product-item' + (appState.editingProductId === p.id ? ' selected' : '');
+    item.innerHTML = `
+      <div class="admin-product-ico">${p.emoji}</div>
+      <div>
+        <div class="admin-product-name">${p.name}</div>
+        <div class="admin-product-price">${fmtPrice(p.price)} · ${p.category}</div>
+      </div>
+      <div class="admin-product-arrow">›</div>`;
+    item.addEventListener('click', () => editProduct(p.id));
+    list.appendChild(item);
+  });
+}
+
+function editProduct(id) {
+  const p = appState.products.find(x => x.id === id);
+  if (!p) return;
+  appState.editingProductId = id;
+  renderAdminProductList();
+
+  document.getElementById('admin-edit-form').style.display = '';
+  document.getElementById('edit-form-product-name').textContent = p.name;
+  document.getElementById('ef-id').value = p.id;
+  document.getElementById('ef-name').value = p.name;
+  document.getElementById('ef-emoji').value = p.emoji;
+  document.getElementById('ef-category').value = p.category || 'tech';
+  document.getElementById('ef-desc').value = p.desc;
+  document.getElementById('ef-price').value = p.price;
+  document.getElementById('ef-old-price').value = p.oldPrice || '';
+  document.getElementById('ef-installments').value = p.installments || '';
+  document.getElementById('ef-shipping').value = p.shipping || 0;
+  document.getElementById('ef-brand').value = p.brand || '';
+  document.getElementById('ef-url').value = p.url || '';
+  document.getElementById('ef-specs').value = (p.specs || []).map(([k,v]) => `${k}: ${v}`).join('\n');
+
+  document.getElementById('admin-edit-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function saveProduct() {
+  const id = document.getElementById('ef-id').value;
+  const specsRaw = document.getElementById('ef-specs').value.trim();
+  const specs = specsRaw
+    ? specsRaw.split('\n').map(line => {
+        const idx = line.indexOf(':');
+        if (idx === -1) return null;
+        return [line.slice(0, idx).trim(), line.slice(idx+1).trim()];
+      }).filter(Boolean)
+    : [];
+
+  const updated = {
+    id,
+    name:         document.getElementById('ef-name').value.trim(),
+    emoji:        document.getElementById('ef-emoji').value.trim() || '📦',
+    category:     document.getElementById('ef-category').value,
+    desc:         document.getElementById('ef-desc').value.trim(),
+    price:        parseFloat(document.getElementById('ef-price').value) || 0,
+    oldPrice:     parseFloat(document.getElementById('ef-old-price').value) || 0,
+    installments: parseInt(document.getElementById('ef-installments').value) || 0,
+    shipping:     parseFloat(document.getElementById('ef-shipping').value) || 0,
+    brand:        document.getElementById('ef-brand').value.trim(),
+    url:          document.getElementById('ef-url').value.trim(),
+    specs,
+  };
+
+  const idx = appState.products.findIndex(p => p.id === id);
+  if (idx !== -1) appState.products[idx] = updated;
+  else appState.products.push(updated);
+
+  saveData();
+  renderAdminProductList();
+  renderAllScreens();
+  showToast('✅ Oferta guardada');
+  document.getElementById('admin-edit-form').style.display = 'none';
+  appState.editingProductId = null;
+}
+
+function addNewProduct() {
+  const newId = 'prod_' + Date.now();
+  const newProd = {
+    id: newId, name: 'Nuevo producto', emoji: '📦', category: 'tech',
+    desc: 'Descripción del producto', price: 0, oldPrice: 0,
+    installments: 0, shipping: 0, brand: 'Marca', url: 'https://wa.me/5491137991082', specs: []
+  };
+  appState.products.push(newProd);
+  saveData();
+  renderAdminProductList();
+  editProduct(newId);
+}
+
+function deleteProduct() {
+  const id = document.getElementById('ef-id').value;
+  if (!id) return;
+  if (!confirm('¿Eliminar esta oferta?')) return;
+  appState.products = appState.products.filter(p => p.id !== id);
+  saveData();
+  document.getElementById('admin-edit-form').style.display = 'none';
+  appState.editingProductId = null;
+  renderAdminProductList();
+  renderAllScreens();
+  showToast('🗑️ Oferta eliminada');
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION ROUTER
+═══════════════════════════════════════════════════════ */
+const SCREEN_MAP = {
+  'home':             'screen-home',
+  'detalle-oferta':   'screen-detalle-oferta',
+  'detalle-producto': 'screen-detalle-producto',
+  'exit':             'screen-exit',
+  'alertas':          'screen-alertas',
+  'cuenta':           'screen-cuenta',
+  'admin':            'screen-admin',
+};
+const BNAV_MAP = {
+  'home':             'bnav-inicio',
+  'detalle-oferta':   'bnav-comparar',
+  'detalle-producto': 'bnav-comparar',
+  'exit':             null,
+  'alertas':          'bnav-alertas',
+  'cuenta':           'bnav-cuenta',
+  'admin':            'bnav-cuenta',
+};
+
+let history_stack = ['home'];
+let current = 'home';
+
+function navigate(screen) {
+  if (screen === current) return;
+  const fromEl = document.getElementById(SCREEN_MAP[current]);
+  const toEl   = document.getElementById(SCREEN_MAP[screen]);
+  if (!toEl) return;
+
+  fromEl.classList.remove('active');
+  fromEl.classList.add('slide-out');
+  setTimeout(() => fromEl.classList.remove('slide-out'), 300);
+  toEl.classList.add('active', 'slide-in');
+  setTimeout(() => toEl.classList.remove('slide-in'), 300);
+
+  history_stack.push(screen);
+  current = screen;
+  updateBottomNav(screen);
+  toEl.scrollTop = 0;
+
+  // Render on navigate
+  if (screen === 'detalle-oferta')   renderDetalleOferta();
+  if (screen === 'detalle-produto')  renderDetalleProducto();
+  if (screen === 'detalle-produto' || screen === 'detalle-producto') renderDetalleProducto();
+  if (screen === 'alertas')          renderAlertas();
+  if (screen === 'exit')             resetProgress();
+  if (screen === 'admin') {
+    if (appState.adminAuth) {
+      document.getElementById('admin-login-view').style.display = 'none';
+      document.getElementById('admin-panel-view').style.display = 'flex';
+      loadAdminPanel();
+    } else {
+      document.getElementById('admin-login-view').style.display = '';
+      document.getElementById('admin-panel-view').style.display = 'none';
+    }
+  }
+}
+
+function goBack() {
+  if (history_stack.length <= 1) return;
+  history_stack.pop();
+  const prev = history_stack[history_stack.length - 1];
+  const fromEl = document.getElementById(SCREEN_MAP[current]);
+  const toEl   = document.getElementById(SCREEN_MAP[prev]);
+  if (!fromEl || !toEl) return;
+
+  fromEl.classList.remove('active');
+  fromEl.classList.add('slide-back-out');
+  setTimeout(() => fromEl.classList.remove('slide-back-out'), 300);
+  toEl.classList.add('active', 'slide-back-in');
+  setTimeout(() => toEl.classList.remove('slide-back-in'), 300);
+  current = prev;
+  updateBottomNav(prev);
+  toEl.scrollTop = 0;
+}
+
+function goHome() { navigate('home'); history_stack = ['home']; }
+
+function updateBottomNav(screen) {
+  document.querySelectorAll('.bnav-item').forEach(el => el.classList.remove('active'));
+  const id = BNAV_MAP[screen];
+  if (id) document.getElementById(id)?.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════ */
+function fmtPrice(n) {
+  if (n === undefined || n === null) return '—';
+  return '$' + Math.round(n).toLocaleString('es-AR');
+}
+
+function resetProgress() {
+  const fill = document.getElementById('progress-fill');
+  if (fill) { fill.style.animation='none'; fill.offsetHeight; fill.style.animation='progress 2s linear forwards'; }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── Category filter chips ── */
+appState._currentCat = 'all';
+appState._currentSearch = '';
+
+document.querySelectorAll('#home-filters .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#home-filters .chip').forEach(c => c.classList.remove('on'));
+    chip.classList.add('on');
+    appState._currentCat = chip.dataset.cat;
+    renderHomeGrid(appState._currentCat, appState._currentSearch);
+  });
+});
+
+function filterOffers(q) {
+  appState._currentSearch = q;
+  renderHomeGrid(appState._currentCat, q);
+}
+
+/* ── Android back button ── */
+history.pushState(null, '', window.location.href);
+window.addEventListener('popstate', () => { if (current !== 'home') goBack(); });
+
+/* ── Service Worker ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════ */
+loadData();
+renderAllScreens();
+if (appState.config.sheetId) startPolling();
+
+async function cargarCompetencia() {
+
+  const sheetId = localStorage.getItem("sheetId");
+  const tab = localStorage.getItem("sheetTab");
+
+  if (!sheetId || !tab) return;
+
+  const url =
+  `https://opensheet.elk.sh/${sheetId}/${tab}`;
+
+  try {
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    window.competencia = data;
+
+    console.log("Competencia cargada:", data);
+
+    actualizarComparativas();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+cargarCompetencia();
+
+setInterval(() => {
+
+  cargarCompetencia();
+
+}, 30000);
+
+function obtenerMejorPrecio(productoId){
+
+  const precios = competencia
+    .filter(p => p.producto_id === productoId)
+    .map(p => Number(p.precio));
+
+  return Math.min(...precios);
+
+}
+
+function renderComparativa(productoId){
+
+  const rows = competencia
+    .filter(p => p.producto_id === productoId);
+
+  const mejor =
+    Math.min(...rows.map(r => Number(r.precio)));
+
+  let html = "";
+
+  rows.forEach(row => {
+
+    const esMejor =
+      Number(row.precio) === mejor;
+
+    html += `
+      <div class="compare-row ${esMejor ? "best" : ""}">
+        <div>${row.tienda}</div>
+        <div>$${Number(row.precio).toLocaleString()}</div>
+        <div>${row.envio == 0 ? "Gratis" : "$"+row.envio}</div>
+        <div>${row.cuotas} cuotas</div>
+      </div>
+    `;
+  });
+
+  document.getElementById(
+    "compare-rows-container"
+  ).innerHTML = html;
+
+}
+
 </script>
 </body>
 </html>
+
+
+
+
+
