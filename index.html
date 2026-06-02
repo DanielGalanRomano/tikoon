@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>DescuentosApp — Ofertas</title>
+<title>DescuentosApp — Mejores Precios</title>
 <style>
 * {
   margin: 0;
@@ -374,53 +374,289 @@ body {
   margin-top: 4px;
 }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
+/* Tabla comparativa */
+.comparison-table {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.comparison-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   background: #18150F;
   color: white;
-  padding: 8px 16px;
-  border-radius: 100px;
-  font-size: 12px;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-
-.toast.show {
-  opacity: 1;
-}
-
-.back-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   padding: 12px 16px;
-  background: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 12px 16px;
+  align-items: center;
   border-bottom: 1px solid #E0DAD0;
 }
 
-.back-btn {
-  background: white;
-  border: 1px solid #E0DAD0;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
+.comparison-row.best {
+  background: #FEF0EC;
+  border-left: 3px solid #E8441A;
+}
+
+.comparison-row:last-child {
+  border-bottom: none;
+}
+
+.store-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.store-icon {
+  width: 32px;
+  height: 32px;
+  background: #F0EDE6;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   font-size: 16px;
 }
 
-.back-title {
-  font-size: 16px;
+.store-name {
   font-weight: 700;
+  font-size: 13px;
+}
+
+.store-sub {
+  font-size: 10px;
+  color: #6B6358;
+}
+
+.comparison-price {
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.comparison-row.best .comparison-price {
+  color: #E8441A;
+}
+
+.buy-btn {
+  background: #E8441A;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+}
+
+.buy-btn-small {
+  background: #F0EDE6;
+  color: #18150F;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 11px;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Pantalla de salida */
+.exit-screen {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.exit-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.exit-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.exit-sub {
+  font-size: 14px;
+  color: #6B6358;
+  margin-bottom: 24px;
+}
+
+.exit-card {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.exit-card-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #A89F94;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.exit-store {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.exit-store-icon {
+  width: 48px;
+  height: 48px;
+  background: #F0EDE6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.exit-store-name {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.exit-store-url {
+  font-size: 11px;
+  color: #1B4FD8;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #E0DAD0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #E8441A;
+  animation: progress 2s linear forwards;
+}
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.exit-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exit-btn-primary {
+  background: #E8441A;
+  color: white;
+  padding: 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+}
+
+.exit-btn-secondary {
+  background: white;
+  color: #6B6358;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #E0DAD0;
+}
+
+.exit-note {
+  font-size: 11px;
+  color: #A89F94;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Product detail */
+.product-detail {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.product-detail-top {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.product-detail-emoji {
+  font-size: 56px;
+  background: #F0EDE6;
+  width: 90px;
+  height: 90px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-detail-info {
   flex: 1;
+}
+
+.product-detail-brand {
+  font-size: 11px;
+  color: #A89F94;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.product-detail-name {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 4px 0;
+}
+
+.product-detail-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: #E8441A;
+}
+
+.product-detail-old {
+  font-size: 13px;
+  color: #A89F94;
+  text-decoration: line-through;
+}
+
+.product-detail-installments {
+  font-size: 13px;
+  color: #0B7A48;
+  margin-top: 8px;
 }
 
 /* Admin */
@@ -453,10 +689,45 @@ body {
   cursor: pointer;
 }
 
+.back-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #E0DAD0;
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid #E0DAD0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.back-title {
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+}
+
 .loading {
   text-align: center;
   padding: 40px;
   color: #6B6358;
+}
+
+.update-time {
+  font-size: 10px;
+  color: #A89F94;
+  text-align: right;
+  margin-top: 8px;
 }
 </style>
 </head>
@@ -480,7 +751,7 @@ body {
         <div class="hero">
           <div>
             <div class="hero-title">¡Descuentos del día! 🔥</div>
-            <div class="hero-sub">Precios actualizados</div>
+            <div class="hero-sub">Precios actualizados en tiempo real</div>
             <div class="hero-btn" onclick="navigate('alerts')">🔔 Activar alertas</div>
           </div>
           <div class="hero-emoji">🛍️</div>
@@ -498,14 +769,15 @@ body {
         </div>
         
         <div class="offers-grid" id="offersGrid"></div>
+        <div id="updateTime" class="update-time"></div>
       </div>
     </div>
 
-    <!-- COMPARAR -->
+    <!-- COMPARATIVA -->
     <div class="screen" id="screen-compare">
       <div class="back-header">
         <div class="back-btn" onclick="goBack()">←</div>
-        <div class="back-title" id="compareTitle">Comparativa</div>
+        <div class="back-title" id="compareTitle">Comparativa de precios</div>
       </div>
       <div class="screen-body" id="compareContent"></div>
     </div>
@@ -561,10 +833,52 @@ body {
           </div>
           
           <div style="background:white; border-radius:18px; padding:16px">
-            <h3 style="margin-bottom:12px">📝 ID de prueba</h3>
+            <h3 style="margin-bottom:12px">📝 Formato del Google Sheet</h3>
             <div style="font-size:12px; color:#6B6358">
-              <code style="background:#F0EDE6; padding:4px; display:block; word-break:break-all">1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w</code>
+              <strong>Columnas necesarias (fila 1):</strong><br>
+              <code style="background:#F0EDE6; padding:4px; display:block; margin:8px 0; font-size:10px">
+                id | nombre | emoji | marca | precio | precio_anterior | cuotas | descripcion
+              </code>
+              <strong>Ejemplo:</strong><br>
+              tv_samsung | TV Samsung 40" | 📺 | Samsung | 299999 | 399999 | 12 | Smart TV 4K
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXIT (pantalla de salida a WhatsApp) -->
+    <div class="screen" id="screen-exit">
+      <div class="back-header">
+        <div class="back-btn" onclick="goBack()">←</div>
+        <div class="back-title">Saliendo de DescuentosApp</div>
+      </div>
+      <div class="screen-body">
+        <div class="exit-screen">
+          <div class="exit-icon">⚠️</div>
+          <div class="exit-title">Estás saliendo de DescuentosApp</div>
+          <div class="exit-sub">Serás redirigido a WhatsApp para completar tu compra</div>
+          
+          <div class="exit-card">
+            <div class="exit-card-title">Serás redirigido a</div>
+            <div class="exit-store">
+              <div class="exit-store-icon" id="exitStoreIcon">🏪</div>
+              <div>
+                <div class="exit-store-name" id="exitStoreName">WhatsApp</div>
+                <div class="exit-store-url" id="exitStoreUrl">wa.me/1137991082</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="exit-buttons">
+            <a href="#" id="exitDirectLink" class="exit-btn-primary">💬 Ir a WhatsApp ahora</a>
+            <button class="exit-btn-secondary" onclick="goBack()">← Volver a DescuentosApp</button>
+          </div>
+          <div class="exit-note">
+            🔒 No compartimos tus datos. Serás redirigido a un sitio externo.
           </div>
         </div>
       </div>
@@ -579,190 +893,105 @@ body {
   </div>
 </div>
 
-<div class="toast" id="toast">Mensaje</div>
+<div class="toast" id="toast" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#18150F; color:white; padding:8px 16px; border-radius:100px; font-size:12px; z-index:9999; opacity:0; transition:opacity 0.2s; pointer-events:none">Mensaje</div>
 
 <script>
 // ============================================
-// PRODUCTOS DE EJEMPLO (VISIBLES INMEDIATAMENTE)
+// CONFIGURACIÓN
 // ============================================
-const productosEjemplo = [
-  { id: '1', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: '#', desc: 'Triple cámara 50MP, pantalla AMOLED, USB-C' },
-  { id: '2', name: 'Lenovo IdeaPad 3', emoji: '💻', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, shipping: 0, url: '#', desc: 'Intel Core i5, 16GB RAM, SSD 512GB' },
-  { id: '3', name: 'Adidas Ultraboost 22', emoji: '👟', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, shipping: 0, url: '#', desc: 'Tecnología BOOST, máxima comodidad' },
-  { id: '4', name: 'Samsung Galaxy S24', emoji: '📱', brand: 'Samsung', price: 699999, oldPrice: 849999, installments: 12, shipping: 0, url: '#', desc: 'IA integrada, cámara 200MP, 7 años updates' },
-  { id: '5', name: 'MacBook Air M2', emoji: '💻', brand: 'Apple', price: 1049999, oldPrice: 1299999, installments: 18, shipping: 0, url: '#', desc: 'Chip M2, 8GB RAM, 256GB SSD' }
-];
-
-// Competidores simulados
-const competidoresEjemplo = {
-  '1': [
-    { tienda: 'Mercado Libre', precio: 499999, envio: 0, cuotas: '12x sin int.', url: '#', emoji: '🛒' },
-    { tienda: 'Frávega', precio: 509999, envio: 2500, cuotas: '6x sin int.', url: '#', emoji: '🔌' }
-  ],
-  '2': [
-    { tienda: 'Mercado Libre', precio: 779999, envio: 0, cuotas: '12x sin int.', url: '#', emoji: '🛒' }
-  ]
-};
-
-// Estado global
-let products = [...productosEjemplo];
-let competitors = {...competidoresEjemplo};
+const WHATSAPP_NUMBER = '5491137991082'; // Tu número de WhatsApp
+let products = [];
 let selectedProduct = null;
 let currentScreen = 'home';
 let screenHistory = ['home'];
+let redirectTimer = null;
+
+// Precios de competidores (simulados - se actualizan "en tiempo real")
+// En producción, esto se conectaría a APIs reales
+const COMPETITORS_API = {
+  // Función que simula obtener precios de competidores
+  getPrices: async (productName) => {
+    // Simulamos delay de API
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Precios simulados basados en el nombre del producto
+    // En la vida real, esto sería una llamada a APIs de MercadoLibre, Frávega, etc.
+    const basePrice = products.find(p => p.name === productName)?.price || 300000;
+    
+    return [
+      { 
+        tienda: 'Mercado Libre', 
+        precio: Math.round(basePrice * 1.08), 
+        envio: 0, 
+        cuotas: '12x sin interés',
+        url: 'https://mercadolibre.com.ar',
+        emoji: '🛒',
+        shippingDays: '2-4 días'
+      },
+      { 
+        tienda: 'Frávega', 
+        precio: Math.round(basePrice * 1.12), 
+        envio: 2999, 
+        cuotas: '6x sin interés',
+        url: 'https://fravega.com.ar',
+        emoji: '🔌',
+        shippingDays: '3-5 días'
+      },
+      { 
+        tienda: 'Garbarino', 
+        precio: Math.round(basePrice * 1.15), 
+        envio: 0, 
+        cuotas: '3x sin interés',
+        url: 'https://garbarino.com.ar',
+        emoji: '🏪',
+        shippingDays: '2-5 días'
+      },
+      { 
+        tienda: 'Musimundo', 
+        precio: Math.round(basePrice * 1.18), 
+        envio: 3999, 
+        cuotas: '6x con interés',
+        url: 'https://musimundo.com.ar',
+        emoji: '🎵',
+        shippingDays: '4-7 días'
+      }
+    ];
+  }
+};
 
 // ============================================
-// RENDERIZAR PANTALLA HOME
+// PRODUCTOS DE EJEMPLO (si no hay Sheet)
 // ============================================
-function renderHome() {
-  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-  const filtered = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm) || 
-    p.brand.toLowerCase().includes(searchTerm)
-  );
+const defaultProducts = [
+  { id: 'tv_samsung', name: 'TV Samsung 40" 4K', emoji: '📺', brand: 'Samsung', price: 299999, oldPrice: 399999, installments: 12, shipping: 0, url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20el%20TV%20Samsung%2040%22`, desc: 'Smart TV 4K Ultra HD, HDR, control por voz' },
+  { id: 'iphone15', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20el%20iPhone%2015`, desc: 'Cámara 48MP, USB-C, Dynamic Island' }
+];
+
+// ============================================
+// CARGAR PRODUCTOS DESDE GOOGLE SHEETS
+// ============================================
+async function loadProducts() {
+  const savedId = localStorage.getItem('sheetId');
   
-  // Actualizar stats
-  document.getElementById('statCount').innerHTML = products.length;
-  document.getElementById('offersCount').innerHTML = filtered.length;
-  document.getElementById('alertBadge').innerHTML = products.length;
-  document.getElementById('alertsCount').innerHTML = products.length;
-  
-  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
-  document.getElementById('statDiscount').innerHTML = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
-  document.getElementById('statStores').innerHTML = '5';
-  
-  const grid = document.getElementById('offersGrid');
-  if (!grid) return;
-  
-  grid.innerHTML = '';
-  
-  if (filtered.length === 0) {
-    grid.innerHTML = '<div class="loading">No se encontraron ofertas 🔍</div>';
-    return;
+  if (savedId) {
+    await fetchSheetData(savedId);
   }
   
-  filtered.forEach(p => {
-    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
-    const comps = competitors[p.id] || [];
-    const saving = comps[0]?.precio ? comps[0].precio - p.price : 0;
-    
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.onclick = () => { 
-      selectedProduct = p; 
-      navigate('compare'); 
-    };
-    card.innerHTML = `
-      <div class="best-tag">MEJOR PRECIO</div>
-      <div class="card-row">
-        <div class="card-img">${p.emoji}</div>
-        <div class="card-body">
-          <div class="card-title">${p.name}</div>
-          <div class="card-brand">${p.brand}</div>
-          <div class="card-desc">${p.desc.substring(0, 50)}${p.desc.length > 50 ? '...' : ''}</div>
-          <div class="price-row">
-            <span class="price-now">$${p.price.toLocaleString('es-AR')}</span>
-            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}
-            ${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''}
-          </div>
-          ${saving > 0 ? `<div class="saving">💰 Ahorrás $${saving.toLocaleString('es-AR')}</div>` : ''}
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-// ============================================
-// RENDERIZAR COMPARATIVA
-// ============================================
-function renderCompare() {
-  if (!selectedProduct) return;
-  
-  const container = document.getElementById('compareContent');
-  const discount = selectedProduct.oldPrice ? Math.round((1 - selectedProduct.price/selectedProduct.oldPrice)*100) : 0;
-  const comps = competitors[selectedProduct.id] || [];
-  
-  document.getElementById('compareTitle').innerHTML = selectedProduct.name;
-  
-  container.innerHTML = `
-    <div style="background:white; border-radius:18px; padding:16px; margin-bottom:16px">
-      <div style="display:flex; gap:14px; align-items:center">
-        <div style="font-size:48px">${selectedProduct.emoji}</div>
-        <div>
-          <div style="font-size:18px; font-weight:800">${selectedProduct.name}</div>
-          <div style="font-size:13px; color:#6B6358">${selectedProduct.brand}</div>
-        </div>
-      </div>
-      <div style="margin-top:12px">
-        <div style="font-size:24px; font-weight:800; color:#E8441A">$${selectedProduct.price.toLocaleString('es-AR')}</div>
-        ${selectedProduct.oldPrice ? `<div style="font-size:13px; color:#A89F94; text-decoration:line-through">$${selectedProduct.oldPrice.toLocaleString('es-AR')}</div>` : ''}
-        ${discount > 0 ? `<div style="background:#FEF0EC; color:#E8441A; padding:4px 8px; border-radius:100px; display:inline-block; font-size:12px; margin-top:6px">-${discount}% OFF</div>` : ''}
-      </div>
-      <div style="margin-top:10px; font-size:13px">💳 ${selectedProduct.installments} cuotas sin interés</div>
-      <div style="margin-top:5px; font-size:13px">🚚 ${selectedProduct.shipping === 0 ? 'Envío gratis' : 'Envío con costo'}</div>
-    </div>
-    
-    <div style="background:white; border-radius:18px; overflow:hidden">
-      <div style="display:grid; grid-template-columns:2fr 1fr 1fr; background:#18150F; color:white; padding:12px 16px; font-size:12px; font-weight:700">
-        <div>Tienda</div><div>Precio</div><div></div>
-      </div>
-      <div style="background:#FEF0EC; padding:12px 16px; display:grid; grid-template-columns:2fr 1fr 1fr; align-items:center">
-        <div><strong>⭐ Nuestra oferta</strong><br><span style="font-size:11px">${selectedProduct.brand}</span></div>
-        <div><strong style="color:#E8441A">$${selectedProduct.price.toLocaleString('es-AR')}</strong></div>
-        <div><a href="${selectedProduct.url}" style="background:#E8441A; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:600">Comprar →</a></div>
-      </div>
-      ${comps.map(c => `
-        <div style="padding:12px 16px; display:grid; grid-template-columns:2fr 1fr 1fr; align-items:center; border-bottom:1px solid #E0DAD0">
-          <div>${c.emoji} ${c.tienda}</div>
-          <div>$${c.precio.toLocaleString('es-AR')}</div>
-          <div><a href="${c.url}" style="background:#F0EDE6; color:#18150F; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px">Ver →</a></div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-// ============================================
-// RENDERIZAR ALERTAS
-// ============================================
-function renderAlerts() {
-  const list = document.getElementById('alertsList');
-  if (!list) return;
-  
-  list.innerHTML = products.map(p => `
-    <div style="background:white; border-radius:12px; padding:13px; margin-bottom:10px; display:flex; align-items:center; gap:12px; cursor:pointer" onclick="selectedProduct=products.find(x=>x.id==='${p.id}'); navigate('compare')">
-      <div style="font-size:28px">${p.emoji}</div>
-      <div style="flex:1">
-        <div style="font-weight:700">${p.name}</div>
-        <div style="font-size:11px; color:#0B7A48">✓ Precio monitoreado</div>
-      </div>
-      <div>→</div>
-    </div>
-  `).join('');
-}
-
-// ============================================
-// CONECTAR GOOGLE SHEETS
-// ============================================
-async function connectSheet() {
-  const sheetId = document.getElementById('sheetIdInput').value.trim();
-  const statusDiv = document.getElementById('sheetStatus');
-  
-  if (!sheetId) {
-    statusDiv.innerHTML = '❌ Ingresá un ID de Google Sheet';
-    statusDiv.style.color = '#dc2626';
-    return;
+  if (products.length === 0) {
+    products = [...defaultProducts];
   }
   
-  statusDiv.innerHTML = '⏳ Cargando datos...';
-  statusDiv.style.color = '#6B6358';
-  
+  renderHome();
+  renderAlerts();
+  updateLastUpdateTime();
+}
+
+async function fetchSheetData(sheetId) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Ofertas`;
   
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error('No se pudo cargar');
+    if (!response.ok) throw new Error();
     
     const csv = await response.text();
     const rows = parseCSV(csv);
@@ -780,33 +1009,18 @@ async function connectSheet() {
             price: parseFloat(row[4]) || 0,
             oldPrice: parseFloat(row[5]) || null,
             installments: parseInt(row[6]) || 1,
-            shipping: row[7] === 'true' || row[7] === 'TRUE' ? 0 : null,
-            url: row[8] || '#',
-            desc: row[9] || `Oferta en ${row[1]}`
+            shipping: 0,
+            url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20${encodeURIComponent(row[1])}`,
+            desc: row[7] || `Oferta increíble en ${row[1]}`
           });
         }
       }
-      
       if (newProducts.length > 0) {
         products = newProducts;
-        localStorage.setItem('sheetId', sheetId);
-        statusDiv.innerHTML = `✅ Cargados ${newProducts.length} productos`;
-        statusDiv.style.color = '#0B7A48';
-        renderHome();
-        renderAlerts();
-        showToast('✅ Datos cargados correctamente');
-      } else {
-        statusDiv.innerHTML = '⚠️ No se encontraron productos válidos';
-        statusDiv.style.color = '#E8441A';
       }
-    } else {
-      statusDiv.innerHTML = '⚠️ El Sheet está vacío';
-      statusDiv.style.color = '#E8441A';
     }
   } catch (error) {
-    statusDiv.innerHTML = '❌ Error: Verificá que el Sheet sea público';
-    statusDiv.style.color = '#dc2626';
-    console.error('Error:', error);
+    console.log('Error cargando Sheet, usando datos locales');
   }
 }
 
@@ -835,100 +1049,54 @@ function parseCSV(csv) {
 }
 
 // ============================================
-// ADMIN FUNCTIONS
+// RENDER HOME
 // ============================================
-function adminLogin() {
-  const pass = document.getElementById('adminPass').value;
-  if (pass === 'admin123') {
-    document.getElementById('adminLogin').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'flex';
-    
-    const savedId = localStorage.getItem('sheetId');
-    if (savedId) {
-      document.getElementById('sheetIdInput').value = savedId;
-    }
-  } else {
-    showToast('❌ Contraseña incorrecta');
+function renderHome() {
+  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const filtered = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm) || 
+    p.brand.toLowerCase().includes(searchTerm)
+  );
+  
+  document.getElementById('statCount').innerHTML = products.length;
+  document.getElementById('offersCount').innerHTML = filtered.length;
+  document.getElementById('alertBadge').innerHTML = products.length;
+  document.getElementById('alertsCount').innerHTML = products.length;
+  
+  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
+  document.getElementById('statDiscount').innerHTML = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
+  document.getElementById('statStores').innerHTML = '4+';
+  
+  const grid = document.getElementById('offersGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="loading">No se encontraron ofertas 🔍</div>';
+    return;
   }
-}
-
-function adminLogout() {
-  document.getElementById('adminLogin').style.display = 'flex';
-  document.getElementById('adminPanel').style.display = 'none';
-  document.getElementById('adminPass').value = '';
-  goBack();
-}
-
-// ============================================
-// NAVEGACIÓN
-// ============================================
-function navigate(screen) {
-  if (screen === currentScreen) return;
   
-  const screens = {
-    home: 'screen-home',
-    compare: 'screen-compare',
-    alerts: 'screen-alerts',
-    account: 'screen-account',
-    admin: 'screen-admin'
-  };
-  
-  const oldScreen = document.getElementById(screens[currentScreen]);
-  const newScreen = document.getElementById(screens[screen]);
-  
-  if (!oldScreen || !newScreen) return;
-  
-  oldScreen.classList.remove('active');
-  newScreen.classList.add('active');
-  
-  screenHistory.push(screen);
-  currentScreen = screen;
-  
-  // Actualizar navegación
-  const navScreens = ['home', 'compare', 'alerts', 'account'];
-  document.querySelectorAll('.nav-item').forEach((item, idx) => {
-    item.classList.toggle('active', navScreens[idx] === screen);
-  });
-  
-  // Renderizar contenido si es necesario
-  if (screen === 'compare') renderCompare();
-  if (screen === 'alerts') renderAlerts();
-  
-  newScreen.scrollTop = 0;
-}
-
-function goBack() {
-  if (screenHistory.length <= 1) return;
-  screenHistory.pop();
-  const prevScreen = screenHistory[screenHistory.length - 1];
-  navigate(prevScreen);
-}
-
-function filterOffers() {
-  renderHome();
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-// ============================================
-// INICIALIZAR
-// ============================================
-renderHome();
-renderAlerts();
-
-// Cargar Sheet guardado automáticamente
-const savedSheetId = localStorage.getItem('sheetId');
-if (savedSheetId) {
-  setTimeout(() => {
-    document.getElementById('sheetIdInput').value = savedSheetId;
-    connectSheet();
-  }, 500);
-}
-</script>
-</body>
-</html>
+  filtered.forEach(p => {
+    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = async () => { 
+      selectedProduct = p;
+      showToast('🔄 Cargando precios de la competencia...');
+      await loadCompetitorPrices(p);
+      navigate('compare'); 
+    };
+    card.innerHTML = `
+      <div class="best-tag">MEJOR PRECIO</div>
+      <div class="card-row">
+        <div class="card-img">${p.emoji}</div>
+        <div class="card-body">
+          <div class="card-title">${p.name}</div>
+          <div class="card-brand">${p.brand}</div>
+          <div class="card-desc">${p.desc.substring(0, 50)}${p.desc.length > 50 ? '...' : ''}</div>
+          <div class="price-row">
+            <span class="price-now">$${p.price.toLocaleString('es-AR')}</span>
+            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}
+            ${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''
