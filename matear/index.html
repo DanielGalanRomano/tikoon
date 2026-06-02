@@ -638,6 +638,94 @@
   function acceptJoinRequest() { const notifDiv = document.getElementById('notifRequestItem'); if(notifDiv) notifDiv.innerHTML = `<div class="avatar">✓</div><div><div class="notif-title">Camila confirmada ✅</div><div class="notif-sub">Se suma a tu mateada · llega en 12 min</div></div>`; }
   function createMateada() { alert("🌿 ¡Mateada publicada! Los vecinos la verán en el inicio."); goScreen('screen-home'); }
   window.goScreen = goScreen; window.goToDetail = goToDetail; window.toggleOpt = toggleOpt; window.sendJoinRequest = sendJoinRequest; window.acceptJoinRequest = acceptJoinRequest; window.createMateada = createMateada; window.historyBack = historyBack;
+
+// ==================== CONFIGURACIÓN ====================
+const SCRIPT_URL = 'https://script.google.com/macros/s/TU_SCRIPT_ID/exec'; // Reemplazar con URL de Apps Script
+
+// ==================== FUNCIONES DE CONEXIÓN ====================
+
+async function obtenerMateadas() {
+  try {
+    const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+    const data = await response.json();
+    return data.mateadas || [];
+  } catch (error) {
+    console.error('Error al obtener mateadas:', error);
+    return [];
+  }
+}
+
+async function crearMateadaEnSheet(mateadaData) {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        accion: 'crearMateada',
+        ...mateadaData
+      })
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error al crear mateada:', error);
+    return { success: false };
+  }
+}
+
+async function enviarSolicitudAceptacion(solicitudData) {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        accion: 'enviarSolicitud',
+        ...solicitudData
+      })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error al enviar solicitud:', error);
+    return { success: false };
+  }
+}
+
+// ==================== INTEGRAR CON LA APP EXISTENTE ====================
+
+// Modificar la función que carga mateadas
+async function cargarMateadasDesdeSheet() {
+  const mateadas = await obtenerMateadas();
+  // Actualizar la UI con las mateadas obtenidas
+  renderMateadas(mateadas);
+}
+
+// Modificar la función de crear mateada
+async function publicarMateada(eventData) {
+  const resultado = await crearMateadaEnSheet({
+    titulo: eventData.titulo,
+    ubicacion: eventData.ubicacion,
+    latitud: eventData.latitud,
+    longitud: eventData.longitud,
+    lugares_totales: eventData.maxParticipantes,
+    organizador: 'Camila P.',
+    descripcion: eventData.descripcion,
+    duracion: eventData.duracion,
+    hora: eventData.hora,
+    tags: eventData.tags
+  });
+  
+  if (resultado.success) {
+    alert('¡Mateada publicada exitosamente!');
+    cargarMateadasDesdeSheet(); // Recargar lista
+  } else {
+    alert('Error al publicar. Intenta nuevamente.');
+  }
+}
+
+// Llamar a cargarMateadasDesdeSheet() cuando inicia la app
+document.addEventListener('DOMContentLoaded', () => {
+  cargarMateadasDesdeSheet();
+});
 </script>
 </body>
 </html>
