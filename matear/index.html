@@ -657,7 +657,7 @@ async function obtenerMateadas() {
 
 async function crearMateadaEnSheet(mateadaData) {
   try {
-    const response = await fetch(SCRIPT_URL, {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec", {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
@@ -675,7 +675,7 @@ async function crearMateadaEnSheet(mateadaData) {
 
 async function enviarSolicitudAceptacion(solicitudData) {
   try {
-    const response = await fetch(SCRIPT_URL, {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
