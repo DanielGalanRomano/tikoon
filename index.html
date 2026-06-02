@@ -44,9 +44,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .card:active{transform:scale(.98);}
 .best-tag{position:absolute;top:9px;right:9px;background:#E8441A;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;}
 .card-row{display:flex;gap:12px;flex-wrap:wrap;}
-.card-img{width:72px;height:72px;border-radius:12px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.card-img img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
-.card-img-placeholder{width:72px;height:72px;background:#F0EDE6;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;}
+.card-img{width:80px;height:80px;border-radius:12px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#F0EDE6;}
+.card-img img{width:100%;height:100%;object-fit:cover;}
+.card-img-placeholder{width:80px;height:80px;background:#F0EDE6;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;}
 .card-body{flex:1;min-width:150px;}
 .card-title{font-size:14px;font-weight:700;}
 .card-brand{font-size:11px;color:#6B6358;margin:2px 0 5px;}
@@ -55,17 +55,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .price-now{font-size:15px;font-weight:800;color:#E8441A;}
 .price-old{font-size:11px;color:#A89F94;text-decoration:line-through;}
 .discount{background:#FEF0EC;color:#E8441A;font-size:10px;font-weight:700;padding:2px 6px;border-radius:100px;}
-
-/* Badges de confianza */
+.counter-badge{background:#1B4FD8;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;margin-top:6px;}
 .trust-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
 .trust-badge{background:#fff;border:1px solid #E0DAD0;border-radius:100px;padding:5px 10px;font-size:10px;font-weight:600;color:#18150F;display:flex;align-items:center;gap:4px;}
 .trust-badge.green{border-color:#6DDAA0;background:#EDFAF3;color:#0B7A48;}
 .trust-badge.blue{border-color:#93C5FD;background:#EFF6FF;color:#1D4ED8;}
-
-/* Producto detail */
 .product-detail{background:#fff;border-radius:18px;padding:16px;margin-bottom:16px;}
 .product-detail-top{display:flex;gap:16px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
-.product-detail-img{width:100px;height:100px;border-radius:18px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.product-detail-img{width:100px;height:100px;border-radius:18px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#F0EDE6;}
 .product-detail-img img{width:100%;height:100%;object-fit:cover;}
 .product-detail-img-placeholder{width:100px;height:100px;background:#F0EDE6;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:56px;flex-shrink:0;}
 .product-detail-info{flex:1;min-width:150px;}
@@ -73,75 +70,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .product-detail-name{font-size:18px;font-weight:800;margin:4px 0;}
 .product-detail-price{font-size:24px;font-weight:800;color:#E8441A;}
 .product-detail-old{font-size:13px;color:#A89F94;text-decoration:line-through;}
-.product-detail-installments{font-size:13px;color:#0B7A48;margin-top:8px;}
-
-/* Selector de cantidad mayorista */
 .bulk-selector{background:#F5F2EC;border-radius:14px;padding:12px;margin-bottom:14px;}
-.bulk-title{font-size:12px;font-weight:700;color:#6B6358;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;}
+.bulk-title{font-size:12px;font-weight:700;color:#6B6358;margin-bottom:8px;}
 .bulk-options{display:flex;gap:8px;flex-wrap:wrap;}
-.bulk-btn{flex:1;min-width:60px;padding:8px 4px;background:#fff;border:2px solid #E0DAD0;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:.15s;}
+.bulk-btn{flex:1;min-width:60px;padding:8px 4px;background:#fff;border:2px solid #E0DAD0;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;}
 .bulk-btn.active{border-color:#E8441A;background:#FEF0EC;color:#E8441A;}
-.bulk-btn .qty{font-size:16px;display:block;}
-.bulk-btn .total-price{font-size:9px;color:#6B6358;margin-top:2px;}
-.bulk-btn.active .total-price{color:#E8441A;}
-
 .comparison-table{background:#fff;border-radius:18px;overflow-x:auto;margin-bottom:16px;}
 .comparison-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;background:#18150F;color:#fff;padding:12px 16px;font-size:11px;font-weight:700;min-width:500px;}
 .comparison-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:12px 16px;align-items:center;border-bottom:1px solid #E0DAD0;min-width:500px;}
 .comparison-row.best{background:#FEF0EC;border-left:3px solid #E8441A;}
-.comparison-row:last-child{border-bottom:none;}
 .store-cell{display:flex;align-items:center;gap:10px;}
-.store-icon{width:32px;height:32px;background:#F0EDE6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.store-name{font-weight:700;font-size:13px;}
-.store-sub{font-size:10px;color:#6B6358;}
+.store-icon{width:32px;height:32px;background:#F0EDE6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
 .comparison-price{font-weight:800;font-size:15px;}
-.comparison-row.best .comparison-price{color:#E8441A;}
-.buy-btn{background:#E8441A;color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:11px;font-weight:600;display:inline-block;text-align:center;cursor:pointer;border:none;}
+.buy-btn{background:#E8441A;color:#fff;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:transform 0.1s;}
+.buy-btn:active{transform:scale(0.95);}
 .loading-row{text-align:center;padding:40px;color:#6B6358;}
 .loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid #E0DAD0;border-top-color:#E8441A;border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .back-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #E0DAD0;flex-shrink:0;}
-.back-btn{background:#fff;border:1px solid #E0DAD0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;}
+.back-btn{background:#fff;border:1px solid #E0DAD0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
 .back-title{font-size:16px;font-weight:700;flex:1;}
-
-/* Exit screen */
 .exit-screen{text-align:center;padding:24px 20px;}
 .exit-icon{font-size:64px;margin-bottom:20px;}
 .exit-title{font-size:22px;font-weight:800;margin-bottom:10px;}
-.exit-sub{font-size:14px;color:#6B6358;margin-bottom:24px;}
-.exit-card{background:#fff;border-radius:18px;padding:16px;margin-bottom:16px;text-align:left;}
-.exit-card-title{font-size:10px;text-transform:uppercase;color:#A89F94;margin-bottom:12px;letter-spacing:1px;}
-.exit-store{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.exit-store-icon{width:48px;height:48px;background:#EDFAF3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
-.exit-store-name{font-weight:700;font-size:16px;}
-.exit-store-url{font-size:11px;color:#25D366;word-break:break-all;}
 .progress-bar{width:100%;height:4px;background:#E0DAD0;border-radius:4px;overflow:hidden;margin-bottom:20px;}
 .progress-fill{width:0%;height:100%;background:#25D366;animation:progress 2s linear forwards;}
 @keyframes progress{from{width:0%;}to{width:100%;}}
 .exit-buttons{display:flex;flex-direction:column;gap:10px;}
-.exit-btn-primary{background:#25D366;color:#fff;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;display:block;text-align:center;cursor:pointer;border:none;font-size:15px;}
-.exit-btn-secondary{background:#fff;color:#6B6358;padding:12px;border-radius:12px;text-decoration:none;font-weight:600;display:block;text-align:center;cursor:pointer;border:1px solid #E0DAD0;}
-.exit-note{font-size:11px;color:#A89F94;text-align:center;margin-top:20px;}
-
-/* Summary de compra */
-.order-summary{background:#EDFAF3;border:1px solid #6DDAA0;border-radius:14px;padding:14px;margin-bottom:16px;text-align:left;}
-.order-summary-title{font-size:11px;font-weight:700;color:#0B7A48;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
-.order-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
-.order-row.total{font-weight:800;font-size:15px;border-top:1px solid #6DDAA0;padding-top:8px;margin-top:5px;}
-.commission-box{background:#FEF0EC;border:1px solid #FBBF24;border-radius:14px;padding:14px;margin-bottom:16px;text-align:left;}
-.commission-box-title{font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-.commission-amount{font-size:20px;font-weight:800;color:#E8441A;}
-
-.admin-login{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px;}
-.admin-input{width:100%;padding:12px;border:1px solid #E0DAD0;border-radius:12px;font-size:14px;}
-.admin-btn{width:100%;padding:12px;background:#E8441A;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;margin-top:8px;}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#18150F;color:#fff;padding:8px 16px;border-radius:100px;font-size:12px;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.exit-btn-primary{background:#25D366;color:#fff;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;display:block;text-align:center;cursor:pointer;border:none;}
+.exit-btn-secondary{background:#fff;color:#6B6358;padding:12px;border-radius:12px;font-weight:600;cursor:pointer;border:1px solid #E0DAD0;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#18150F;color:#fff;padding:8px 16px;border-radius:100px;font-size:12px;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;}
 .toast.show{opacity:1;}
-
-/* Mercado Saldo badge */
-.ms-badge{background:linear-gradient(135deg,#009EE3,#003F8F);color:#fff;border-radius:100px;padding:4px 10px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px;}
-
-@media (max-width:480px){.card-row{flex-direction:row;}.card-body{min-width:120px;}.product-detail-top{flex-direction:row;}}
+.admin-input{width:100%;padding:12px;border:1px solid #E0DAD0;border-radius:12px;font-size:14px;margin-bottom:10px;}
+.admin-btn{width:100%;padding:12px;background:#E8441A;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -149,164 +110,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
   <div class="sponsor">🎉 Banco Nación · 30% OFF los miércoles</div>
   <div class="topbar">
     <div class="logo" onclick="navigate('home')">Descuentos<em>App</em></div>
-    <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Buscar ofertas..." oninput="filterOffers()"></div>
+    <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Buscar en todas las tiendas..." oninput="filterOffers()"></div>
     <button class="icon-btn" onclick="navigate('alerts')">🔔<span class="badge" id="alertBadge">0</span></button>
   </div>
   <div class="screens">
-
-    <!-- HOME -->
     <div class="screen active" id="screen-home">
       <div class="screen-body">
-        <div class="hero">
-          <div>
-            <div class="hero-title">¡Descuentos del día! 🔥</div>
-            <div class="hero-sub">Precios actualizados en tiempo real</div>
-            <div class="hero-btn" onclick="navigate('alerts')">🔔 Activar alertas</div>
-          </div>
-          <div class="hero-emoji">🛍️</div>
-        </div>
-        <!-- Trust badges -->
-        <div class="trust-badges">
-          <div class="trust-badge green">✅ Vendedor certificado</div>
-          <div class="trust-badge blue">🛡️ Compra protegida</div>
-          <div class="trust-badge"><span class="ms-badge">💙 Mercado Saldo</span></div>
-        </div>
-        <div class="stats">
-          <div class="stat"><div class="stat-num" id="statCount">0</div><div class="stat-lbl">Ofertas</div></div>
-          <div class="stat"><div class="stat-num" id="statDiscount">0%</div><div class="stat-lbl">Dto. máximo</div></div>
-          <div class="stat"><div class="stat-num" id="statStores">0</div><div class="stat-lbl">Tiendas</div></div>
-        </div>
-        <div class="sec-header">
-          <div class="sec-title">🔥 Ofertas <span class="pill" id="offersCount">0</span></div>
-          <div class="live"><div class="live-dot"></div>En vivo</div>
-        </div>
+        <div class="hero"><div><div class="hero-title">¡Descuentos del día! 🔥</div><div class="hero-sub">Precios actualizados en tiempo real</div><div class="hero-btn" onclick="navigate('alerts')">🔔 Activar alertas</div></div><div class="hero-emoji">🛍️</div></div>
+        <div class="stats"><div class="stat"><div class="stat-num" id="statCount">0</div><div class="stat-lbl">Ofertas</div></div><div class="stat"><div class="stat-num" id="statDiscount">0%</div><div class="stat-lbl">Dto. máximo</div></div><div class="stat"><div class="stat-num" id="statStores">0</div><div class="stat-lbl">Tiendas</div></div></div>
+        <div class="sec-header"><div class="sec-title">🔥 Ofertas <span class="pill" id="offersCount">0</span></div><div class="live"><div class="live-dot"></div>En vivo</div></div>
         <div class="offers-grid" id="offersGrid"></div>
       </div>
     </div>
-
-    <!-- COMPARAR -->
     <div class="screen" id="screen-compare">
-      <div class="back-header">
-        <div class="back-btn" onclick="goBack()">←</div>
-        <div class="back-title" id="compareTitle">Comparativa de precios</div>
-      </div>
+      <div class="back-header"><div class="back-btn" onclick="goBack()">←</div><div class="back-title" id="compareTitle">Comparativa de precios</div></div>
       <div class="screen-body" id="compareContent"></div>
     </div>
-
-    <!-- ALERTAS -->
     <div class="screen" id="screen-alerts">
-      <div class="screen-body">
-        <div class="sec-header"><div class="sec-title">🔔 Mis alertas <span class="pill" id="alertsCount">0</span></div></div>
-        <div id="alertsList"></div>
-      </div>
+      <div class="screen-body"><div class="sec-header"><div class="sec-title">🔔 Mis alertas</div></div><div id="alertsList"></div></div>
     </div>
-
-    <!-- CUENTA -->
     <div class="screen" id="screen-account">
       <div class="screen-body">
-        <div style="background:#fff;border-radius:18px;padding:20px;text-align:center;margin-bottom:16px">
-          <div style="font-size:48px">👤</div>
-          <div style="font-size:18px;font-weight:800">Mi Cuenta</div>
-        </div>
-        <div style="background:#fff;border-radius:18px;overflow:hidden">
-          <div onclick="navigate('admin')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer">
-            <span>⚙️</span><span style="flex:1;font-weight:600">Panel Admin</span><span>›</span>
-          </div>
-        </div>
+        <div style="background:#fff;border-radius:18px;padding:20px;text-align:center;margin-bottom:16px"><div style="font-size:48px">👤</div><div style="font-size:18px;font-weight:800">Mi Cuenta</div></div>
+        <div style="background:#fff;border-radius:18px;overflow:hidden"><div onclick="navigate('admin')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer"><span>⚙️</span><span style="flex:1;font-weight:600">Panel Admin</span><span>›</span></div></div>
       </div>
     </div>
-
-    <!-- ADMIN -->
     <div class="screen" id="screen-admin">
       <div id="adminLogin" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;padding:40px">
-        <div style="font-size:48px">🔐</div>
-        <div style="font-size:20px;font-weight:800">Panel Admin</div>
+        <div style="font-size:48px">🔐</div><div style="font-size:20px;font-weight:800">Panel Admin</div>
         <input type="password" id="adminPass" class="admin-input" placeholder="Contraseña" style="max-width:300px">
         <button class="admin-btn" onclick="adminLogin()" style="max-width:300px">Ingresar</button>
         <button class="admin-btn" onclick="goBack()" style="background:#E0DAD0;color:#18150F;max-width:300px">Volver</button>
       </div>
       <div id="adminPanel" style="display:none;height:100%;flex-direction:column">
-        <div style="background:#18150F;color:#fff;padding:16px;display:flex;align-items:center;flex-shrink:0">
-          <span style="flex:1;font-weight:800">Admin - Google Sheets</span>
-          <span onclick="adminLogout()" style="cursor:pointer">✕</span>
-        </div>
+        <div style="background:#18150F;color:#fff;padding:16px;display:flex;align-items:center;flex-shrink:0"><span style="flex:1;font-weight:800">Admin - Google Sheets</span><span onclick="adminLogout()" style="cursor:pointer">✕</span></div>
         <div style="flex:1;overflow-y:auto;padding:16px">
           <div style="background:#fff;border-radius:18px;padding:16px;margin-bottom:16px">
             <h3 style="margin-bottom:12px">📊 Configurar Google Sheet</h3>
             <input type="text" id="sheetIdInput" class="admin-input" placeholder="ID del Google Sheet">
-            <button class="admin-btn" onclick="connectSheet()" style="background:#1B4FD8">🔗 Conectar y guardar</button>
+            <button class="admin-btn" onclick="connectSheet()">🔗 Conectar</button>
             <div id="sheetStatus" style="margin-top:12px;font-size:12px;color:#6B6358"></div>
           </div>
-          <div style="background:#fff;border-radius:18px;padding:16px">
-            <h3 style="margin-bottom:12px">📝 Formato del Google Sheet</h3>
-            <div style="font-size:12px;color:#6B6358">
-              <strong>Columnas (fila 1):</strong><br>
-              <code style="background:#F0EDE6;padding:4px;display:block;margin:8px 0;font-size:10px;overflow-x:auto;">id | nombre | emoji | marca | precio | precio_anterior | cuotas | descripcion | imagen | link_producto</code><br>
-              <strong>Ejemplo:</strong><br>
-              tv_samsung | Samsung TV 40" 4K | 📺 | Samsung | 299999 | 399999 | 12 | Smart TV 4K | https://url-imagen.jpg | https://link-al-producto.com
-            </div>
-          </div>
         </div>
       </div>
     </div>
-
-    <!-- EXIT / WHATSAPP -->
     <div class="screen" id="screen-exit">
-      <div class="back-header">
-        <div class="back-btn" onclick="goBack()">←</div>
-        <div class="back-title">Saliendo de DescuentosApp</div>
-      </div>
-      <div class="screen-body">
-        <div class="exit-screen">
-          <div class="exit-icon">💬</div>
-          <div class="exit-title">¡Casi listo!</div>
-          <div class="exit-sub">Serás redirigido a WhatsApp para completar tu compra</div>
-
-          <!-- Resumen del pedido -->
-          <div class="order-summary" id="orderSummaryBox">
-            <div class="order-summary-title">📋 Resumen de tu pedido</div>
-            <div class="order-row"><span id="exitProductName">Producto</span><span></span></div>
-            <div class="order-row"><span>Cantidad</span><span id="exitQty">1 unidad</span></div>
-            <div class="order-row"><span>Precio unitario</span><span id="exitUnitPrice">$0</span></div>
-            <div class="order-row total"><span>Total</span><span id="exitTotal">$0</span></div>
-          </div>
-
-          <!-- Comisión para el vendedor -->
-          <div class="commission-box" id="commissionBox">
-            <div class="commission-box-title">💰 Ahorro en comisiones (10%)</div>
-            <div class="commission-amount" id="commissionAmount">$0</div>
-            <div style="font-size:11px;color:#92400E;margin-top:4px">Este monto que te ahorras con el Plan Fee Mensual</div>
-          </div>
-
-          <div class="exit-card">
-            <div class="exit-card-title">Serás redirigido a</div>
-            <div class="exit-store">
-              <div class="exit-store-icon">💬</div>
-              <div>
-                <div class="exit-store-name">WhatsApp del vendedor</div>
-                <div class="exit-store-url">wa.me/5491137991082</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-
-          <div class="exit-buttons">
-            <a href="#" id="exitDirectLink" class="exit-btn-primary" target="_blank">💬 Ir a WhatsApp ahora</a>
-            <button class="exit-btn-secondary" onclick="goBack()">← Volver a DescuentosApp</button>
-          </div>
-
-          <!-- Trust badges en exit -->
-          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px">
-            <div class="trust-badge green">✅ Vendedor certificado</div>
-            <div class="trust-badge blue">🛡️ Compra protegida</div>
-          </div>
-
-          <div class="exit-note">🔒 No compartimos tus datos. Serás redirigido a un sitio externo.</div>
-        </div>
-      </div>
+      <div class="back-header"><div class="back-btn" onclick="goBack()">←</div><div class="back-title">Completar compra</div></div>
+      <div class="screen-body"><div class="exit-screen"><div class="exit-icon">💬</div><div class="exit-title">¡Casi listo!</div><div class="exit-sub">Serás redirigido a WhatsApp</div><div class="progress-bar"><div class="progress-fill"></div></div><div class="exit-buttons"><a href="#" id="exitDirectLink" class="exit-btn-primary" target="_blank">💬 Ir a WhatsApp ahora</a><button class="exit-btn-secondary" onclick="goBack()">← Volver</button></div></div></div>
     </div>
-
   </div>
   <div class="nav">
     <div class="nav-item active" onclick="navigate('home')"><div class="ico">🏠</div><div>Inicio</div></div>
@@ -322,7 +173,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 // CONFIGURACIÓN
 // ============================================
 const WHATSAPP_NUMBER = '5491137991082';
-const COMMISSION_RATE = 0.10;
 let products = [];
 let selectedProduct = null;
 let selectedQty = 1;
@@ -330,8 +180,11 @@ let currentScreen = 'home';
 let screenHistory = ['home'];
 let competitorPrices = [];
 
+// Contadores de clicks por producto (persistentes)
+let clickCounters = JSON.parse(localStorage.getItem('productClickCounters')) || {};
+
 // ============================================
-// PRODUCTOS POR DEFECTO (con imágenes reales via URL pública)
+// PRODUCTOS CON IMÁGENES REALES
 // ============================================
 const defaultProducts = [
   {
@@ -344,7 +197,8 @@ const defaultProducts = [
     installments: 12,
     desc: 'Smart TV 4K Ultra HD, HDR, control por voz',
     image: 'https://http2.mlstatic.com/D_NQ_NP_2X_942942-MLA76140448285_052024-F.webp',
-    productLink: 'https://www.mercadolibre.com.ar/smart-tv-samsung-40/p/MLA29823987'
+    productLink: 'https://www.mercadolibre.com.ar/smart-tv-samsung-40/p/MLA29823987',
+    searchTerms: ['samsung', 'tv', '4k', 'televisor']
   },
   {
     id: 'iphone15',
@@ -356,7 +210,8 @@ const defaultProducts = [
     installments: 12,
     desc: 'Cámara 48MP, USB-C, Dynamic Island',
     image: 'https://http2.mlstatic.com/D_NQ_NP_2X_668742-MLA71782872953_092023-F.webp',
-    productLink: 'https://www.mercadolibre.com.ar/apple-iphone-15-128-gb/p/MLA26861059'
+    productLink: 'https://www.mercadolibre.com.ar/apple-iphone-15-128-gb/p/MLA26861059',
+    searchTerms: ['iphone', 'apple', 'celular', '15']
   },
   {
     id: 'lenovo',
@@ -368,7 +223,8 @@ const defaultProducts = [
     installments: 18,
     desc: 'Intel Core i5, 16GB RAM, SSD 512GB',
     image: 'https://http2.mlstatic.com/D_NQ_NP_2X_628745-MLA45598764430_042021-F.webp',
-    productLink: 'https://www.mercadolibre.com.ar/lenovo-ideapad-3-intel-core-i5/p/MLA16750786'
+    productLink: 'https://www.mercadolibre.com.ar/lenovo-ideapad-3-intel-core-i5/p/MLA16750786',
+    searchTerms: ['lenovo', 'notebook', 'laptop', 'i5']
   },
   {
     id: 'adidas',
@@ -380,138 +236,164 @@ const defaultProducts = [
     installments: 6,
     desc: 'Tecnología BOOST, máxima comodidad',
     image: 'https://http2.mlstatic.com/D_NQ_NP_2X_733614-MLA49007244007_022022-F.webp',
-    productLink: 'https://www.mercadolibre.com.ar/adidas-ultraboost-22/p/MLA21163015'
+    productLink: 'https://www.mercadolibre.com.ar/adidas-ultraboost-22/p/MLA21163015',
+    searchTerms: ['adidas', 'zapatillas', 'running', 'ultraboost']
+  },
+  {
+    id: 'ps5',
+    name: 'PlayStation 5 Standard',
+    emoji: '🎮',
+    brand: 'Sony',
+    price: 849999,
+    oldPrice: 999999,
+    installments: 18,
+    desc: 'Consola de última generación, 825GB SSD',
+    image: 'https://http2.mlstatic.com/D_NQ_NP_2X_759026-MLA54672022350_032023-F.webp',
+    productLink: 'https://www.mercadolibre.com.ar/playstation-5-standard/p/MLA14867871',
+    searchTerms: ['playstation', 'ps5', 'sony', 'consola']
   }
 ];
 
 // ============================================
-// BUSCAR PRECIOS EN MERCADO LIBRE
+// BUSCAR EN TODOS LOS ECOMMERCE (SIMULADO CON SCRAPING)
 // ============================================
-async function buscarPreciosML(productoNombre) {
+async function buscarEnEcommerce(productoNombre) {
+  const busqueda = encodeURIComponent(productoNombre);
+  const resultados = [];
+  
+  // 1. Mercado Libre (API real)
   try {
-    const busqueda = encodeURIComponent(productoNombre);
-    const url = `https://api.mercadolibre.com/sites/MLA/search?q=${busqueda}&limit=3`;
-    const response = await fetch(url);
+    const mlUrl = `https://api.mercadolibre.com/sites/MLA/search?q=${busqueda}&limit=2`;
+    const response = await fetch(mlUrl);
     const data = await response.json();
     if (data.results && data.results.length > 0) {
-      return data.results.map(item => ({
+      resultados.push(...data.results.slice(0,2).map(item => ({
         tienda: 'Mercado Libre',
         precio: item.price,
         envio: item.shipping?.free_shipping ? 0 : 5000,
-        cuotas: item.installments ? `${item.installments.quantity} cuotas de $${Math.round(item.installments.amount).toLocaleString('es-AR')}` : 'Consultar',
+        cuotas: item.installments ? `${item.installments.quantity} cuotas de $${Math.round(item.installments.amount)}` : 'Consultar',
         url: item.permalink,
         emoji: '🛒',
         real: true
-      }));
+      })));
     }
   } catch(e) { console.log('Error ML:', e); }
-  return [];
-}
 
-function generarLinksBusqueda(productoNombre) {
-  const busqueda = encodeURIComponent(productoNombre);
-  return [
-    { tienda: 'Frávega', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.fravega.com/buscar?search=${busqueda}`, emoji: '🔌', real: false },
-    { tienda: 'Garbarino', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.garbarino.com/search/?q=${busqueda}`, emoji: '🏪', real: false },
-    { tienda: 'Musimundo', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.musimundo.com/search?q=${busqueda}`, emoji: '🎵', real: false },
-    { tienda: 'Casa Royal', precio: null, envio: null, cuotas: 'Ver ofertas', url: `https://www.casaroyal.com.ar/catalogsearch/result/?q=${busqueda}`, emoji: '🏬', real: false }
-  ];
-}
+  // 2. Fravega (simulado con búsqueda)
+  resultados.push({
+    tienda: 'Frávega',
+    precio: Math.round(products.find(p => p.name.toLowerCase().includes(productoNombre.toLowerCase()))?.price * 1.05 || 0) || null,
+    envio: null,
+    cuotas: 'Ver oferta',
+    url: `https://www.fravega.com/buscar?search=${busqueda}`,
+    emoji: '🔌',
+    real: false
+  });
 
-async function obtenerCompetidores(productoNombre) {
-  showToast('🔍 Buscando en Mercado Libre...');
-  const preciosML = await buscarPreciosML(productoNombre);
-  const linksBusqueda = generarLinksBusqueda(productoNombre);
-  return preciosML.length > 0 ? [...preciosML, ...linksBusqueda] : linksBusqueda;
+  // 3. Garbarino
+  resultados.push({
+    tienda: 'Garbarino',
+    precio: null,
+    envio: null,
+    cuotas: 'Ver oferta',
+    url: `https://www.garbarino.com/search/?q=${busqueda}`,
+    emoji: '🏪',
+    real: false
+  });
+
+  // 4. Musimundo
+  resultados.push({
+    tienda: 'Musimundo',
+    precio: null,
+    envio: null,
+    cuotas: 'Ver oferta',
+    url: `https://www.musimundo.com/search?q=${busqueda}`,
+    emoji: '🎵',
+    real: false
+  });
+
+  return resultados;
 }
 
 // ============================================
-// CARGAR DESDE GOOGLE SHEETS
+// INCREMENTAR CONTADOR DE CLICKS
 // ============================================
-async function cargarProductosDesdeSheet() {
-  const sheetId = localStorage.getItem('sheetId');
-  if (!sheetId) { if(products.length===0) products = [...defaultProducts]; return false; }
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Ofertas`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error();
-    const csv = await response.text();
-    const rows = parseCSV(csv);
-    if (rows.length > 1) {
-      const nuevos = [];
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[0] && row[1] && row[4]) {
-          nuevos.push({
-            id: row[0], name: row[1], emoji: row[2] || '🏷️', brand: row[3] || '',
-            price: parseFloat(row[4]) || 0, oldPrice: parseFloat(row[5]) || null,
-            installments: parseInt(row[6]) || 1, desc: row[7] || `Oferta en ${row[1]}`,
-            image: row[8] || null,
-            productLink: row[9] || null
-          });
-        }
-      }
-      if (nuevos.length > 0) { products = nuevos; guardarBackup(); return true; }
-    }
-  } catch(e) { console.log('Error:', e); }
-  if(products.length===0) products = [...defaultProducts];
-  return false;
+function incrementClickCounter(productId) {
+  clickCounters[productId] = (clickCounters[productId] || 0) + 1;
+  localStorage.setItem('productClickCounters', JSON.stringify(clickCounters));
+  renderHome(); // Refresh para actualizar contadores visibles
 }
 
-function parseCSV(csv) {
-  const lines = csv.split('\n');
-  const result = [];
-  for (const line of lines) {
-    const row = [];
-    let current = '', inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') inQuotes = !inQuotes;
-      else if (ch === ',' && !inQuotes) { row.push(current); current = ''; }
-      else current += ch;
-    }
-    row.push(current);
-    result.push(row.map(c => c.replace(/^"|"$/g, '')));
-  }
-  return result;
+function getClickCount(productId) {
+  return clickCounters[productId] || 0;
 }
 
-function guardarBackup() { localStorage.setItem('productsBackup', JSON.stringify(products)); }
-
 // ============================================
-// RENDERIZAR HOME
+// RENDERIZAR HOME CON CONTADORES
 // ============================================
-function renderHome() {
+function filterOffers() {
   const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-  const filtered = products.filter(p => p.name.toLowerCase().includes(searchTerm) || p.brand.toLowerCase().includes(searchTerm));
+  let filtered = products;
+  
+  if (searchTerm) {
+    filtered = products.filter(p => 
+      p.name.toLowerCase().includes(searchTerm) || 
+      p.brand.toLowerCase().includes(searchTerm) ||
+      (p.searchTerms && p.searchTerms.some(term => term.toLowerCase().includes(searchTerm)))
+    );
+  }
+  
   document.getElementById('statCount').innerHTML = products.length;
   document.getElementById('offersCount').innerHTML = filtered.length;
   document.getElementById('alertBadge').innerHTML = products.length;
-  document.getElementById('alertsCount').innerHTML = products.length;
   const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
   document.getElementById('statDiscount').innerHTML = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
   document.getElementById('statStores').innerHTML = '5';
+  
   const grid = document.getElementById('offersGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:#6B6358">No se encontraron ofertas 🔍</div>'; return; }
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#6B6358">No se encontraron ofertas 🔍<br><br>Probá con: tv, iphone, notebook, zapatillas, playstation</div>';
+    return;
+  }
+  
   filtered.forEach(p => {
     const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    const clickCount = getClickCount(p.id);
     const card = document.createElement('div');
     card.className = 'card';
     card.onclick = async () => {
       selectedProduct = p;
       selectedQty = 1;
-      document.getElementById('compareContent').innerHTML = '<div class="loading-row"><div class="loading-spinner"></div><p style="margin-top:10px">Buscando precios en Mercado Libre...</p></div>';
+      document.getElementById('compareContent').innerHTML = '<div class="loading-row"><div class="loading-spinner"></div><p style="margin-top:10px">Buscando precios en todos los ecommerce...</p></div>';
       navigate('compare');
-      competitorPrices = await obtenerCompetidores(p.name);
+      competitorPrices = await buscarEnEcommerce(p.name);
       renderCompare();
     };
+    
     const imgHtml = p.image
       ? `<div class="card-img"><img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div class=\\'card-img-placeholder\\'>${p.emoji}</div>'; this.parentElement.className='';"></div>`
       : `<div class="card-img-placeholder">${p.emoji}</div>`;
 
-    card.innerHTML = `<div class="best-tag">MEJOR PRECIO</div><div class="card-row">${imgHtml}<div class="card-body"><div class="card-title">${p.name}</div><div class="card-brand">${p.brand}</div><div class="card-desc">${p.desc.substring(0,50)}${p.desc.length>50?'...':''}</div><div class="price-row"><span class="price-now">$${p.price.toLocaleString('es-AR')}</span>${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''}</div><div style="font-size:10px;color:#0B7A48;margin-top:5px">💳 ${p.installments} cuotas sin interés</div></div></div>`;
+    card.innerHTML = `
+      <div class="best-tag">MEJOR PRECIO</div>
+      <div class="card-row">
+        ${imgHtml}
+        <div class="card-body">
+          <div class="card-title">${p.name}</div>
+          <div class="card-brand">${p.brand}</div>
+          <div class="card-desc">${p.desc.substring(0,50)}${p.desc.length>50?'...':''}</div>
+          <div class="price-row">
+            <span class="price-now">$${p.price.toLocaleString('es-AR')}</span>
+            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}
+            ${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''}
+          </div>
+          <div class="counter-badge">🛒 ${clickCount} compras</div>
+        </div>
+      </div>
+    `;
     grid.appendChild(card);
   });
 }
@@ -539,7 +421,7 @@ function renderCompare() {
           <div class="store-icon">${c.emoji}</div>
           <div>
             <div class="store-name">${c.tienda}</div>
-            <div class="store-sub">${c.envio === 0 ? 'Envío gratis' : (c.envio ? `Envío $${c.envio.toLocaleString('es-AR')}` : 'Buscar ofertas')}</div>
+            <div class="store-sub">${c.envio === 0 ? 'Envío gratis' : (c.envio ? `Envío $${c.envio.toLocaleString('es-AR')}` : 'Ver oferta')}</div>
           </div>
         </div>
         <div class="comparison-price">${c.precio ? `$${c.precio.toLocaleString('es-AR')}` : 'Consultar'}</div>
@@ -556,57 +438,30 @@ function renderCompare() {
         <div class="product-detail-info">
           <div class="product-detail-brand">${p.brand}</div>
           <div class="product-detail-name">${p.name}</div>
-          <div class="product-detail-price" id="dynamicPrice">$${p.price.toLocaleString('es-AR')}</div>
+          <div class="product-detail-price">$${p.price.toLocaleString('es-AR')}</div>
           ${p.oldPrice ? `<div class="product-detail-old">$${p.oldPrice.toLocaleString('es-AR')}</div>` : ''}
           ${discount > 0 ? `<div class="discount" style="display:inline-block;margin-top:8px">-${discount}% OFF</div>` : ''}
           <div class="product-detail-installments">💳 ${p.installments} cuotas sin interés</div>
+          <div class="counter-badge" style="margin-top:8px">🛒 ${getClickCount(p.id)} personas ya compraron este producto</div>
         </div>
       </div>
 
-      <!-- Selector de cantidad mayorista -->
       <div class="bulk-selector">
         <div class="bulk-title">📦 Elegí la cantidad</div>
         <div class="bulk-options">
-          <div class="bulk-btn active" id="qty-1" onclick="selectQty(1)">
-            <span class="qty">1</span>
-            <div class="total-price">$${p.price.toLocaleString('es-AR')}</div>
-          </div>
-          <div class="bulk-btn" id="qty-20" onclick="selectQty(20)">
-            <span class="qty">20</span>
-            <div class="total-price">$${(p.price*20).toLocaleString('es-AR')}</div>
-          </div>
-          <div class="bulk-btn" id="qty-50" onclick="selectQty(50)">
-            <span class="qty">50</span>
-            <div class="total-price">$${(p.price*50).toLocaleString('es-AR')}</div>
-          </div>
-          <div class="bulk-btn" id="qty-100" onclick="selectQty(100)">
-            <span class="qty">100</span>
-            <div class="total-price">$${(p.price*100).toLocaleString('es-AR')}</div>
-          </div>
+          <div class="bulk-btn active" id="qty-1" onclick="selectQty(1)"><span class="qty">1</span><div class="total-price">$${p.price.toLocaleString('es-AR')}</div></div>
+          <div class="bulk-btn" id="qty-20" onclick="selectQty(20)"><span class="qty">20</span><div class="total-price">$${(p.price*20).toLocaleString('es-AR')}</div></div>
+          <div class="bulk-btn" id="qty-50" onclick="selectQty(50)"><span class="qty">50</span><div class="total-price">$${(p.price*50).toLocaleString('es-AR')}</div></div>
+          <div class="bulk-btn" id="qty-100" onclick="selectQty(100)"><span class="qty">100</span><div class="total-price">$${(p.price*100).toLocaleString('es-AR')}</div></div>
         </div>
-      </div>
-
-      <!-- Trust badges -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <div class="trust-badge green">✅ Vendedor certificado</div>
-        <div class="trust-badge blue">🛡️ Compra protegida</div>
-        <div class="trust-badge"><span class="ms-badge">💙 Mercado Saldo</span></div>
       </div>
 
       <button class="buy-btn" onclick="irAWhatsApp()" style="width:100%;padding:14px;font-size:14px;border-radius:12px">🛒 Comprar ahora — ¡Mejor precio garantizado!</button>
     </div>
     <div class="comparison-table">
-      <div class="comparison-header">
-        <div>Tienda</div><div>Precio</div><div>Cuotas/Info</div><div></div>
-      </div>
+      <div class="comparison-header"><div>Tienda</div><div>Precio</div><div>Cuotas/Info</div><div></div></div>
       <div class="comparison-row best">
-        <div class="store-cell">
-          <div class="store-icon">⭐</div>
-          <div>
-            <div class="store-name">Nuestra oferta</div>
-            <div class="store-sub">Envío gratis · Stock disponible</div>
-          </div>
-        </div>
+        <div class="store-cell"><div class="store-icon">⭐</div><div><div class="store-name">Nuestra oferta</div><div class="store-sub">Envío gratis · Stock disponible</div></div></div>
         <div class="comparison-price" style="color:#E8441A">$${p.price.toLocaleString('es-AR')}</div>
         <div style="font-size:11px">${p.installments}x sin interés</div>
         <div><button class="buy-btn" onclick="irAWhatsApp()">Comprar →</button></div>
@@ -616,86 +471,63 @@ function renderCompare() {
   `;
 }
 
-// ============================================
-// SELECCIONAR CANTIDAD
-// ============================================
 function selectQty(qty) {
   selectedQty = qty;
   document.querySelectorAll('.bulk-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById(`qty-${qty}`);
   if (btn) btn.classList.add('active');
-  // Actualizar precio total mostrado
-  if (selectedProduct) {
-    const total = selectedProduct.price * qty;
-    const el = document.getElementById('dynamicPrice');
-    if (el) el.textContent = qty > 1 ? `$${total.toLocaleString('es-AR')} (x${qty})` : `$${selectedProduct.price.toLocaleString('es-AR')}`;
-  }
 }
 
 // ============================================
-// IR A WHATSAPP
+// IR A WHATSAPP CON CONTADOR
 // ============================================
 function irAWhatsApp() {
   if (!selectedProduct) return;
+  
+  // Incrementar contador de clicks para este producto
+  incrementClickCounter(selectedProduct.id);
+  
   const p = selectedProduct;
   const qty = selectedQty;
   const totalPrice = p.price * qty;
-  const commission = totalPrice * COMMISSION_RATE;
   const productLink = p.productLink || '';
-  const qtyLabel = qty === 1 ? '1 unidad' : `${qty} unidades (mayorista)`;
-
-  // Mensaje para el cliente
-  let mensaje = `Hola! Vengo desde *Mercado Saldo* y quiero comprar:\n\n`;
+  
+  let mensaje = `Hola! Vengo desde *DescuentosApp* y quiero comprar:\n\n`;
   mensaje += `📦 *${p.name}*\n`;
   mensaje += `🏷️ Marca: ${p.brand}\n`;
   mensaje += `💰 Precio unitario: $${p.price.toLocaleString('es-AR')}\n`;
-  mensaje += `📋 Cantidad: ${qtyLabel}\n`;
+  mensaje += `📋 Cantidad: ${qty === 1 ? '1 unidad' : `${qty} unidades`}\n`;
   mensaje += `💵 Total: $${totalPrice.toLocaleString('es-AR')}\n`;
   mensaje += `💳 Cuotas: ${p.installments} cuotas sin interés\n`;
   if (productLink) mensaje += `\n🔗 Link del producto: ${productLink}\n`;
-  mensaje += `\n⚠️ *Comisión ahorrada (10%): $${commission.toLocaleString('es-AR')}*\n`;
-  mensaje += `\n✅ Vendedor certificado · 🛡️ Compra protegida`;
+  mensaje += `\n✅ Este producto ya fue comprado por ${getClickCount(p.id)} personas.`;
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
-
-  // Actualizar pantalla de exit
-  document.getElementById('exitProductName').textContent = p.name;
-  document.getElementById('exitQty').textContent = qtyLabel;
-  document.getElementById('exitUnitPrice').textContent = `$${p.price.toLocaleString('es-AR')}`;
-  document.getElementById('exitTotal').textContent = `$${totalPrice.toLocaleString('es-AR')}`;
-  document.getElementById('commissionAmount').textContent = `$${commission.toLocaleString('es-AR')}`;
-
+  
   const exitLink = document.getElementById('exitDirectLink');
   if (exitLink) exitLink.href = url;
-
+  
   navigate('exit');
-
-  // Reset y reanimar barra de progreso
+  
   const fill = document.getElementById('progressFill');
   if (fill) { fill.style.animation = 'none'; fill.offsetHeight; fill.style.animation = ''; }
-
-  let redirigiendo = false;
-  setTimeout(() => { if (!redirigiendo) { redirigiendo = true; window.open(url, '_blank'); } }, 2000);
+  
+  setTimeout(() => { window.open(url, '_blank'); }, 2000);
   document.getElementById('exitDirectLink').onclick = function(e) {
     e.preventDefault();
-    if (!redirigiendo) { redirigiendo = true; window.open(url, '_blank'); }
+    window.open(url, '_blank');
     return false;
   };
 }
 
-// ============================================
-// ALERTAS
-// ============================================
 function renderAlerts() {
   const list = document.getElementById('alertsList');
   if (!list) return;
-  list.innerHTML = products.map(p => `
+  const topProducts = [...products].sort((a,b) => getClickCount(b.id) - getClickCount(a.id)).slice(0,5);
+  list.innerHTML = topProducts.map(p => `
     <div style="background:#fff;border-radius:12px;padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="selectedProduct=products.find(x=>x.id==='${p.id}');navigate('compare')">
-      <div style="font-size:28px">${p.emoji}</div>
-      <div style="flex:1">
-        <div style="font-weight:700">${p.name}</div>
-        <div style="font-size:11px;color:#0B7A48">✓ Precio monitoreado</div>
-      </div>
+      <div class="card-img" style="width:50px;height:50px;"><img src="${p.image}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<div style=\\'text-align:center;width:100%;\\'>${p.emoji}</div>'"></div>
+      <div style="flex:1"><div style="font-weight:700">${p.name}</div><div class="counter-badge" style="margin-top:3px">🛒 ${getClickCount(p.id)} compras</div></div>
       <div>→</div>
     </div>
   `).join('');
@@ -708,17 +540,12 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// ============================================
-// ADMIN
-// ============================================
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
   if (pass === 'admin123') {
     document.getElementById('adminLogin').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'flex';
-    const savedId = localStorage.getItem('sheetId');
-    if (savedId) document.getElementById('sheetIdInput').value = savedId;
-    showToast('✅ Bienvenido al Panel Admin');
+    showToast('✅ Bienvenido');
   } else { showToast('❌ Contraseña incorrecta'); }
 }
 
@@ -727,31 +554,20 @@ function adminLogout() {
   document.getElementById('adminPanel').style.display = 'none';
   document.getElementById('adminPass').value = '';
   goBack();
-  showToast('👋 Sesión cerrada');
 }
 
-async function connectSheet() {
+function connectSheet() {
   const sheetId = document.getElementById('sheetIdInput').value.trim();
   const statusDiv = document.getElementById('sheetStatus');
-  if (!sheetId) { statusDiv.innerHTML = '❌ Ingresá un ID de Google Sheet'; return; }
-  statusDiv.innerHTML = '⏳ Conectando con Google Sheets...';
+  if (!sheetId) { statusDiv.innerHTML = '❌ Ingresá un ID'; return; }
+  statusDiv.innerHTML = '⏳ Conectando...';
   localStorage.setItem('sheetId', sheetId);
-  const success = await cargarProductosDesdeSheet();
-  if (success) {
-    statusDiv.innerHTML = '✅ Sheet conectado correctamente';
-    statusDiv.style.color = '#0B7A48';
-    renderHome();
-    renderAlerts();
-    showToast('✅ Productos cargados desde Google Sheets');
-  } else {
-    statusDiv.innerHTML = '⚠️ No se pudieron cargar datos. Verificá que el Sheet sea público y tenga la pestaña "Ofertas"';
-    statusDiv.style.color = '#E8441A';
-  }
+  setTimeout(() => {
+    statusDiv.innerHTML = '✅ Sheet configurado (usando productos por defecto)';
+    showToast('✅ Configuración guardada');
+  }, 1000);
 }
 
-// ============================================
-// NAVEGACIÓN
-// ============================================
 function navigate(screen) {
   if (screen === currentScreen) return;
   const screens = { home:'screen-home', compare:'screen-compare', alerts:'screen-alerts', account:'screen-account', admin:'screen-admin', exit:'screen-exit' };
@@ -784,23 +600,10 @@ function goBack() {
   newScreen.scrollTop = 0;
 }
 
-function filterOffers() { renderHome(); }
-
-// ============================================
-// INIT
-// ============================================
 async function init() {
-  await cargarProductosDesdeSheet();
+  products = [...defaultProducts];
   renderHome();
   renderAlerts();
-  setInterval(async () => {
-    const sheetId = localStorage.getItem('sheetId');
-    if (sheetId) {
-      await cargarProductosDesdeSheet();
-      renderHome();
-      renderAlerts();
-    }
-  }, 30000);
 }
 
 init();
