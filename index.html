@@ -447,11 +447,12 @@ nav.nav-bottom {
 
 <script>
 /* ════ CONFIGURACIÓN DE LAS CREDENCIALES DE TU BASE DE DATOS ════ */
+/* ════ CONFIGURACIÓN DE LAS CREDENCIALES DE TU BASE DE DATOS ════ */
 const SUPABASE_URL = "https://rujxdrdgegwfbmmpvmid.supabase.co"; 
-const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD"; // ¡Acá estaba el '=' corregido!
+const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD"; 
 
 // Inicialización limpia del cliente
-const supabase = window.supabase.createClient("https://rujxdrdgegwfbmmpvmid.supabase.co", "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD");
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ════ ESTADO GLOBAL DE LA APP ════ */
 const S = {
@@ -490,9 +491,10 @@ async function initRealtimeFetch() {
 
 async function fetchAllOfertas() {
   try {
+    // CORRECCIÓN CLAVE: Pedimos las columnas problemáticas de forma segura con comillas
     const { data, error } = await supabase
       .from('ofertas')
-      .select('*');
+      .select('id, producto_id, nombre, marca, categoria, tienda, precio, "precio anterior", envio, cuotas, "url compra", imagen, descripcion');
 
     if (error) throw error;
     if (data) actualizarCatalogoSupabase(data);
