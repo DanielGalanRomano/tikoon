@@ -44,7 +44,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .card:active{transform:scale(.98);}
 .best-tag{position:absolute;top:9px;right:9px;background:#E8441A;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;}
 .card-row{display:flex;gap:12px;flex-wrap:wrap;}
-.card-img{width:72px;height:72px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.card-img{width:72px;height:72px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;background:#F0EDE6;}
 .card-img img{width:100%;height:100%;object-fit:cover;}
 .card-body{flex:1;min-width:150px;}
 .card-title{font-size:14px;font-weight:700;}
@@ -136,14 +136,27 @@ let competitorPrices = [];
 let productImages = {};
 
 // ============================================
-// PRODUCTOS POR DEFECTO CON IMÁGENES REALES
+// PRODUCTOS POR DEFECTO
 // ============================================
 const defaultProducts = [
-  { id: 'tv_samsung', name: 'Smart TV Samsung 40" 4K', brand: 'Samsung', price: 299999, oldPrice: 399999, installments: 12, desc: 'Smart TV 4K Ultra HD, HDR, control por voz', image: 'https://http2.mlstatic.com/D_NQ_NP_2X_123456-MLA78901234567_2024-F.webp' },
-  { id: 'iphone15', name: 'Apple iPhone 15 128GB', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, desc: 'Cámara 48MP, USB-C, Dynamic Island', image: 'https://http2.mlstatic.com/D_NQ_NP_2X_987654-MLA78901234567_2024-F.webp' },
-  { id: 'lenovo', name: 'Lenovo IdeaPad 3 i5', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, desc: 'Intel Core i5, 16GB RAM, SSD 512GB', image: 'https://http2.mlstatic.com/D_NQ_NP_2X_456789-MLA78901234567_2024-F.webp' },
-  { id: 'adidas', name: 'Adidas Ultraboost 22', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, desc: 'Tecnología BOOST, máxima comodidad', image: 'https://http2.mlstatic.com/D_NQ_NP_2X_789123-MLA78901234567_2024-F.webp' }
+  { id: 'tv_samsung', name: 'Smart TV Samsung 40 4K', brand: 'Samsung', price: 299999, oldPrice: 399999, installments: 12, desc: 'Smart TV 4K Ultra HD, HDR, control por voz', image: '' },
+  { id: 'iphone15', name: 'iPhone 15 128GB', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, desc: 'Cámara 48MP, USB-C, Dynamic Island', image: '' },
+  { id: 'lenovo', name: 'Lenovo IdeaPad 3 i5', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, desc: 'Intel Core i5, 16GB RAM, SSD 512GB', image: '' },
+  { id: 'adidas', name: 'Adidas Ultraboost 22', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, desc: 'Tecnología BOOST, máxima comodidad', image: '' }
 ];
+
+// ============================================
+// GENERAR URLs CORRECTAS PARA CADA TIENDA
+// ============================================
+function generarURLBusqueda(productoNombre, tienda) {
+  const busqueda = encodeURIComponent(productoNombre);
+  const urls = {
+    'Mercado Libre': `https://listado.mercadolibre.com.ar/${busqueda}#D[A:${busqueda}]`,
+    'Frávega': `https://www.fravega.com/l/?keyword=${busqueda}`,
+    'Coto': `https://www.cotodigital.com.ar/sitios/cdigi/productos/busqueda?q=${busqueda}`
+  };
+  return urls[tienda] || `https://www.google.com/search?q=${busqueda}`;
+}
 
 // ============================================
 // BUSCAR EN MERCADO LIBRE (API REAL)
@@ -162,28 +175,13 @@ async function buscarMercadoLibre(productoNombre) {
         precio: item.price,
         envio: item.shipping?.free_shipping ? 0 : 5000,
         cuotas: item.installments ? `${item.installments.quantity} cuotas de $${Math.round(item.installments.amount).toLocaleString('es-AR')}` : 'Consultar',
-        url: item.permalink,
+        url: generarURLBusqueda(productoNombre, 'Mercado Libre'),
         imagen: item.thumbnail,
         real: true
       };
     }
   } catch(e) { console.log('Error ML:', e); }
   return null;
-}
-
-// ============================================
-// GENERAR URLs DE BÚSQUEDA PARA CADA TIENDA
-// ============================================
-function generarURLBusqueda(productoNombre, tienda) {
-  const busqueda = encodeURIComponent(productoNombre);
-  const urls = {
-    'Frávega': `https://www.fravega.com/buscar?search=${busqueda}`,
-    'Emprentienda': `https://www.emprentienda.com.ar/catalogsearch/result/?q=${busqueda}`,
-    'Tienda Nube': `https://www.tiendanube.com/search?q=${busqueda}`,
-    'Carrefour': `https://www.carrefour.com.ar/buscador?q=${busqueda}`,
-    'Coto': `https://www.coto.com.ar/buscador?q=${busqueda}`
-  };
-  return urls[tienda] || `https://www.google.com/search?q=${busqueda}`;
 }
 
 // ============================================
@@ -198,9 +196,19 @@ async function obtenerCompetidores(productoNombre) {
   if (mlResult) {
     competidores.push(mlResult);
     if (mlResult.imagen) productImages[productoNombre] = mlResult.imagen;
+  } else {
+    competidores.push({
+      tienda: 'Mercado Libre',
+      precio: null,
+      envio: null,
+      cuotas: 'Buscar ofertas',
+      url: generarURLBusqueda(productoNombre, 'Mercado Libre'),
+      imagen: null,
+      real: false
+    });
   }
   
-  const tiendas = ['Frávega', 'Emprentienda', 'Tienda Nube', 'Carrefour', 'Coto'];
+  const tiendas = ['Frávega', 'Coto'];
   tiendas.forEach(tienda => {
     competidores.push({
       tienda: tienda,
@@ -280,7 +288,7 @@ function renderHome() {
   document.getElementById('alertsCount').innerHTML = products.length;
   const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
   document.getElementById('statDiscount').innerHTML = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
-  document.getElementById('statStores').innerHTML = '6';
+  document.getElementById('statStores').innerHTML = '3';
   const grid = document.getElementById('offersGrid');
   if (!grid) return;
   grid.innerHTML = '';
@@ -328,10 +336,15 @@ function renderCompare() {
   if (competitorPrices.length === 0) {
     competidoresHtml = '<div class="loading-row">⚠️ No se encontraron precios de competidores</div>';
   } else {
-    competidoresHtml = competitorPrices.map(c => `
+    competidoresHtml = competitorPrices.map(c => {
+      let icono = '🏬';
+      if (c.tienda === 'Mercado Libre') icono = '🛒';
+      else if (c.tienda === 'Frávega') icono = '🔌';
+      else if (c.tienda === 'Coto') icono = '🏪';
+      return `
       <div class="comparison-row">
         <div class="store-cell">
-          <div class="store-icon">${c.tienda === 'Mercado Libre' ? '🛒' : (c.tienda === 'Frávega' ? '🔌' : (c.tienda === 'Carrefour' ? '🏪' : '🏬'))}</div>
+          <div class="store-icon">${icono}</div>
           <div>
             <div class="store-name">${c.tienda}</div>
             <div class="store-sub">${c.envio === 0 ? 'Envío gratis' : (c.envio ? `Envío $${c.envio.toLocaleString('es-AR')}` : 'Buscar ofertas')}</div>
@@ -341,7 +354,7 @@ function renderCompare() {
         <div style="font-size:11px;color:#6B6358">${c.cuotas}</div>
         <div><a href="${c.url}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#F0EDE6;color:#18150F">Ver →</a></div>
       </div>
-    `).join('');
+    `}).join('');
   }
   
   document.getElementById('compareContent').innerHTML = `
