@@ -44,7 +44,6 @@ body {
   padding-bottom: 90px;
 }
 
-/* ════ MAPA DE ESTILOS BASE ════ */
 h1, h2, h3, h4 { font-family: var(--font-title); font-weight: 700; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; border: none; background: none; cursor: pointer; }
@@ -68,7 +67,6 @@ header {
 .logo-area h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
 .logo-area span { color: var(--primary); }
 
-/* Barra de Búsqueda */
 .search-wrapper {
   background: var(--s2);
   padding: 12px 16px;
@@ -84,7 +82,6 @@ header {
   color: var(--text);
 }
 
-/* Categorías Pill horizontal */
 .cats-scroll {
   display: flex;
   gap: 8px;
@@ -113,14 +110,12 @@ header {
 .view { display: none; padding: 16px; }
 .view.active { display: block; }
 
-/* Grid de Productos */
 .grid-ofertas {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 12px;
 }
 
-/* Tarjeta Producto Mínima Brutalista */
 .card-prod {
   background: var(--surface);
   border-radius: var(--radius);
@@ -130,6 +125,7 @@ header {
   display: flex;
   flex-direction: column;
   position: relative;
+  cursor: pointer;
 }
 .card-img-box {
   width: 100%;
@@ -139,7 +135,6 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
   overflow: hidden;
   margin-bottom: 10px;
 }
@@ -189,7 +184,7 @@ header {
   margin-bottom: 16px;
 }
 .detail-header { display: flex; gap: 16px; margin-bottom: 20px; }
-.detail-img { width: 90px; height: 90px; background: var(--s2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 36px; overflow: hidden; }
+.detail-img { width: 90px; height: 90px; background: var(--s2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .detail-img img { width: 100%; height: 100%; object-fit: cover; }
 .detail-main-info { flex: 1; }
 
@@ -448,13 +443,14 @@ nav.nav-bottom {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* ════ CONFIGURACIÓN DE CONEXIÓN DE TU BACKEND ════ */
+/* ════ CONFIGURACIÓN DE LAS CREDENCIALES DE TU BASE DE DATOS ════ */
 const SUPABASE_URL = "https://rujxdrdgegwfbmmpvmid.supabase.co"; 
-const SUPABASE_KEY = "sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD"; 
+const SUPABASE_KEY = "PONER_ACA_TU_ANON_KEY_REAL_DE_SUPABASE"; 
 
+// Inicialización limpia del cliente
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ════ ESTADO GLOBAL DE LA APP (SINGLE SOURCE OF TRUTH) ════ */
+/* ════ ESTADO GLOBAL DE LA APP ════ */
 const S = {
   products: [],
   categories: ['todos', 'tech', 'moda', 'hogar'],
@@ -465,7 +461,7 @@ const S = {
 
 let cur = 'home';
 
-// Inicialización de la App
+// Inicialización de Eventos y Carga Inicial
 document.addEventListener("DOMContentLoaded", () => {
   initRealtimeFetch();
   renderCategories();
@@ -476,16 +472,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-/* ═══════════════════════════════════════════
-   SUPABASE REALTIME ENGINE & FETCH COUPLING
-   ═══════════════════════════════════════════ */
+/* ── Motores de Datos ── */
 async function initRealtimeFetch() {
   await fetchAllOfertas();
 
   supabase
     .channel('cambios-en-ofertas')
-    .on('postgres_changes', { event: '*', scheme: 'public', table: 'ofertas' }, async (payload) => {
-       showToast("Base de datos de Supabase actualizada ⚡");
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'ofertas' }, async (payload) => {
+       showToast("Base de datos actualizada ⚡");
        await fetchAllOfertas();
     })
     .subscribe();
@@ -495,7 +489,7 @@ async function fetchAllOfertas() {
   try {
     const { data, error } = await supabase
       .from('ofertas')
-      .select('*'); // Removido .order('destacado') por no existir en la base de datos
+      .select('*');
 
     if (error) throw error;
     if (data) actualizarCatalogoSupabase(data);
@@ -505,19 +499,17 @@ async function fetchAllOfertas() {
 }
 
 function actualizarCatalogoSupabase(data) {
-  // MAPEO AJUSTADO A LOS NOMBRES CON ESPACIOS DE TU BASE DE DATOS
   S.products = data.map(item => {
     const pActual = Number(item.precio || 0);
     const pAnterior = item["precio anterior"] ? Number(item["precio anterior"]) : null;
     
-    // Calcular descuento automático localmente si no existe en la DB
     let descCalc = 0;
     if (pAnterior && pAnterior > pActual) {
       descCalc = Math.round(((pAnterior - pActual) / pAnterior) * 100);
     }
 
     return {
-      id: item.producto_id || item.id, // Mapeo de identificador de agrupación
+      id: item.producto_id || item.id,
       name: item.nombre,
       brand: item.marca || 'Genérico',
       category: item.categoria || 'todos',
@@ -525,15 +517,12 @@ function actualizarCatalogoSupabase(data) {
       price: pActual,
       oldPrice: pAnterior,
       discount: descCalc,
-      
-      // Si envio es true, ponemos 0 (Gratis) para compatibilidad con la UI
       shipping: item.envio === true ? 0 : null, 
-      
       installments: parseInt(item.cuotas || 1),
-      url: item["url compra"] || '#', // Nombre exacto con espacios
+      url: item["url compra"] || '#',
       emoji: item.imagen || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500',
       desc: item.descripcion || '',
-      db_id: item.id // ID numérico único e incremental
+      db_id: item.id
     };
   });
 
@@ -541,11 +530,10 @@ function actualizarCatalogoSupabase(data) {
   renderAdminProdList();
 }
 
-/* ═══════════════════════════════════════════
-   MÓDULOS DE RENDERIZADO INTERFAZ DE USUARIO
-   ═══════════════════════════════════════════ */
+/* ── Renderizado ── */
 function renderCategories() {
   const box = document.getElementById('cats-box');
+  if (!box) return;
   box.innerHTML = S.categories.map(c => `
     <button class="cat-pill ${S._activeCat === c ? 'active' : ''}" onclick="filterCat('${c}')">
       ${c.toUpperCase()}
@@ -582,6 +570,7 @@ function getGroupedProducts() {
 
 function renderHomeGrid(query = '') {
   const box = document.getElementById('grid-box');
+  if (!box) return;
   let items = getGroupedProducts();
 
   if (query) {
@@ -661,9 +650,7 @@ function seeDetail(productId) {
   `).join('');
 }
 
-/* ═══════════════════════════════════════════
-   MÓDULO DE ESCRITURA / CRUD (SUPABASE API)
-   ═══════════════════════════════════════════ */
+/* ── CRUD Operaciones ── */
 async function saveProduct(e) {
   e.preventDefault();
 
@@ -680,7 +667,6 @@ async function saveProduct(e) {
   const imagen = document.getElementById('f-img').value.trim() || undefined;
   const descripcion = document.getElementById('f-desc').value.trim();
 
-  // Armamos el payload respetando las columnas exactas con comillas donde hay espacios
   const payload = {
     producto_id: idProd,
     nombre,
@@ -688,10 +674,10 @@ async function saveProduct(e) {
     categoria,
     tienda,
     precio,
-    "precio anterior": precio_anterior, // Mapeo exacto
+    "precio anterior": precio_anterior, 
     envio,
     cuotas,
-    "url compra": url_compra,           // Mapeo exacto
+    "url compra": url_compra,           
     imagen,
     descripcion
   };
@@ -708,13 +694,13 @@ async function saveProduct(e) {
     } else {
       const { error } = await supabase
         .from('ofertas')
-        .insert([payload]); // Usamos insert directo para simplificar compatibilidades
+        .insert([payload]);
       responseError = error;
     }
 
     if (responseError) throw responseError;
 
-    showToast(S.editingId ? "Oferta modificada con éxito" : "Nueva oferta distribuida a Supabase");
+    showToast(S.editingId ? "Oferta modificada con éxito" : "Nueva oferta agregada");
     cancelEdit();
     await fetchAllOfertas();
   } catch (err) {
@@ -731,7 +717,7 @@ async function deleteOffer(dbId) {
       .eq('id', dbId);
 
     if (error) throw error;
-    showToast("Oferta eliminada del backend");
+    showToast("Oferta eliminada");
     await fetchAllOfertas();
   } catch (err) {
     alert("Error eliminando: " + err.message);
@@ -769,6 +755,7 @@ function cancelEdit() {
 
 function renderAdminProdList() {
   const box = document.getElementById('admin-list');
+  if (!box) return;
   box.innerHTML = S.products.map(p => `
     <div class="adm-item">
       <div>
@@ -783,9 +770,7 @@ function renderAdminProdList() {
   `).join('');
 }
 
-/* ═══════════════════════════════════════════
-   NÚCLEO DE RUTEO Y NAVEGACIÓN (SPA)
-   ═══════════════════════════════════════════ */
+/* ── Enrutamiento SPA ── */
 function switchView(viewName) {
   cur = viewName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -797,17 +782,17 @@ function switchView(viewName) {
   if (viewName === 'home') {
     document.getElementById('view-home').classList.add('active');
     document.getElementById('tab-home').classList.add('active');
-    header.style.display = 'block';
-    cats.style.display = 'flex';
+    if (header) header.style.display = 'block';
+    if (cats) cats.style.display = 'flex';
   } else if (viewName === 'detail') {
     document.getElementById('view-detail').classList.add('active');
-    header.style.display = 'block';
-    cats.style.display = 'none';
+    if (header) header.style.display = 'block';
+    if (cats) cats.style.display = 'none';
   } else if (viewName === 'admin') {
     document.getElementById('view-admin').classList.add('active');
     document.getElementById('tab-admin').classList.add('active');
-    header.style.display = 'none';
-    cats.style.display = 'none';
+    if (header) header.style.display = 'none';
+    if (cats) cats.style.display = 'none';
   }
 }
 
@@ -823,13 +808,14 @@ function fmt(n) {
 let _toast;
 function showToast(msg) {
   const t = document.getElementById('toast');
+  if (!t) return;
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(_toast);
   _toast = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* Control nativo del botón atrás */
+/* Control nativo de navegación */
 history.pushState(null, '', window.location.href);
 window.addEventListener('popstate', () => {
   if (cur !== 'home') {
