@@ -653,7 +653,7 @@ function irAWhatsApp() {
   mensaje += `💵 Total: $${totalPrice.toLocaleString('es-AR')}\n`;
   mensaje += `💳 Cuotas: ${p.installments} cuotas sin interés\n`;
   if (productLink) mensaje += `\n🔗 Link del producto: ${productLink}\n`;
-  mensaje += `\n⚠️ *Comisión de plataforma (10%): $${commission.toLocaleString('es-AR')}*\n`;
+  mensaje += `\n⚠️ *Comisión ahorrada (10%): $${commission.toLocaleString('es-AR')}*\n`;
   mensaje += `\n✅ Vendedor certificado · 🛡️ Compra protegida`;
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
