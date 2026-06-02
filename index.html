@@ -392,6 +392,7 @@ html, body { font-family: var(--f-b); background: var(--c-bg); color: var(--c-te
 }
 </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <body>
 <div id="app">
 
@@ -980,7 +981,10 @@ function loadData() {
     if (raw) {
       const saved = JSON.parse(raw);
       if (saved.products?.length) appState.products = saved.products;
-      if (saved.config) appState.config = { ...appState.config, ...saved.config };
+      if (saved.config) appState.config = {
+          ...appState.config,
+          ...saved.config
+        };
     }
   } catch(e) {}
   if (!appState.products.length) appState.products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
@@ -1632,8 +1636,48 @@ if ('serviceWorker' in navigator) {
    BOOT
 ═══════════════════════════════════════════════════════ */
 loadData();
-renderAllScreens();
-if (appState.config.sheetId) startPolling();
+
+async function cargarOfertasSupabase() {
+
+  const supabase = window.supabase.createClient(
+    'https://rujxdrdgegwfbmmpvmid.supabase.co',
+    'sb_publishable_oOKB7X2ntZhrwIziRquvTA_FsbuAERD'
+  );
+
+  const { data, error } = await supabase
+    .from('ofertas')
+    .select('*');
+
+  if (error) {
+    console.error(error);
+    renderAllScreens();
+    return;
+  }
+
+  appState.products = data.map(item => ({
+    id: item.producto_id,
+    name: item.nombre,
+    desc: item.descripcion || '',
+    price: Number(item.precio || 0),
+    oldPrice: Number(item.precio_anterior || 0),
+    brand: item.marca || item.tienda || '',
+    category: item.categoria || 'tech',
+    emoji: '🏷️',
+    installments: item.cuotas || 1,
+    shipping: item.envio || 0,
+    url: item.url || '#'
+  }));
+
+  renderAllScreens();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  cargarOfertasSupabase();
+});
+
+if (appState.config.sheetId) {
+  startPolling();
+}
 
 async function cargarCompetencia() {
 
@@ -1654,7 +1698,7 @@ async function cargarCompetencia() {
 
     console.log("Competencia cargada:", data);
 
-    actualizarComparativas();
+    
 
   } catch (error) {
 
@@ -1674,21 +1718,23 @@ setInterval(() => {
 
 function obtenerMejorPrecio(productoId){
 
-  const precios = competencia
+  const competencia = window.competencia || [];
     .filter(p => p.producto_id === productoId)
     .map(p => Number(p.precio));
 
-  return Math.min(...precios);
+  return precios.length ? Math.min(...precios) : 0;
 
 }
 
 function renderComparativa(productoId){
 
-  const rows = competencia
+  const competencia = window.competencia || [];
     .filter(p => p.producto_id === productoId);
 
-  const mejor =
-    Math.min(...rows.map(r => Number(r.precio)));
+const mejor =
+  rows.length
+    ? Math.min(...rows.map(r => Number(r.precio)))
+    : 0;
 
   let html = "";
 
@@ -1714,6 +1760,13 @@ function renderComparativa(productoId){
 }
 
 </script>
+
+
+
+
+
+
+
 </body>
 </html>
 
