@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>DescuentosApp — Mejores Ofertas</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<title>DescuentosApp — Ofertas</title>
 <style>
 * {
   margin: 0;
@@ -13,7 +12,7 @@
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background: #F5F2EC;
   color: #18150F;
   height: 100vh;
@@ -28,29 +27,28 @@ body {
 }
 
 /* Header */
-.header {
-  background: #1B4FD8;
+.sponsor {
+  background: #7C3AED;
   color: white;
   text-align: center;
-  padding: 6px 16px;
+  padding: 6px;
   font-size: 11px;
   flex-shrink: 0;
 }
 
 .topbar {
   background: white;
-  border-bottom: 1px solid #E0DAD0;
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
+  border-bottom: 1px solid #E0DAD0;
   flex-shrink: 0;
 }
 
 .logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
   font-size: 18px;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -64,6 +62,9 @@ body {
   background: #F0EDE6;
   border-radius: 100px;
   padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .search-box input {
@@ -71,7 +72,7 @@ body {
   border: none;
   width: 100%;
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .icon-btn {
@@ -94,6 +95,8 @@ body {
   font-size: 10px;
   padding: 2px 5px;
   border-radius: 50%;
+  min-width: 16px;
+  text-align: center;
 }
 
 /* Navegación */
@@ -101,7 +104,6 @@ body {
   background: white;
   border-top: 1px solid #E0DAD0;
   display: flex;
-  padding-bottom: env(safe-area-inset-bottom);
   flex-shrink: 0;
 }
 
@@ -110,10 +112,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 0 8px;
+  padding: 10px 0;
   cursor: pointer;
   gap: 3px;
-  font-family: 'Syne', sans-serif;
   font-size: 10px;
   font-weight: 600;
   color: #A89F94;
@@ -165,7 +166,6 @@ body {
 }
 
 .hero-title {
-  font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 800;
   margin-bottom: 4px;
@@ -209,7 +209,6 @@ body {
 }
 
 .stat-num {
-  font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 800;
   color: #E8441A;
@@ -230,7 +229,6 @@ body {
 }
 
 .sec-title {
-  font-family: 'Syne', sans-serif;
   font-size: 16px;
   font-weight: 800;
   display: flex;
@@ -264,7 +262,7 @@ body {
   height: 6px;
   background: #0B7A48;
   border-radius: 50%;
-  animation: pulse 1.4s infinite;
+  animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
@@ -326,7 +324,6 @@ body {
 }
 
 .card-title {
-  font-family: 'Syne', sans-serif;
   font-size: 14px;
   font-weight: 700;
 }
@@ -351,7 +348,6 @@ body {
 }
 
 .price-now {
-  font-family: 'Syne', sans-serif;
   font-size: 15px;
   font-weight: 800;
   color: #E8441A;
@@ -399,6 +395,34 @@ body {
   opacity: 1;
 }
 
+.back-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #E0DAD0;
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid #E0DAD0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.back-title {
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+}
+
 /* Admin */
 .admin-login {
   display: flex;
@@ -429,50 +453,21 @@ body {
   cursor: pointer;
 }
 
-.back-btn {
-  background: white;
-  border: 1px solid #E0DAD0;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.back-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: white;
-  border-bottom: 1px solid #E0DAD0;
-}
-
-.back-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  flex: 1;
-}
-
-/* Loading */
 .loading {
   text-align: center;
   padding: 40px;
-  color: #A89F94;
+  color: #6B6358;
 }
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="header">🎉 Banco Nación · 30% OFF los miércoles</div>
+  <div class="sponsor">🎉 Banco Nación · 30% OFF los miércoles</div>
   
   <div class="topbar">
     <div class="logo" onclick="navigate('home')">Descuentos<em>App</em></div>
     <div class="search-box">
+      <span>🔍</span>
       <input type="text" id="searchInput" placeholder="Buscar ofertas..." oninput="filterOffers()">
     </div>
     <button class="icon-btn" onclick="navigate('alerts')">🔔<span class="badge" id="alertBadge">0</span></button>
@@ -530,7 +525,7 @@ body {
       <div class="screen-body">
         <div style="background:white; border-radius:18px; padding:20px; text-align:center; margin-bottom:16px">
           <div style="font-size:48px">👤</div>
-          <div style="font-family:Syne; font-size:18px; font-weight:800">Mi Cuenta</div>
+          <div style="font-size:18px; font-weight:800">Mi Cuenta</div>
         </div>
         <div style="background:white; border-radius:18px; overflow:hidden">
           <div onclick="navigate('admin')" style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid #E0DAD0; cursor:pointer">
@@ -546,7 +541,7 @@ body {
     <div class="screen" id="screen-admin">
       <div id="adminLogin" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; height:100%; padding:40px">
         <div style="font-size:48px">🔐</div>
-        <div style="font-family:Syne; font-size:20px; font-weight:800">Panel Admin</div>
+        <div style="font-size:20px; font-weight:800">Panel Admin</div>
         <input type="password" id="adminPass" class="admin-input" placeholder="Contraseña">
         <button class="admin-btn" onclick="adminLogin()">Ingresar</button>
         <button class="admin-btn" onclick="goBack()" style="background:#E0DAD0; color:#18150F">Volver</button>
@@ -566,10 +561,9 @@ body {
           </div>
           
           <div style="background:white; border-radius:18px; padding:16px">
-            <h3 style="margin-bottom:12px">📝 Datos de ejemplo</h3>
+            <h3 style="margin-bottom:12px">📝 ID de prueba</h3>
             <div style="font-size:12px; color:#6B6358">
-              Si no ves productos, usá este ID de prueba:<br>
-              <code style="background:#F0EDE6; padding:4px; display:block; margin-top:6px">1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w</code>
+              <code style="background:#F0EDE6; padding:4px; display:block; word-break:break-all">1wYKTrDhJ2C-PjJujpRl6ZINkzuxO2TbNs5QejJ7NW2w</code>
             </div>
           </div>
         </div>
@@ -579,7 +573,7 @@ body {
 
   <div class="nav">
     <div class="nav-item active" onclick="navigate('home')"><div class="ico">🏠</div><div>Inicio</div></div>
-    <div class="nav-item" onclick="if(selectedProduct) navigate('compare'); else showToast('Seleccioná un producto primero')"><div class="ico">📊</div><div>Comparar</div></div>
+    <div class="nav-item" onclick="if(selectedProduct) navigate('compare'); else showToast('Seleccioná un producto')"><div class="ico">📊</div><div>Comparar</div></div>
     <div class="nav-item" onclick="navigate('alerts')"><div class="ico">🔔</div><div>Alertas</div></div>
     <div class="nav-item" onclick="navigate('account')"><div class="ico">👤</div><div>Cuenta</div></div>
   </div>
@@ -589,22 +583,18 @@ body {
 
 <script>
 // ============================================
-// DATOS DE EJEMPLO (FUNCIONAN SIEMPRE)
+// PRODUCTOS DE EJEMPLO (VISIBLES INMEDIATAMENTE)
 // ============================================
-let products = [
-  { id: '1', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: '#', desc: 'Triple cámara 50MP, pantalla AMOLED' },
+const productosEjemplo = [
+  { id: '1', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: '#', desc: 'Triple cámara 50MP, pantalla AMOLED, USB-C' },
   { id: '2', name: 'Lenovo IdeaPad 3', emoji: '💻', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, shipping: 0, url: '#', desc: 'Intel Core i5, 16GB RAM, SSD 512GB' },
   { id: '3', name: 'Adidas Ultraboost 22', emoji: '👟', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, shipping: 0, url: '#', desc: 'Tecnología BOOST, máxima comodidad' },
-  { id: '4', name: 'Samsung Galaxy S24', emoji: '📱', brand: 'Samsung', price: 699999, oldPrice: 849999, installments: 12, shipping: 0, url: '#', desc: 'IA integrada, cámara 200MP' },
+  { id: '4', name: 'Samsung Galaxy S24', emoji: '📱', brand: 'Samsung', price: 699999, oldPrice: 849999, installments: 12, shipping: 0, url: '#', desc: 'IA integrada, cámara 200MP, 7 años updates' },
   { id: '5', name: 'MacBook Air M2', emoji: '💻', brand: 'Apple', price: 1049999, oldPrice: 1299999, installments: 18, shipping: 0, url: '#', desc: 'Chip M2, 8GB RAM, 256GB SSD' }
 ];
 
-let selectedProduct = null;
-let currentScreen = 'home';
-let screenHistory = ['home'];
-
 // Competidores simulados
-const competitors = {
+const competidoresEjemplo = {
   '1': [
     { tienda: 'Mercado Libre', precio: 499999, envio: 0, cuotas: '12x sin int.', url: '#', emoji: '🛒' },
     { tienda: 'Frávega', precio: 509999, envio: 2500, cuotas: '6x sin int.', url: '#', emoji: '🔌' }
@@ -614,8 +604,15 @@ const competitors = {
   ]
 };
 
+// Estado global
+let products = [...productosEjemplo];
+let competitors = {...competidoresEjemplo};
+let selectedProduct = null;
+let currentScreen = 'home';
+let screenHistory = ['home'];
+
 // ============================================
-// FUNCIONES PRINCIPALES
+// RENDERIZAR PANTALLA HOME
 // ============================================
 function renderHome() {
   const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -624,14 +621,15 @@ function renderHome() {
     p.brand.toLowerCase().includes(searchTerm)
   );
   
-  document.getElementById('statCount').textContent = products.length;
-  document.getElementById('offersCount').textContent = filtered.length;
-  document.getElementById('alertBadge').textContent = products.length;
-  document.getElementById('alertsCount').textContent = products.length;
+  // Actualizar stats
+  document.getElementById('statCount').innerHTML = products.length;
+  document.getElementById('offersCount').innerHTML = filtered.length;
+  document.getElementById('alertBadge').innerHTML = products.length;
+  document.getElementById('alertsCount').innerHTML = products.length;
   
   const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
-  document.getElementById('statDiscount').textContent = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
-  document.getElementById('statStores').textContent = '5';
+  document.getElementById('statDiscount').innerHTML = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
+  document.getElementById('statStores').innerHTML = '5';
   
   const grid = document.getElementById('offersGrid');
   if (!grid) return;
@@ -650,7 +648,10 @@ function renderHome() {
     
     const card = document.createElement('div');
     card.className = 'card';
-    card.onclick = () => { selectedProduct = p; navigate('compare'); };
+    card.onclick = () => { 
+      selectedProduct = p; 
+      navigate('compare'); 
+    };
     card.innerHTML = `
       <div class="best-tag">MEJOR PRECIO</div>
       <div class="card-row">
@@ -658,13 +659,13 @@ function renderHome() {
         <div class="card-body">
           <div class="card-title">${p.name}</div>
           <div class="card-brand">${p.brand}</div>
-          <div class="card-desc">${p.desc}</div>
+          <div class="card-desc">${p.desc.substring(0, 50)}${p.desc.length > 50 ? '...' : ''}</div>
           <div class="price-row">
-            <span class="price-now">$${p.price.toLocaleString()}</span>
-            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString()}</span>` : ''}
+            <span class="price-now">$${p.price.toLocaleString('es-AR')}</span>
+            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}
             ${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''}
           </div>
-          ${saving > 0 ? `<div class="saving">💰 Ahorrás $${saving.toLocaleString()}</div>` : ''}
+          ${saving > 0 ? `<div class="saving">💰 Ahorrás $${saving.toLocaleString('es-AR')}</div>` : ''}
         </div>
       </div>
     `;
@@ -672,6 +673,9 @@ function renderHome() {
   });
 }
 
+// ============================================
+// RENDERIZAR COMPARATIVA
+// ============================================
 function renderCompare() {
   if (!selectedProduct) return;
   
@@ -679,20 +683,20 @@ function renderCompare() {
   const discount = selectedProduct.oldPrice ? Math.round((1 - selectedProduct.price/selectedProduct.oldPrice)*100) : 0;
   const comps = competitors[selectedProduct.id] || [];
   
-  document.getElementById('compareTitle').textContent = selectedProduct.name;
+  document.getElementById('compareTitle').innerHTML = selectedProduct.name;
   
   container.innerHTML = `
     <div style="background:white; border-radius:18px; padding:16px; margin-bottom:16px">
       <div style="display:flex; gap:14px; align-items:center">
         <div style="font-size:48px">${selectedProduct.emoji}</div>
         <div>
-          <div style="font-family:Syne; font-size:18px; font-weight:800">${selectedProduct.name}</div>
+          <div style="font-size:18px; font-weight:800">${selectedProduct.name}</div>
           <div style="font-size:13px; color:#6B6358">${selectedProduct.brand}</div>
         </div>
       </div>
       <div style="margin-top:12px">
-        <div style="font-size:24px; font-weight:800; color:#E8441A">$${selectedProduct.price.toLocaleString()}</div>
-        ${selectedProduct.oldPrice ? `<div style="font-size:13px; color:#A89F94; text-decoration:line-through">$${selectedProduct.oldPrice.toLocaleString()}</div>` : ''}
+        <div style="font-size:24px; font-weight:800; color:#E8441A">$${selectedProduct.price.toLocaleString('es-AR')}</div>
+        ${selectedProduct.oldPrice ? `<div style="font-size:13px; color:#A89F94; text-decoration:line-through">$${selectedProduct.oldPrice.toLocaleString('es-AR')}</div>` : ''}
         ${discount > 0 ? `<div style="background:#FEF0EC; color:#E8441A; padding:4px 8px; border-radius:100px; display:inline-block; font-size:12px; margin-top:6px">-${discount}% OFF</div>` : ''}
       </div>
       <div style="margin-top:10px; font-size:13px">💳 ${selectedProduct.installments} cuotas sin interés</div>
@@ -705,13 +709,13 @@ function renderCompare() {
       </div>
       <div style="background:#FEF0EC; padding:12px 16px; display:grid; grid-template-columns:2fr 1fr 1fr; align-items:center">
         <div><strong>⭐ Nuestra oferta</strong><br><span style="font-size:11px">${selectedProduct.brand}</span></div>
-        <div><strong style="color:#E8441A">$${selectedProduct.price.toLocaleString()}</strong></div>
+        <div><strong style="color:#E8441A">$${selectedProduct.price.toLocaleString('es-AR')}</strong></div>
         <div><a href="${selectedProduct.url}" style="background:#E8441A; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:600">Comprar →</a></div>
       </div>
       ${comps.map(c => `
         <div style="padding:12px 16px; display:grid; grid-template-columns:2fr 1fr 1fr; align-items:center; border-bottom:1px solid #E0DAD0">
           <div>${c.emoji} ${c.tienda}</div>
-          <div>$${c.precio.toLocaleString()}</div>
+          <div>$${c.precio.toLocaleString('es-AR')}</div>
           <div><a href="${c.url}" style="background:#F0EDE6; color:#18150F; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px">Ver →</a></div>
         </div>
       `).join('')}
@@ -719,9 +723,13 @@ function renderCompare() {
   `;
 }
 
+// ============================================
+// RENDERIZAR ALERTAS
+// ============================================
 function renderAlerts() {
   const list = document.getElementById('alertsList');
   if (!list) return;
+  
   list.innerHTML = products.map(p => `
     <div style="background:white; border-radius:12px; padding:13px; margin-bottom:10px; display:flex; align-items:center; gap:12px; cursor:pointer" onclick="selectedProduct=products.find(x=>x.id==='${p.id}'); navigate('compare')">
       <div style="font-size:28px">${p.emoji}</div>
@@ -735,7 +743,7 @@ function renderAlerts() {
 }
 
 // ============================================
-// GOOGLE SHEETS (OPCIONAL)
+// CONECTAR GOOGLE SHEETS
 // ============================================
 async function connectSheet() {
   const sheetId = document.getElementById('sheetIdInput').value.trim();
@@ -796,7 +804,7 @@ async function connectSheet() {
       statusDiv.style.color = '#E8441A';
     }
   } catch (error) {
-    statusDiv.innerHTML = '❌ Error: Verificá que el Sheet sea público y tenga la pestaña "Ofertas"';
+    statusDiv.innerHTML = '❌ Error: Verificá que el Sheet sea público';
     statusDiv.style.color = '#dc2626';
     console.error('Error:', error);
   }
@@ -827,7 +835,7 @@ function parseCSV(csv) {
 }
 
 // ============================================
-// ADMIN
+// ADMIN FUNCTIONS
 // ============================================
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
@@ -877,8 +885,8 @@ function navigate(screen) {
   currentScreen = screen;
   
   // Actualizar navegación
+  const navScreens = ['home', 'compare', 'alerts', 'account'];
   document.querySelectorAll('.nav-item').forEach((item, idx) => {
-    const navScreens = ['home', 'compare', 'alerts', 'account'];
     item.classList.toggle('active', navScreens[idx] === screen);
   });
   
