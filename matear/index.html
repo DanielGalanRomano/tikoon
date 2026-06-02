@@ -4,20 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Matear by Taragüi — Encuentros con mate en el parque</title>
-  <!-- Leaflet CSS + JS (mapa en detalle) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/tabler-icons.min.css">
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=DM+Sans:opsz,wght@9..40,400;500;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bg-primary: #FEF9F0;
       --bg-secondary: #FFF5E8;
@@ -32,491 +24,72 @@
       --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
       --radius-card: 28px;
     }
-
-    body {
-      background: #E8DDD0;
-      font-family: 'Inter', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      width: 100%;
-    }
-
-    /* App sin frame fijo, ocupa todo el ancho disponible de forma adaptativa */
-    .app {
-      width: 100%;
-      max-width: 100%;
-      margin: 0 auto;
-      background: var(--bg-primary);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: none;
-      border-radius: 0;
-    }
-
-    /* Para pantallas más grandes, mantenemos centrado y un poco de margen agradable */
-    @media (min-width: 500px) {
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        background: #cfc3b4;
-      }
-      .app {
-        max-width: 480px;
-        border-radius: 36px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        min-height: auto;
-        height: auto;
-      }
-    }
-
-    .screen {
-      display: none;
-      flex-direction: column;
-      flex: 1;
-      animation: fadeSlide 0.2s ease;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    @keyframes fadeSlide {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 20px 24px;
-      scrollbar-width: thin;
-    }
-
-    /* Topbar con flecha visible */
-    .topbar {
-      padding: 18px 20px 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-primary);
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .back-btn {
-      background: #FFFFFF;
-      border: 1px solid var(--border-light);
-      width: 44px;
-      height: 44px;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 24px;
-      transition: all 0.2s;
-      color: var(--text-primary);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-    }
-
-    .back-btn i {
-      font-size: 24px;
-      stroke-width: 1.5;
-    }
-
-    .back-btn:hover {
-      background: #f5f0e8;
-      transform: scale(0.96);
-    }
-
-    .topbar-title {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.2px;
-    }
-
-    /* Header especial con branding */
-    .brand-header {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .brand-main {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #0F7B5E 0%, #1D9E75 100%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      letter-spacing: -0.5px;
-    }
-
-    .brand-sub {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-      font-weight: 500;
-    }
-
-    .nav-tabs {
-      display: flex;
-      gap: 12px;
-      padding: 8px 20px;
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .nav-tab {
-      flex: 1;
-      background: transparent;
-      border: none;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 10px 0;
-      border-radius: 40px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .nav-tab.active {
-      background: var(--mate-green);
-      color: white;
-      box-shadow: 0 2px 6px rgba(29, 158, 117, 0.2);
-    }
-
-    /* Cards */
-    .mateada-card {
-      background: var(--surface-card);
-      border-radius: var(--radius-card);
-      padding: 18px;
-      margin-bottom: 16px;
-      cursor: pointer;
-      border: 1px solid var(--border-light);
-      box-shadow: var(--shadow-sm);
-      transition: 0.2s;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .card-topic {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .badge {
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 40px;
-    }
-
-    .badge-green {
-      background: var(--mate-green-soft);
-      color: var(--mate-green);
-    }
-
-    .badge-amber {
-      background: #FBEFE2;
-      color: var(--mate-amber);
-    }
-
-    .badge-gray {
-      background: #F0EAE2;
-      color: #7F6E5D;
-    }
-
-    .card-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 12px 0;
-    }
-
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .host-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 14px;
-      border-top: 1px solid var(--border-light);
-      padding-top: 14px;
-    }
-
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      background: #e4f3ed;
-      color: #0F7B5E;
-      flex-shrink: 0;
-    }
-
-    .btn-primary {
-      background: var(--mate-green-bright);
-      color: white;
-      border: none;
-      padding: 15px;
-      border-radius: 60px;
-      font-weight: 600;
-      font-size: 16px;
-      width: 100%;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 2px 8px rgba(29, 158, 117, 0.3);
-    }
-
-    .btn-primary:active {
-      transform: scale(0.97);
-    }
-
-    .btn-secondary {
-      background: white;
-      border: 1px solid var(--border-light);
-      padding: 14px;
-      border-radius: 60px;
-      font-weight: 500;
-      width: 100%;
-      cursor: pointer;
-    }
-
-    .bottomnav {
-      background: var(--surface-card);
-      border-top: 1px solid var(--border-light);
-      display: flex;
-      padding: 8px 16px 12px;
-      justify-content: space-around;
-    }
-
-    .bnav-item {
-      background: transparent;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .bnav-item i {
-      font-size: 24px;
-    }
-
-    .bnav-item.active {
-      color: var(--mate-green);
-    }
-
-    .map-container-detail {
-      border-radius: 28px;
-      overflow: hidden;
-      margin: 16px 0 16px;
-      border: 1px solid var(--border-light);
-      height: 220px;
-      box-shadow: var(--shadow-sm);
-      background: #eef3ef;
-    }
-
-    .gps-box {
-      background: #FFF5E8;
-      border-radius: 24px;
-      padding: 14px;
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      border: 1px solid #e8dacb;
-    }
-
-    .gps-dot {
-      width: 10px;
-      height: 10px;
-      background: #1D9E75;
-      border-radius: 12px;
-      animation: pulse 1.6s infinite;
-      margin-top: 5px;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 0.6;
-        transform: scale(1.2);
-      }
-    }
-
-    .option-grid {
-      display: flex;
-      gap: 12px;
-    }
-
-    .option-btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 48px;
-      border: 1px solid var(--border-light);
-      background: white;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .option-btn.selected {
-      background: var(--mate-green-soft);
-      border-color: var(--mate-green);
-      color: var(--mate-green);
-    }
-
-    .form-input,
-    .form-select {
-      background: white;
-      border: 1px solid var(--border-light);
-      border-radius: 24px;
-      padding: 14px 18px;
-      width: 100%;
-      font-size: 15px;
-    }
-
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .notification-item {
-      background: white;
-      border-radius: 24px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border-light);
-    }
-
-    .accept-reject {
-      display: flex;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .btn-accept {
-      background: var(--mate-green);
-      color: white;
-      border: none;
-      border-radius: 40px;
-      padding: 8px 20px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .detail-section {
-      margin: 16px 0 12px;
-    }
-
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 0.5px solid var(--border-light);
-    }
-
-    .success-anim {
-      text-align: center;
-      padding: 24px;
-    }
-
-    input[type=range] {
-      accent-color: var(--mate-green);
-    }
-
-    .pref-tag {
-      background: #def5ec;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-    }
-
-    .section-title {
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text-primary);
-    }
-
-    .custom-mate-marker {
-      background: transparent;
-      font-size: 26px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    }
+    body { background: #E8DDD0; font-family: 'Inter', 'DM Sans', system-ui; min-height: 100vh; width: 100%; }
+    .app { width: 100%; max-width: 100%; margin: 0 auto; background: var(--bg-primary); min-height: 100vh; display: flex; flex-direction: column; }
+    @media (min-width: 500px) { body { display: flex; align-items: center; justify-content: center; padding: 20px; background: #cfc3b4; } .app { max-width: 480px; border-radius: 36px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); min-height: auto; } }
+    .screen { display: none; flex-direction: column; flex: 1; animation: fadeSlide 0.2s ease; }
+    .screen.active { display: flex; }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .content { flex: 1; overflow-y: auto; padding: 20px 20px 24px; scrollbar-width: thin; }
+    .topbar { padding: 18px 20px 12px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--bg-primary); border-bottom: 1px solid var(--border-light); }
+    .back-btn { background: #FFFFFF; border: 1px solid var(--border-light); width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: all 0.2s; color: var(--text-primary); }
+    .back-btn i { font-size: 24px; }
+    .topbar-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
+    .brand-main { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #0F7B5E 0%, #1D9E75 100%); background-clip: text; -webkit-background-clip: text; color: transparent; }
+    .brand-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
+    .nav-tabs { display: flex; gap: 12px; padding: 8px 20px; border-bottom: 1px solid var(--border-light); }
+    .nav-tab { flex: 1; background: transparent; border: none; font-size: 15px; font-weight: 500; padding: 10px 0; border-radius: 40px; color: var(--text-secondary); cursor: pointer; }
+    .nav-tab.active { background: var(--mate-green); color: white; }
+    .mateada-card { background: var(--surface-card); border-radius: var(--radius-card); padding: 18px; margin-bottom: 16px; cursor: pointer; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); transition: 0.2s; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .card-topic { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .badge { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 40px; }
+    .badge-green { background: var(--mate-green-soft); color: var(--mate-green); }
+    .badge-amber { background: #FBEFE2; color: var(--mate-amber); }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+    .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-secondary); }
+    .host-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; border-top: 1px solid var(--border-light); padding-top: 14px; }
+    .avatar { width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; background: #e4f3ed; color: #0F7B5E; flex-shrink: 0; }
+    .btn-primary { background: var(--mate-green-bright); color: white; border: none; padding: 15px; border-radius: 60px; font-weight: 600; font-size: 16px; width: 100%; cursor: pointer; transition: 0.2s; }
+    .btn-secondary { background: white; border: 1px solid var(--border-light); padding: 14px; border-radius: 60px; font-weight: 500; width: 100%; cursor: pointer; }
+    .bottomnav { background: var(--surface-card); border-top: 1px solid var(--border-light); display: flex; padding: 8px 16px 12px; justify-content: space-around; }
+    .bnav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
+    .bnav-item i { font-size: 24px; }
+    .bnav-item.active { color: var(--mate-green); }
+    .map-container-detail { border-radius: 28px; overflow: hidden; margin: 16px 0; border: 1px solid var(--border-light); height: 220px; }
+    .gps-box { background: #FFF5E8; border-radius: 24px; padding: 14px; display: flex; gap: 12px; margin-bottom: 16px; border: 1px solid #e8dacb; }
+    .gps-dot { width: 10px; height: 10px; background: #1D9E75; border-radius: 12px; animation: pulse 1.6s infinite; margin-top: 5px; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.2)} }
+    .option-grid { display: flex; gap: 12px; }
+    .option-btn { flex: 1; padding: 12px; border-radius: 48px; border: 1px solid var(--border-light); background: white; font-weight: 500; cursor: pointer; }
+    .option-btn.selected { background: var(--mate-green-soft); border-color: var(--mate-green); color: var(--mate-green); }
+    .form-input, .form-select { background: white; border: 1px solid var(--border-light); border-radius: 24px; padding: 14px 18px; width: 100%; font-size: 15px; }
+    .slider-row { display: flex; align-items: center; gap: 14px; }
+    .notification-item { background: white; border-radius: 24px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border-light); }
+    .accept-reject { display: flex; gap: 12px; margin-top: 14px; }
+    .btn-accept { background: var(--mate-green); color: white; border: none; border-radius: 40px; padding: 8px 20px; font-weight: 600; cursor: pointer; }
+    .detail-section { margin: 16px 0 12px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border-light); }
+    .success-anim { text-align: center; padding: 24px; }
+    .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- SCREEN: HOME / EXPLORE -->
+  <!-- SCREEN: HOME -->
   <div class="screen active" id="screen-home">
     <div class="topbar">
-      <div class="brand-header">
-        <div class="brand-main">🧉 matear</div>
-        <div class="brand-sub">by Taragüi · Encuentros con mate</div>
-      </div>
-      <button class="back-btn" onclick="goScreen('screen-notifs')" style="position:relative">
-        <i class="ti ti-bell"></i>
-        <span style="position:absolute;top:-2px;right:-2px;width:9px;height:9px;background:#E25C4A;border-radius:50%;border:1px solid white"></span>
-      </button>
+      <div><div class="brand-main">🧉 matear</div><div class="brand-sub">by Taragüi · Encuentros con mate</div></div>
+      <button class="back-btn" onclick="goScreen('screen-notifs')"><i class="ti ti-bell"></i></button>
     </div>
     <div class="nav-tabs">
       <button class="nav-tab active">Mateadas</button>
       <button class="nav-tab" onclick="goScreen('screen-create')">+ Crear</button>
     </div>
-    <div class="content">
-      <div class="section-title" style="margin-bottom: 12px;">✨ Mateadas activas cerca</div>
-      <div class="mateada-card" onclick="goToDetail('emprendedurismo')">
-        <div class="card-header"><div class="card-topic">🌿 Emprendedurismo & Freelance</div><span class="badge badge-green">2 lugares</span></div>
-        <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> Parque Tres de Febrero</span><span class="meta-item"><i class="ti ti-clock"></i> 17:00 · 1.5 hs</span><span class="meta-item"><i class="ti ti-users"></i> 4/6</span></div>
-        <div class="host-row"><div class="avatar">LM</div><div><div class="host-name">Luli, 28</div><div class="host-tags">Emprendedora · mate amargo 🔥</div></div></div>
-      </div>
-      <div class="mateada-card" onclick="goToDetail('filosofia')">
-        <div class="card-header"><div class="card-topic">📖 Filosofía y vida cotidiana</div><span class="badge badge-amber">1 lugar</span></div>
-        <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> Parque Rivadavia</span><span class="meta-item"><i class="ti ti-clock"></i> 18:30 · 2 hs</span><span class="meta-item"><i class="ti ti-users"></i> 4/5</span></div>
-        <div class="host-row"><div class="avatar" style="background:#eae2f7; color:#5d4a9f;">MP</div><div><div class="host-name">Matías, 34</div><div class="host-tags">Mate dulce · charlas profundas</div></div></div>
-      </div>
-      <div class="mateada-card" onclick="goToDetail('tecnologia')">
-        <div class="card-header"><div class="card-topic">🤖 Tecnología e IA · networking</div><span class="badge badge-green">4 lugares</span></div>
-        <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> Parque Centenario</span><span class="meta-item"><i class="ti ti-clock"></i> 19:00 · 1 hs</span><span class="meta-item"><i class="ti ti-users"></i> 2/6</span></div>
-        <div class="host-row"><div class="avatar" style="background:#ddeef9;color:#136b9c;">SR</div><div><div class="host-name">Sofía, 26</div><div class="host-tags">Dev · apasionada por el mate</div></div></div>
-      </div>
-      <div class="mateada-card" onclick="goToDetail('lasheras')">
-        <div class="card-header"><div class="card-topic">🌳 Mates & Cuentos · Parque Las Heras</div><span class="badge badge-green">5 lugares</span></div>
-        <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> Parque Las Heras (Palermo)</span><span class="meta-item"><i class="ti ti-clock"></i> 16:30 · 2 hs</span><span class="meta-item"><i class="ti ti-users"></i> 3/8</span></div>
-        <div class="host-row"><div class="avatar" style="background:#fce7d9;">JV</div><div><div class="host-name">Juan, 31</div><div class="host-tags">Narrador · mate cebado con ronda</div></div></div>
-      </div>
+    <div class="content" id="homeContent">
+      <div class="loading">Cargando mateadas... 🧉</div>
     </div>
     <div class="bottomnav">
       <button class="bnav-item active"><i class="ti ti-home"></i><span>Inicio</span></button>
@@ -525,207 +98,242 @@
     </div>
   </div>
 
-  <!-- SCREEN: Detail (con mapa interactivo) -->
+  <!-- SCREEN: Detail -->
   <div class="screen" id="screen-detail">
-    <div class="topbar">
-      <button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button>
-      <div class="topbar-title">Detalle mateada</div>
-      <div style="width:44px;"></div>
-    </div>
+    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Detalle mateada</div><div style="width:44px;"></div></div>
     <div class="content" id="detailContent"></div>
   </div>
 
-  <!-- SCREEN: Join Request -->
+  <!-- SCREEN: Join -->
   <div class="screen" id="screen-join">
-    <div class="topbar">
-      <button class="back-btn" onclick="historyBack()"><i class="ti ti-arrow-left"></i></button>
-      <div class="topbar-title">Sumarse</div>
-      <div style="width:44px;"></div>
-    </div>
+    <div class="topbar"><button class="back-btn" onclick="historyBack()"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Sumarse</div><div style="width:44px;"></div></div>
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Estás cerca del parque</div><div class="gps-text">Compartí tu tiempo estimado</div></div></div>
       <div class="form-group"><label>⏱️ ¿En cuántos minutos llegás caminando?</label><div class="slider-row"><input type="range" id="arrivalRange" min="3" max="40" value="12" step="1"><span id="arrivalValue" style="font-weight:700;color:var(--mate-green);">12 min</span></div></div>
-      <div style="background:#f7f2ea; border-radius:28px; padding:18px; margin:12px 0 24px;"><div style="font-weight:600;">Tu perfil público</div><div>Camila · 25 años · Mujer · 💼 Diseñadora</div><div style="font-size:13px;">⭐ 4.9 en puntualidad</div></div>
+      <div style="background:#f7f2ea; border-radius:28px; padding:18px; margin:12px 0 24px;"><div style="font-weight:600;">Tu perfil público</div><div>Camila · 25 años · Mujer · 💼 Diseñadora</div></div>
       <button class="btn-primary" onclick="sendJoinRequest()">Enviar solicitud 🧉</button>
     </div>
   </div>
 
   <div class="screen" id="screen-sent">
-    <div class="topbar">
-      <button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button>
-      <div class="topbar-title">Solicitud enviada</div>
-      <div style="width:44px;"></div>
-    </div>
-    <div class="content" style="display:flex; flex-direction:column; justify-content:center; min-height:500px;">
-      <div class="success-anim"><div class="success-icon" style="font-size:68px;">🧉✨</div><div class="success-title" style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div>
-      <button class="btn-secondary" onclick="goScreen('screen-home')">Volver al inicio</button>
-    </div>
+    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Solicitud enviada</div><div style="width:44px;"></div></div>
+    <div class="content"><div class="success-anim"><div style="font-size:68px;">🧉✨</div><div style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div><button class="btn-secondary" onclick="goScreen('screen-home')">Volver al inicio</button></div>
   </div>
 
-  <!-- SCREEN: Notificaciones -->
   <div class="screen" id="screen-notifs">
-    <div class="topbar">
-      <button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button>
-      <div class="topbar-title">Avisos</div>
-      <div style="width:44px;"></div>
-    </div>
-    <div class="content"><div class="notification-item" id="notifRequestItem"><div class="avatar">CP</div><div><div class="notif-title">Camila quiere sumarse</div><div class="notif-sub">A tu mateada de Emprendedurismo</div><div class="accept-reject"><button class="btn-accept" onclick="acceptJoinRequest()">Aceptar</button><button class="btn-secondary" style="padding:8px 16px;">Rechazar</button></div></div></div><div class="notification-item"><div class="avatar">JR</div><div><div class="notif-title">Juan se sumó a Filosofía</div><div class="notif-sub">Confirmado · hace 2 hs</div></div></div></div>
+    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Avisos</div><div style="width:44px;"></div></div>
+    <div class="content"><div class="notification-item" id="notifRequestItem"><div class="avatar">CP</div><div><div class="notif-title">Camila quiere sumarse</div><div class="notif-sub">A tu mateada</div><div class="accept-reject"><button class="btn-accept" onclick="acceptJoinRequest()">Aceptar</button><button class="btn-secondary" style="padding:8px 16px;">Rechazar</button></div></div></div></div>
   </div>
 
-  <!-- SCREEN: Crear mateada -->
   <div class="screen" id="screen-create">
-    <div class="topbar">
-      <button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button>
-      <div class="topbar-title">Nueva mateada</div>
-      <div style="width:44px;"></div>
+    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Nueva mateada</div><div style="width:44px;"></div></div>
+    <div class="content">
+      <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
+      <div class="form-group"><label>Tema</label><input class="form-input" id="eventTopic" placeholder="Ej: Mates y charlas"></div>
+      <div class="form-group"><label>Ubicación</label><input class="form-input" id="eventLocation" placeholder="Parque, plaza, etc"></div>
+      <div class="form-group"><label>Mate</label><div class="option-grid"><button class="option-btn" onclick="toggleOpt(this)">Amargo</button><button class="option-btn selected">Dulce</button></div></div>
+      <div class="form-group"><label>Máx participantes</label><input type="range" min="2" max="10" value="6" id="maxPeopleSlider"><span id="maxPeopleVal">6</span></div>
+      <button class="btn-primary" onclick="createMateada()">Publicar mateada</button>
     </div>
-    <div class="content"><div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div><div class="form-group"><label>Tema</label><input class="form-input" id="eventTopic" placeholder="Ej: Mates y charlas"></div><div class="form-group"><label>Mate</label><div class="option-grid"><button class="option-btn" onclick="toggleOpt(this)">Amargo</button><button class="option-btn selected">Dulce</button></div></div><div class="form-group"><label>Agua</label><div class="option-grid"><button class="option-btn selected">Muy caliente</button><button class="option-btn">Caliente</button></div></div><div class="form-group"><label>Máx participantes</label><input type="range" min="2" max="10" value="6" id="maxPeopleSlider"><span id="maxPeopleVal">6</span></div><button class="btn-primary" onclick="createMateada()">Publicar mateada</button></div>
   </div>
 
-  <!-- SCREEN: Perfil -->
   <div class="screen" id="screen-profile">
-    <div class="topbar">
-      <button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button>
-      <div class="topbar-title">Mi perfil</div>
-      <div style="width:44px;"></div>
-    </div>
-    <div class="content"><div style="display:flex; gap:16px;"><div class="avatar" style="width:70px;height:70px;font-size:28px;">CP</div><div><div style="font-size:20px;font-weight:700;">Camila P.</div><div>25 · Mujer · CABA</div></div></div><div style="margin:20px 0;"><div>🍃 Preferencias: Mate amargo, agua muy caliente</div></div><div style="display:flex; gap:12px;"><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;">7</div><div>mateadas</div></div><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;">3</div><div>organizadas</div></div></div><button class="btn-secondary" style="margin-top:24px;">Editar perfil</button></div>
+    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Mi perfil</div><div style="width:44px;"></div></div>
+    <div class="content"><div style="display:flex; gap:16px;"><div class="avatar" style="width:70px;height:70px;font-size:28px;">CP</div><div><div style="font-size:20px;font-weight:700;">Camila P.</div><div>25 · Mujer · CABA</div></div></div><div style="margin:20px 0;"><div>🍃 Preferencias: Mate amargo, agua muy caliente</div></div><div style="display:flex; gap:12px;"><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsMateadas">0</div><div>mateadas</div></div><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsOrganizadas">0</div><div>organizadas</div></div></div><button class="btn-secondary">Editar perfil</button></div>
   </div>
 </div>
 
 <script>
-  // Datos de mateadas con coordenadas (Parques de CABA)
-  const mateadasData = [
-    { id: "emprendedurismo", title: "🌿 Emprendedurismo & Freelance", location: "Parque Tres de Febrero", lat: -34.5735, lng: -58.4215, spotsLeft: 2, total: 6, status: "green", host: "Luli, 28", desc: "Charlas de negocios y ronda de mates amargos. Agua muy caliente.", duration: "1.5 hs", time: "17:00", tags: "Networking · Café opcional" },
-    { id: "filosofia", title: "📖 Filosofía y vida cotidiana", location: "Parque Rivadavia", lat: -34.6170, lng: -58.4430, spotsLeft: 1, total: 5, status: "amber", host: "Matías, 34", desc: "Debate filosófico + mate dulce. Traé tu termo.", duration: "2 hs", time: "18:30", tags: "Debate · mente abierta" },
-    { id: "tecnologia", title: "🤖 Tecnología e IA", location: "Parque Centenario", lat: -34.6055, lng: -58.4345, spotsLeft: 4, total: 6, status: "green", host: "Sofía, 26", desc: "Networking tech, se comparten proyectos y mates calientes.", duration: "1.5 hs", time: "19:00", tags: "Devs · café con mates" },
-    { id: "lasheras", title: "🌳 Mates & Cuentos · Parque Las Heras", location: "Parque Las Heras", lat: -34.5842, lng: -58.4073, spotsLeft: 5, total: 8, status: "green", host: "Juan, 31", desc: "Círculo de cuentos, historias y ronda de mate compartido.", duration: "2 hs", time: "16:30", tags: "Literatura · música suave" }
-  ];
-
-  let currentMap = null;
-  let activeMateadaId = null;
-
-  function showDetailScreen(mateada) {
-    const detailDiv = document.getElementById('detailContent');
-    detailDiv.innerHTML = `
-      <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.title}</div><div class="card-meta" style="margin-top:8px"><span class="badge ${mateada.spotsLeft <= 1 ? 'badge-amber' : 'badge-green'}">${mateada.spotsLeft} lugares libres</span><span class="badge badge-gray">${mateada.time} · ${mateada.duration}</span></div></div>
-      <div id="detailMap" class="map-container-detail"></div>
-      <div class="gps-box" style="margin-top:4px;"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.location}</div><div class="gps-text">Punto de encuentro exacto en el parque</div></div></div>
-      <div class="detail-section"><div class="section-title">📋 Sobre la mateada</div><div class="detail-row"><span>Duración</span><strong>${mateada.duration}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.total - mateada.spotsLeft} de ${mateada.total}</strong></div><div class="detail-row"><span>Agua</span><strong>Muy caliente 🔥</strong></div><div class="detail-row"><span>Mate</span><strong>${mateada.title.includes("Dulce") ? "Dulce" : "Amargo"}</strong></div><div class="detail-row"><span>Descripción</span><strong>${mateada.desc}</strong></div></div>
-      <div class="host-row" style="border:none; padding:8px 0 16px;"><div class="avatar">${mateada.host.charAt(0)}</div><div><div class="host-name">${mateada.host}</div><div class="host-tags">${mateada.tags}</div><div class="mate-pref" style="display:flex; gap:8px; margin-top:8px;"><span class="pref-tag">Mate tradicional</span><span class="pref-tag">Puntualidad ★</span></div></div></div>
-      <button class="btn-primary" onclick="goScreen('screen-join')">🧉 Quiero sumarme</button>
-    `;
-    goScreen('screen-detail');
-    setTimeout(() => {
-      const mapContainer = document.getElementById('detailMap');
-      if (mapContainer) {
-        if (currentMap) currentMap.remove();
-        currentMap = L.map('detailMap').setView([mateada.lat, mateada.lng], 16);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM & CartoDB', subdomains: 'abcd' }).addTo(currentMap);
-        const mateIcon = L.divIcon({ html: '🧉', iconSize: [28,28], className: 'custom-mate-marker' });
-        L.marker([mateada.lat, mateada.lng], { icon: mateIcon }).addTo(currentMap).bindPopup(`<strong>${mateada.title}</strong><br>${mateada.location}`).openPopup();
-        L.circle([mateada.lat, mateada.lng], { color: '#1D9E75', fillColor: '#b5e0cf', fillOpacity: 0.2, radius: 50 }).addTo(currentMap);
-      }
-    }, 80);
-  }
-
-  function goToDetail(id) { const mateada = mateadasData.find(m => m.id === id); if (mateada) { activeMateadaId = id; showDetailScreen(mateada); } else goScreen('screen-home'); }
-  function goScreen(id) { if (id !== 'screen-detail' && currentMap) { currentMap.remove(); currentMap = null; } document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); const activeContent = document.querySelector('.screen.active .content'); if (activeContent) activeContent.scrollTop = 0; }
-  function historyBack() { const current = document.querySelector('.screen.active').id; if (current === 'screen-join' || current === 'screen-sent') { if (activeMateadaId) goToDetail(activeMateadaId); else goScreen('screen-home'); } else { goScreen('screen-home'); } }
-  function toggleOpt(btn) { const parent = btn.parentElement; if(parent && parent.classList.contains('option-grid')) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); } }
-  const arrivalSlider = document.getElementById('arrivalRange'); if(arrivalSlider) arrivalSlider.addEventListener('input', function() { document.getElementById('arrivalValue').innerText = this.value + ' min'; });
-  function sendJoinRequest() { let mins = arrivalSlider ? arrivalSlider.value : 12; const span = document.getElementById('showArrivalMins'); if(span) span.innerText = mins + ' minutos'; goScreen('screen-sent'); }
-  function acceptJoinRequest() { const notifDiv = document.getElementById('notifRequestItem'); if(notifDiv) notifDiv.innerHTML = `<div class="avatar">✓</div><div><div class="notif-title">Camila confirmada ✅</div><div class="notif-sub">Se suma a tu mateada · llega en 12 min</div></div>`; }
-  function createMateada() { alert("🌿 ¡Mateada publicada! Los vecinos la verán en el inicio."); goScreen('screen-home'); }
-  window.goScreen = goScreen; window.goToDetail = goToDetail; window.toggleOpt = toggleOpt; window.sendJoinRequest = sendJoinRequest; window.acceptJoinRequest = acceptJoinRequest; window.createMateada = createMateada; window.historyBack = historyBack;
-
 // ==================== CONFIGURACIÓN ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/TU_SCRIPT_ID/exec'; // Reemplazar con URL de Apps Script
+// 🔴 REEMPLAZÁ ESTA URL CON LA DE TU APPS SCRIPT PUBLICADO 🔴
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec';
 
-// ==================== FUNCIONES DE CONEXIÓN ====================
+let currentMap = null;
+let currentMateada = null;
 
+// ==================== LLAMADAS A LA API ====================
 async function obtenerMateadas() {
   try {
     const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
     const data = await response.json();
-    return data.mateadas || [];
+    return data.success ? data.mateadas : [];
   } catch (error) {
-    console.error('Error al obtener mateadas:', error);
+    console.error('Error:', error);
     return [];
   }
 }
 
-async function crearMateadaEnSheet(mateadaData) {
+async function crearMateadaEnSheet(mateada) {
   try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec", {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        accion: 'crearMateada',
-        ...mateadaData
-      })
-    });
-    return { success: true };
-  } catch (error) {
-    console.error('Error al crear mateada:', error);
-    return { success: false };
-  }
-}
-
-async function enviarSolicitudAceptacion(solicitudData) {
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec", {
+    const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        accion: 'enviarSolicitud',
-        ...solicitudData
-      })
+      body: JSON.stringify(mateada)
     });
     return await response.json();
   } catch (error) {
-    console.error('Error al enviar solicitud:', error);
+    console.error('Error:', error);
     return { success: false };
   }
 }
 
-// ==================== INTEGRAR CON LA APP EXISTENTE ====================
-
-// Modificar la función que carga mateadas
-async function cargarMateadasDesdeSheet() {
-  const mateadas = await obtenerMateadas();
-  // Actualizar la UI con las mateadas obtenidas
-  renderMateadas(mateadas);
-}
-
-// Modificar la función de crear mateada
-async function publicarMateada(eventData) {
-  const resultado = await crearMateadaEnSheet({
-    titulo: eventData.titulo,
-    ubicacion: eventData.ubicacion,
-    latitud: eventData.latitud,
-    longitud: eventData.longitud,
-    lugares_totales: eventData.maxParticipantes,
-    organizador: 'Camila P.',
-    descripcion: eventData.descripcion,
-    duracion: eventData.duracion,
-    hora: eventData.hora,
-    tags: eventData.tags
-  });
-  
-  if (resultado.success) {
-    alert('¡Mateada publicada exitosamente!');
-    cargarMateadasDesdeSheet(); // Recargar lista
-  } else {
-    alert('Error al publicar. Intenta nuevamente.');
+async function enviarSolicitudAlSheet(solicitud) {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(solicitud)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error:', error);
+    return { success: false };
   }
 }
 
-// Llamar a cargarMateadasDesdeSheet() cuando inicia la app
-document.addEventListener('DOMContentLoaded', () => {
-  cargarMateadasDesdeSheet();
-});
+// ==================== RENDERIZADO ====================
+async function cargarMateadas() {
+  const container = document.getElementById('homeContent');
+  container.innerHTML = '<div class="loading">Cargando mateadas... 🧉</div>';
+  
+  const mateadas = await obtenerMateadas();
+  
+  if (!mateadas.length) {
+    container.innerHTML = '<div class="empty-state">✨ No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+    return;
+  }
+  
+  container.innerHTML = `<div class="section-title" style="margin-bottom:12px;">✨ ${mateadas.length} mateadas activas</div>`;
+  
+  mateadas.forEach(m => {
+    const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
+    const badgeText = m.lugares_libres <= 1 ? `${m.lugares_libres} lugar` : `${m.lugares_libres} lugares`;
+    
+    const card = document.createElement('div');
+    card.className = 'mateada-card';
+    card.onclick = () => goToDetail(m);
+    card.innerHTML = `
+      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">${badgeText}</span></div>
+      <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> ${m.ubicacion}</span><span class="meta-item"><i class="ti ti-clock"></i> ${m.hora} · ${m.duracion}</span><span class="meta-item"><i class="ti ti-users"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
+      <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function goToDetail(mateada) {
+  currentMateada = mateada;
+  const detailDiv = document.getElementById('detailContent');
+  const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
+  
+  detailDiv.innerHTML = `
+    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares libres</span><span class="badge badge-gray">${mateada.hora} · ${mateada.duracion}</span></div></div>
+    <div id="detailMap" class="map-container-detail"></div>
+    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro en el parque</div></div></div>
+    <div class="detail-section"><div class="section-title">📋 Sobre la mateada</div><div class="detail-row"><span>Descripción</span><strong>${mateada.descripcion || 'Compartir mates y buenas charlas'}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres} de ${mateada.lugares_totales}</strong></div></div>
+    <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">Anfitrión · ${mateada.tags || 'buena onda'}</div></div></div>
+    <button class="btn-primary" onclick="goScreen('screen-join')">🧉 Quiero sumarme</button>
+  `;
+  
+  goScreen('screen-detail');
+  
+  setTimeout(() => {
+    const mapContainer = document.getElementById('detailMap');
+    if (mapContainer && mateada.latitud && mateada.longitud) {
+      if (currentMap) currentMap.remove();
+      currentMap = L.map('detailMap').setView([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], 16);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(currentMap);
+      const icon = L.divIcon({ html: '🧉', iconSize: [28,28], className: 'custom-mate-marker' });
+      L.marker([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], { icon }).addTo(currentMap).bindPopup(mateada.titulo);
+    }
+  }, 80);
+}
+
+// ==================== ACCIONES ====================
+async function createMateada() {
+  const titulo = document.getElementById('eventTopic')?.value;
+  const ubicacion = document.getElementById('eventLocation')?.value;
+  const maxPersonas = document.getElementById('maxPeopleSlider')?.value;
+  
+  if (!titulo || !ubicacion) {
+    alert('Completá tema y ubicación');
+    return;
+  }
+  
+  const nuevaMateada = {
+    accion: 'crearMateada',
+    titulo: titulo,
+    ubicacion: ubicacion,
+    latitud: -34.5842,
+    longitud: -58.4073,
+    lugares_totales: parseInt(maxPersonas),
+    organizador: 'Camila P.',
+    organizador_avatar: 'CP',
+    descripcion: 'Mateada organizada desde la app',
+    duracion: '1.5 hs',
+    hora: '18:00',
+    tags: 'mates,amigos'
+  };
+  
+  const resultado = await crearMateadaEnSheet(nuevaMateada);
+  if (resultado.success) {
+    alert('¡Mateada publicada! 🧉');
+    goScreen('screen-home');
+    cargarMateadas();
+  } else {
+    alert('Error al publicar. Intenta de nuevo.');
+  }
+}
+
+async function sendJoinRequest() {
+  if (!currentMateada) return;
+  
+  const minutos = document.getElementById('arrivalRange')?.value || 12;
+  const solicitud = {
+    accion: 'enviarSolicitud',
+    mateada_id: currentMateada.id,
+    usuario_nombre: 'Camila P.',
+    usuario_edad: '25',
+    usuario_avatar: 'CP',
+    tiempo_llegada: minutos + ' min'
+  };
+  
+  const resultado = await enviarSolicitudAlSheet(solicitud);
+  if (resultado.success) {
+    document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
+    goScreen('screen-sent');
+  } else {
+    alert('No se pudo enviar la solicitud. Tal vez ya no hay lugares.');
+  }
+}
+
+function acceptJoinRequest() {
+  const notifDiv = document.getElementById('notifRequestItem');
+  if(notifDiv) notifDiv.innerHTML = `<div class="avatar">✓</div><div><div class="notif-title">Camila confirmada ✅</div><div class="notif-sub">Se suma a tu mateada</div></div>`;
+}
+
+function goScreen(id) {
+  if (id !== 'screen-detail' && currentMap) { currentMap.remove(); currentMap = null; }
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function historyBack() { goScreen('screen-home'); }
+function toggleOpt(btn) { const parent = btn.parentElement; if(parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); } }
+
+// Inicializar
+const arrivalSlider = document.getElementById('arrivalRange');
+if(arrivalSlider) arrivalSlider.addEventListener('input', function() { document.getElementById('arrivalValue').innerText = this.value + ' min'; });
+
+cargarMateadas();
+
+window.goScreen = goScreen;
+window.createMateada = createMateada;
+window.sendJoinRequest = sendJoinRequest;
+window.acceptJoinRequest = acceptJoinRequest;
+window.toggleOpt = toggleOpt;
+window.goToDetail = goToDetail;
+window.historyBack = historyBack;
 </script>
 </body>
 </html>
