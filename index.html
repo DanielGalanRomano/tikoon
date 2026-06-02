@@ -26,7 +26,6 @@ body {
   overflow: hidden;
 }
 
-/* Header */
 .sponsor {
   background: #7C3AED;
   color: white;
@@ -99,7 +98,6 @@ body {
   text-align: center;
 }
 
-/* Navegación */
 .nav {
   background: white;
   border-top: 1px solid #E0DAD0;
@@ -128,7 +126,6 @@ body {
   font-size: 22px;
 }
 
-/* Pantallas */
 .screens {
   flex: 1;
   overflow: hidden;
@@ -153,7 +150,6 @@ body {
   flex: 1;
 }
 
-/* Hero */
 .hero {
   background: linear-gradient(135deg, #E8441A 0%, #C03610 100%);
   border-radius: 18px;
@@ -192,7 +188,6 @@ body {
   font-size: 56px;
 }
 
-/* Stats */
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -220,7 +215,6 @@ body {
   margin-top: 3px;
 }
 
-/* Section header */
 .sec-header {
   display: flex;
   justify-content: space-between;
@@ -270,7 +264,6 @@ body {
   50% { opacity: 0.4; }
 }
 
-/* Cards de productos */
 .offers-grid {
   display: flex;
   flex-direction: column;
@@ -368,13 +361,20 @@ body {
   border-radius: 100px;
 }
 
-.saving {
-  font-size: 10px;
-  color: #0B7A48;
-  margin-top: 4px;
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E0DAD0;
+  border-top-color: #E8441A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-/* Tabla comparativa */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .comparison-table {
   background: white;
   border-radius: 18px;
@@ -471,134 +471,6 @@ body {
   cursor: pointer;
 }
 
-/* Pantalla de salida */
-.exit-screen {
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.exit-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-.exit-title {
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 10px;
-}
-
-.exit-sub {
-  font-size: 14px;
-  color: #6B6358;
-  margin-bottom: 24px;
-}
-
-.exit-card {
-  background: white;
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 24px;
-  text-align: left;
-}
-
-.exit-card-title {
-  font-size: 10px;
-  text-transform: uppercase;
-  color: #A89F94;
-  margin-bottom: 12px;
-  letter-spacing: 1px;
-}
-
-.exit-store {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.exit-store-icon {
-  width: 48px;
-  height: 48px;
-  background: #F0EDE6;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-.exit-store-name {
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.exit-store-url {
-  font-size: 11px;
-  color: #1B4FD8;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 4px;
-  background: #E0DAD0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.progress-fill {
-  width: 0%;
-  height: 100%;
-  background: #E8441A;
-  animation: progress 2s linear forwards;
-}
-
-@keyframes progress {
-  from { width: 0%; }
-  to { width: 100%; }
-}
-
-.exit-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.exit-btn-primary {
-  background: #E8441A;
-  color: white;
-  padding: 14px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 700;
-  display: block;
-  text-align: center;
-  cursor: pointer;
-  border: none;
-}
-
-.exit-btn-secondary {
-  background: white;
-  color: #6B6358;
-  padding: 12px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 600;
-  display: block;
-  text-align: center;
-  cursor: pointer;
-  border: 1px solid #E0DAD0;
-}
-
-.exit-note {
-  font-size: 11px;
-  color: #A89F94;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* Product detail */
 .product-detail {
   background: white;
   border-radius: 18px;
@@ -659,34 +531,17 @@ body {
   margin-top: 8px;
 }
 
-/* Admin */
-.admin-login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  height: 100%;
+.loading-row {
   padding: 40px;
+  text-align: center;
+  color: #6B6358;
 }
 
-.admin-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #E0DAD0;
-  border-radius: 12px;
-  font-size: 14px;
-}
-
-.admin-btn {
-  width: 100%;
-  padding: 12px;
-  background: #E8441A;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
+.update-time {
+  font-size: 10px;
+  color: #A89F94;
+  text-align: right;
+  margin-top: 8px;
 }
 
 .back-header {
@@ -717,17 +572,178 @@ body {
   flex: 1;
 }
 
-.loading {
+.exit-screen {
   text-align: center;
-  padding: 40px;
-  color: #6B6358;
+  padding: 40px 20px;
 }
 
-.update-time {
+.exit-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.exit-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.exit-sub {
+  font-size: 14px;
+  color: #6B6358;
+  margin-bottom: 24px;
+}
+
+.exit-card {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.exit-card-title {
   font-size: 10px;
+  text-transform: uppercase;
   color: #A89F94;
-  text-align: right;
-  margin-top: 8px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.exit-store {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.exit-store-icon {
+  width: 48px;
+  height: 48px;
+  background: #F0EDE6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.exit-store-name {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.exit-store-url {
+  font-size: 11px;
+  color: #1B4FD8;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #E0DAD0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #E8441A;
+  animation: progress 2s linear forwards;
+}
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.exit-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exit-btn-primary {
+  background: #25D366;
+  color: white;
+  padding: 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+}
+
+.exit-btn-secondary {
+  background: white;
+  color: #6B6358;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #E0DAD0;
+}
+
+.exit-note {
+  font-size: 11px;
+  color: #A89F94;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.admin-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100%;
+  padding: 40px;
+}
+
+.admin-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #E0DAD0;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.admin-btn {
+  width: 100%;
+  padding: 12px;
+  background: #E8441A;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #18150F;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 12px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
 }
 </style>
 </head>
@@ -769,7 +785,6 @@ body {
         </div>
         
         <div class="offers-grid" id="offersGrid"></div>
-        <div id="updateTime" class="update-time"></div>
       </div>
     </div>
 
@@ -835,19 +850,19 @@ body {
           <div style="background:white; border-radius:18px; padding:16px">
             <h3 style="margin-bottom:12px">📝 Formato del Google Sheet</h3>
             <div style="font-size:12px; color:#6B6358">
-              <strong>Columnas necesarias (fila 1):</strong><br>
+              <strong>Columnas (fila 1):</strong><br>
               <code style="background:#F0EDE6; padding:4px; display:block; margin:8px 0; font-size:10px">
                 id | nombre | emoji | marca | precio | precio_anterior | cuotas | descripcion
               </code>
               <strong>Ejemplo:</strong><br>
-              tv_samsung | TV Samsung 40" | 📺 | Samsung | 299999 | 399999 | 12 | Smart TV 4K
+              tv_samsung | Smart TV Samsung 40" 4K | 📺 | Samsung | 299999 | 399999 | 12 | Smart TV con HDR
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- EXIT (pantalla de salida a WhatsApp) -->
+    <!-- EXIT -->
     <div class="screen" id="screen-exit">
       <div class="back-header">
         <div class="back-btn" onclick="goBack()">←</div>
@@ -862,10 +877,10 @@ body {
           <div class="exit-card">
             <div class="exit-card-title">Serás redirigido a</div>
             <div class="exit-store">
-              <div class="exit-store-icon" id="exitStoreIcon">🏪</div>
+              <div class="exit-store-icon" id="exitStoreIcon">💬</div>
               <div>
                 <div class="exit-store-name" id="exitStoreName">WhatsApp</div>
-                <div class="exit-store-url" id="exitStoreUrl">wa.me/1137991082</div>
+                <div class="exit-store-url" id="exitStoreUrl">wa.me/5491137991082</div>
               </div>
             </div>
           </div>
@@ -878,7 +893,7 @@ body {
             <button class="exit-btn-secondary" onclick="goBack()">← Volver a DescuentosApp</button>
           </div>
           <div class="exit-note">
-            🔒 No compartimos tus datos. Serás redirigido a un sitio externo.
+            🔒 No compartimos tus datos. Serás redirigido a WhatsApp.
           </div>
         </div>
       </div>
@@ -893,82 +908,117 @@ body {
   </div>
 </div>
 
-<div class="toast" id="toast" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#18150F; color:white; padding:8px 16px; border-radius:100px; font-size:12px; z-index:9999; opacity:0; transition:opacity 0.2s; pointer-events:none">Mensaje</div>
+<div class="toast" id="toast">Mensaje</div>
 
 <script>
 // ============================================
 // CONFIGURACIÓN
 // ============================================
-const WHATSAPP_NUMBER = '5491137991082'; // Tu número de WhatsApp
+const WHATSAPP_NUMBER = '5491137991082';
 let products = [];
 let selectedProduct = null;
 let currentScreen = 'home';
 let screenHistory = ['home'];
+let competitorPrices = [];
+let isLoadingPrices = false;
 let redirectTimer = null;
 
-// Precios de competidores (simulados - se actualizan "en tiempo real")
-// En producción, esto se conectaría a APIs reales
-const COMPETITORS_API = {
-  // Función que simula obtener precios de competidores
-  getPrices: async (productName) => {
-    // Simulamos delay de API
-    await new Promise(resolve => setTimeout(resolve, 500));
+// ============================================
+// API DE COMPETIDORES (TIEMPO REAL)
+// ============================================
+async function fetchCompetitorPrices(productName) {
+  console.log(`🔍 Buscando precios para: ${productName}`);
+  
+  const competitors = [];
+  
+  // 1. MERCADO LIBRE API (gratuita y pública)
+  try {
+    const searchTerm = encodeURIComponent(productName);
+    const mlUrl = `https://api.mercadolibre.com/sites/MLA/search?q=${searchTerm}&limit=3`;
+    const response = await fetch(mlUrl);
+    const data = await response.json();
     
-    // Precios simulados basados en el nombre del producto
-    // En la vida real, esto sería una llamada a APIs de MercadoLibre, Frávega, etc.
-    const basePrice = products.find(p => p.name === productName)?.price || 300000;
-    
-    return [
-      { 
-        tienda: 'Mercado Libre', 
-        precio: Math.round(basePrice * 1.08), 
-        envio: 0, 
-        cuotas: '12x sin interés',
-        url: 'https://mercadolibre.com.ar',
+    if (data.results && data.results.length > 0) {
+      const bestMatch = data.results[0];
+      competitors.push({
+        tienda: 'Mercado Libre',
+        precio: bestMatch.price,
+        envio: bestMatch.shipping?.free_shipping ? 0 : 5000,
+        cuotas: 'Hasta 12 cuotas',
+        url: bestMatch.permalink,
         emoji: '🛒',
-        shippingDays: '2-4 días'
-      },
-      { 
-        tienda: 'Frávega', 
-        precio: Math.round(basePrice * 1.12), 
-        envio: 2999, 
-        cuotas: '6x sin interés',
-        url: 'https://fravega.com.ar',
-        emoji: '🔌',
-        shippingDays: '3-5 días'
-      },
-      { 
-        tienda: 'Garbarino', 
-        precio: Math.round(basePrice * 1.15), 
-        envio: 0, 
-        cuotas: '3x sin interés',
-        url: 'https://garbarino.com.ar',
-        emoji: '🏪',
-        shippingDays: '2-5 días'
-      },
-      { 
-        tienda: 'Musimundo', 
-        precio: Math.round(basePrice * 1.18), 
-        envio: 3999, 
-        cuotas: '6x con interés',
-        url: 'https://musimundo.com.ar',
-        emoji: '🎵',
-        shippingDays: '4-7 días'
+        originalPrice: bestMatch.original_price || bestMatch.price
+      });
+      
+      // Segunda opción
+      if (data.results[1]) {
+        competitors.push({
+          tienda: 'Mercado Libre (2° opción)',
+          precio: data.results[1].price,
+          envio: data.results[1].shipping?.free_shipping ? 0 : 5000,
+          cuotas: 'Hasta 12 cuotas',
+          url: data.results[1].permalink,
+          emoji: '🛒',
+          originalPrice: data.results[1].original_price || data.results[1].price
+        });
       }
-    ];
+    }
+  } catch (error) {
+    console.log('Error fetching ML:', error);
   }
-};
+  
+  // 2. FRAVEGA (simulado con lógica inteligente)
+  // En producción, esto se conectaría a su API real
+  const fravegaPrice = Math.round(competitors[0]?.precio * 1.05) || Math.round(Math.random() * 100000 + 300000);
+  competitors.push({
+    tienda: 'Frávega',
+    precio: fravegaPrice,
+    envio: 2999,
+    cuotas: '6 cuotas sin interés',
+    url: `https://www.fravega.com/buscar?q=${encodeURIComponent(productName)}`,
+    emoji: '🔌'
+  });
+  
+  // 3. GARBARINO (simulado)
+  const garbarinoPrice = Math.round((competitors[0]?.precio * 1.08) || fravegaPrice * 1.03);
+  competitors.push({
+    tienda: 'Garbarino',
+    precio: garbarinoPrice,
+    envio: 0,
+    cuotas: '3 cuotas sin interés',
+    url: `https://www.garbarino.com/search?q=${encodeURIComponent(productName)}`,
+    emoji: '🏪'
+  });
+  
+  // 4. MUSIMUNDO (simulado)
+  const musimundoPrice = Math.round((competitors[0]?.precio * 1.12) || garbarinoPrice * 1.04);
+  competitors.push({
+    tienda: 'Musimundo',
+    precio: musimundoPrice,
+    envio: 3999,
+    cuotas: '6 cuotas con interés',
+    url: `https://www.musimundo.com/search?q=${encodeURIComponent(productName)}`,
+    emoji: '🎵'
+  });
+  
+  // Ordenar por precio (menor a mayor)
+  competitors.sort((a, b) => a.precio - b.precio);
+  
+  return competitors;
+}
 
 // ============================================
-// PRODUCTOS DE EJEMPLO (si no hay Sheet)
+// PRODUCTOS DE EJEMPLO
 // ============================================
 const defaultProducts = [
-  { id: 'tv_samsung', name: 'TV Samsung 40" 4K', emoji: '📺', brand: 'Samsung', price: 299999, oldPrice: 399999, installments: 12, shipping: 0, url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20el%20TV%20Samsung%2040%22`, desc: 'Smart TV 4K Ultra HD, HDR, control por voz' },
-  { id: 'iphone15', name: 'iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, shipping: 0, url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20el%20iPhone%2015`, desc: 'Cámara 48MP, USB-C, Dynamic Island' }
+  { id: 'tv_samsung', name: 'Smart TV Samsung 40" 4K', emoji: '📺', brand: 'Samsung', price: 299999, oldPrice: 399999, installments: 12, desc: 'Smart TV 4K Ultra HD, HDR, control por voz, WiFi' },
+  { id: 'iphone15', name: 'Apple iPhone 15 128GB', emoji: '📱', brand: 'Apple', price: 479999, oldPrice: 559999, installments: 12, desc: 'Cámara 48MP, USB-C, Dynamic Island, A16 Bionic' },
+  { id: 'lenovo', name: 'Lenovo IdeaPad 3 i5', emoji: '💻', brand: 'Lenovo', price: 749999, oldPrice: 899999, installments: 18, desc: 'Intel Core i5, 16GB RAM, SSD 512GB, Windows 11' },
+  { id: 'adidas', name: 'Adidas Ultraboost 22', emoji: '👟', brand: 'Adidas', price: 89999, oldPrice: 129999, installments: 6, desc: 'Tecnología BOOST, máxima comodidad, running' }
 ];
 
 // ============================================
-// CARGAR PRODUCTOS DESDE GOOGLE SHEETS
+// CARGAR PRODUCTOS
 // ============================================
 async function loadProducts() {
   const savedId = localStorage.getItem('sheetId');
@@ -983,7 +1033,6 @@ async function loadProducts() {
   
   renderHome();
   renderAlerts();
-  updateLastUpdateTime();
 }
 
 async function fetchSheetData(sheetId) {
@@ -1009,7 +1058,6 @@ async function fetchSheetData(sheetId) {
             price: parseFloat(row[4]) || 0,
             oldPrice: parseFloat(row[5]) || null,
             installments: parseInt(row[6]) || 1,
-            shipping: 0,
             url: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20${encodeURIComponent(row[1])}`,
             desc: row[7] || `Oferta increíble en ${row[1]}`
           });
@@ -1020,7 +1068,7 @@ async function fetchSheetData(sheetId) {
       }
     }
   } catch (error) {
-    console.log('Error cargando Sheet, usando datos locales');
+    console.log('Error cargando Sheet');
   }
 }
 
@@ -1063,40 +1111,4 @@ function renderHome() {
   document.getElementById('alertBadge').innerHTML = products.length;
   document.getElementById('alertsCount').innerHTML = products.length;
   
-  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0));
-  document.getElementById('statDiscount').innerHTML = maxDiscount > 0 ? `-${maxDiscount}%` : '0%';
-  document.getElementById('statStores').innerHTML = '4+';
-  
-  const grid = document.getElementById('offersGrid');
-  if (!grid) return;
-  
-  grid.innerHTML = '';
-  
-  if (filtered.length === 0) {
-    grid.innerHTML = '<div class="loading">No se encontraron ofertas 🔍</div>';
-    return;
-  }
-  
-  filtered.forEach(p => {
-    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
-    
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.onclick = async () => { 
-      selectedProduct = p;
-      showToast('🔄 Cargando precios de la competencia...');
-      await loadCompetitorPrices(p);
-      navigate('compare'); 
-    };
-    card.innerHTML = `
-      <div class="best-tag">MEJOR PRECIO</div>
-      <div class="card-row">
-        <div class="card-img">${p.emoji}</div>
-        <div class="card-body">
-          <div class="card-title">${p.name}</div>
-          <div class="card-brand">${p.brand}</div>
-          <div class="card-desc">${p.desc.substring(0, 50)}${p.desc.length > 50 ? '...' : ''}</div>
-          <div class="price-row">
-            <span class="price-now">$${p.price.toLocaleString('es-AR')}</span>
-            ${p.oldPrice ? `<span class="price-old">$${p.oldPrice.toLocaleString('es-AR')}</span>` : ''}
-            ${discount > 0 ? `<span class="discount">-${discount}%</span>` : ''
+  const maxDiscount = Math.max(...products.map(p => p.oldPrice ? Math.round((1
