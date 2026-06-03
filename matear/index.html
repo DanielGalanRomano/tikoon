@@ -68,7 +68,6 @@
     .logo-main span { font-size: 36px; }
     .brand-sub { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 4px; font-weight: 500; }
     
-    /* Barra de navegación superior */
     .nav-bar {
       display: flex;
       justify-content: space-between;
@@ -88,10 +87,7 @@
       font-size: 20px;
       color: var(--text-primary);
     }
-    .user-menu {
-      display: flex;
-      gap: 8px;
-    }
+    .user-menu { display: flex; gap: 8px; }
     .icon-circle {
       background: #FFFFFF;
       border: 1px solid var(--border-light);
@@ -117,7 +113,7 @@
       border: 2px solid white;
     }
     
-    /* BOTÓN FLOTANTE + CREAR MATEADA */
+    /* BOTÓN FLOTANTE */
     .fab-create {
       position: fixed;
       bottom: 24px;
@@ -140,7 +136,6 @@
     .fab-create:active { transform: scale(0.95); background: var(--cta-primary-dark); }
     @media (min-width: 500px) { .fab-create { right: calc(50% - 220px); } }
     
-    /* Breadcrumb */
     .breadcrumb {
       padding: 12px 20px 0 20px;
       font-size: 12px;
@@ -156,7 +151,6 @@
     .breadcrumb-separator { color: var(--border-light); font-size: 12px; }
     .breadcrumb-current { color: var(--text-primary); font-weight: 500; }
     
-    /* Cards */
     .mateada-card {
       background: var(--surface-card);
       border-radius: var(--radius-card);
@@ -173,6 +167,7 @@
     .badge-green { background: var(--mate-green-soft); color: var(--mate-green); }
     .badge-amber { background: #FBEFE2; color: var(--mate-amber); }
     .badge-gray { background: #F0EAE2; color: #7F6E5D; }
+    .badge-time { background: var(--cta-soft); color: var(--cta-primary); }
     .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
     .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-secondary); }
     .host-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; border-top: 1px solid var(--border-light); padding-top: 14px; }
@@ -195,10 +190,8 @@
     .detail-section { margin: 16px 0 12px; }
     .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border-light); }
     .success-anim { text-align: center; padding: 24px; }
-    .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
     
-    /* Modal de menú */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -246,7 +239,6 @@
 <body>
 <div class="app">
 
-  <!-- HEADER FIJO -->
   <div class="header-fixed">
     <div class="logo-area">
       <div class="logo-main" onclick="irAlInicio()">
@@ -259,23 +251,16 @@
       <button class="back-btn" id="backNavBtn" onclick="goBack()" style="visibility: hidden;">←</button>
       <div></div>
       <div class="user-menu">
-        <div class="icon-circle" onclick="toggleUserMenu()">
-          <i class="ti ti-bell"></i>
-          <span class="badge-dot" id="notifDot" style="display: none;"></span>
-        </div>
-        <div class="icon-circle" onclick="toggleUserMenu()">
-          <i class="ti ti-user"></i>
-        </div>
+        <div class="icon-circle" onclick="toggleUserMenu()"><i class="ti ti-bell"></i><span class="badge-dot" id="notifDot" style="display: none;"></span></div>
+        <div class="icon-circle" onclick="toggleUserMenu()"><i class="ti ti-user"></i></div>
       </div>
     </div>
   </div>
 
-  <!-- BREADCRUMB -->
   <div class="breadcrumb" id="breadcrumbContainer">
     <span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>
   </div>
 
-  <!-- SCREENS -->
   <div class="screen active" id="screen-home">
     <div class="content" id="homeContent"></div>
   </div>
@@ -333,66 +318,58 @@
           <option value="10">10</option><option value="12">12</option><option value="15">15</option><option value="20">20</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">⏰ Duración</label>
+      <div class="form-group"><label class="form-label">⏰ Duración estimada</label>
         <select id="eventDuration" class="form-select">
           <option value="30 min">30 min</option><option value="1 hora">1 hora</option>
           <option value="1.5 hs" selected>1.5 hs</option><option value="2 hs">2 hs</option><option value="3 hs">3 hs</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">🕒 Hora del encuentro</label>
-        <input type="time" id="eventTime" class="form-input" value="18:00">
-      </div>
-      <button class="btn-primary" onclick="createMateada()">🌿 Publicar mateada</button>
+      <button class="btn-primary" onclick="createMateada()">🌿 Publicar mateada ahora</button>
     </div>
   </div>
 
-  <!-- MODAL de menú -->
   <div id="userMenuModal" class="modal-overlay" onclick="if(event.target===this) toggleUserMenu()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title">Menú</div>
-      <div class="menu-item" onclick="verPerfil()">
-        <i class="ti ti-user" style="font-size: 22px;"></i> Mi perfil
-      </div>
-      <div class="menu-item" onclick="verNotificaciones()">
-        <i class="ti ti-bell" style="font-size: 22px;"></i> Notificaciones
-        <span id="notifCountBadge" style="background:#2563EB; color:white; border-radius:20px; padding:2px 8px; font-size:11px; margin-left:8px;">0</span>
-      </div>
-      <div class="menu-item" onclick="toggleUserMenu()">
-        <i class="ti ti-x" style="font-size: 22px;"></i> Cerrar
-      </div>
+      <div class="menu-item" onclick="verPerfil()"><i class="ti ti-user" style="font-size: 22px;"></i> Mi perfil</div>
+      <div class="menu-item" onclick="verNotificaciones()"><i class="ti ti-bell" style="font-size: 22px;"></i> Notificaciones<span id="notifCountBadge" style="background:#2563EB; color:white; border-radius:20px; padding:2px 8px; font-size:11px; margin-left:8px;">0</span></div>
+      <div class="menu-item" onclick="toggleUserMenu()"><i class="ti ti-x" style="font-size: 22px;"></i> Cerrar</div>
     </div>
   </div>
 
-  <!-- BOTÓN FLOTANTE + CREAR MATEADA -->
   <button class="fab-create" onclick="goToCreate()">
     <i class="ti ti-plus" style="font-size: 20px;"></i> Crear mateada
   </button>
 </div>
 
 <script>
-// ==================== DATOS LOCALES ====================
+// ==================== DATOS ====================
 let mateadas = [];
 let currentMap = null;
 let currentMateada = null;
 
-// Función para obtener hora actual en formato "HH:MM"
-function getHoraActual() {
+// Duración de una mateada: 2 horas (en milisegundos)
+const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000;
+
+// Obtener hora legible actual
+function getHoraActualFormateada() {
   const ahora = new Date();
-  return ahora.toTimeString().slice(0,5);
+  return ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 }
 
-// Función para verificar si una mateada ya venció (hora anterior a la actual)
-function isMateadaVencida(mateada) {
-  if (!mateada.hora) return false;
-  const ahora = getHoraActual();
-  return mateada.hora < ahora;
+// Verificar si una mateada ya expiró (pasaron más de 2 horas desde su creación)
+function isMateadaExpirada(mateada) {
+  if (!mateada.timestamp) return true;
+  const ahora = Date.now();
+  const expiracion = mateada.timestamp + DURACION_MATEADA_MS;
+  return ahora > expiracion;
 }
 
-// Limpiar mateadas vencidas
-function limpiarMateadasVencidas() {
+// Limpiar mateadas expiradas
+function limpiarMateadasExpiradas() {
   const antes = mateadas.length;
-  mateadas = mateadas.filter(m => !isMateadaVencida(m) && m.estado === 'activa' && m.lugares_libres > 0);
+  mateadas = mateadas.filter(m => !isMateadaExpirada(m) && m.estado === 'activa' && m.lugares_libres > 0);
   if (antes !== mateadas.length) guardarDatosLocales();
 }
 
@@ -404,24 +381,37 @@ function cargarDatosLocales() {
     mateadas = datos.mateadas || [];
   }
   if (mateadas.length === 0) {
+    const ahora = Date.now();
     mateadas = [
-      { id: '1', titulo: '🤝 Emprendedurismo y freelance', ubicacion: 'Parque Tres de Febrero', latitud: -34.5735, longitud: -58.4215, lugares_totales: 6, lugares_libres: 2, organizador: 'Luli, 28', organizador_avatar: 'LM', descripcion: 'Charlas de negocios', duracion: '1.5 hs', hora: '17:00', tags: 'networking', estado: 'activa' },
-      { id: '2', titulo: '📖 Filosofía y vida cotidiana', ubicacion: 'Parque Rivadavia', latitud: -34.6170, longitud: -58.4430, lugares_totales: 5, lugares_libres: 1, organizador: 'Matías, 34', organizador_avatar: 'MP', descripcion: 'Debate filosófico', duracion: '2 hs', hora: '18:30', tags: 'filosofía', estado: 'activa' },
-      { id: '3', titulo: '💻 Tecnología e inteligencia artificial', ubicacion: 'Parque Centenario', latitud: -34.6055, longitud: -58.4345, lugares_totales: 6, lugares_libres: 4, organizador: 'Sofía, 26', organizador_avatar: 'SR', descripcion: 'Networking tech', duracion: '1.5 hs', hora: '19:00', tags: 'tecnología', estado: 'activa' },
-      { id: '4', titulo: '🌳 Mates & Cuentos · Parque Las Heras', ubicacion: 'Parque Las Heras', latitud: -34.5842, longitud: -58.4073, lugares_totales: 8, lugares_libres: 5, organizador: 'Juan, 31', organizador_avatar: 'JV', descripcion: 'Círculo de cuentos', duracion: '2 hs', hora: '16:30', tags: 'cuentos', estado: 'activa' }
+      { id: '1', titulo: '🤝 Emprendedurismo y freelance', ubicacion: 'Parque Tres de Febrero', latitud: -34.5735, longitud: -58.4215, lugares_totales: 6, lugares_libres: 2, organizador: 'Luli, 28', organizador_avatar: 'LM', descripcion: 'Charlas de negocios', duracion: '1.5 hs', tags: 'networking', estado: 'activa', timestamp: ahora - 300000 },
+      { id: '2', titulo: '📖 Filosofía y vida cotidiana', ubicacion: 'Parque Rivadavia', latitud: -34.6170, longitud: -58.4430, lugares_totales: 5, lugares_libres: 1, organizador: 'Matías, 34', organizador_avatar: 'MP', descripcion: 'Debate filosófico', duracion: '2 hs', tags: 'filosofía', estado: 'activa', timestamp: ahora - 600000 },
+      { id: '3', titulo: '💻 Tecnología e inteligencia artificial', ubicacion: 'Parque Centenario', latitud: -34.6055, longitud: -58.4345, lugares_totales: 6, lugares_libres: 4, organizador: 'Sofía, 26', organizador_avatar: 'SR', descripcion: 'Networking tech', duracion: '1.5 hs', tags: 'tecnología', estado: 'activa', timestamp: ahora - 900000 },
+      { id: '4', titulo: '🌳 Mates & Cuentos · Parque Las Heras', ubicacion: 'Parque Las Heras', latitud: -34.5842, longitud: -58.4073, lugares_totales: 8, lugares_libres: 5, organizador: 'Juan, 31', organizador_avatar: 'JV', descripcion: 'Círculo de cuentos', duracion: '2 hs', tags: 'cuentos', estado: 'activa', timestamp: ahora - 1200000 }
     ];
   }
   guardarDatosLocales();
 }
 function guardarDatosLocales() { localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas })); }
 
-// ==================== BREADCRUMB Y NAVEGACIÓN ====================
+// Calcular tiempo restante de una mateada
+function getTiempoRestante(mateada) {
+  if (!mateada.timestamp) return "expiró";
+  const ahora = Date.now();
+  const expiracion = mateada.timestamp + DURACION_MATEADA_MS;
+  const restante = expiracion - ahora;
+  if (restante <= 0) return "expiró";
+  const minutos = Math.floor(restante / 60000);
+  if (minutos < 60) return `${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  const mins = minutos % 60;
+  return `${horas}h ${mins}min`;
+}
+
+// ==================== NAVEGACIÓN ====================
 function actualizarBreadcrumb() {
   const container = document.getElementById('breadcrumbContainer');
   const backBtn = document.getElementById('backNavBtn');
   const currentScreenId = document.querySelector('.screen.active')?.id;
-  
-  if (!container) return;
   
   if (currentScreenId === 'screen-home') {
     container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>`;
@@ -433,18 +423,13 @@ function actualizarBreadcrumb() {
     else if (currentScreenId === 'screen-join') nombrePantalla = 'Sumarse';
     else if (currentScreenId === 'screen-sent') nombrePantalla = 'Solicitud enviada';
     else nombrePantalla = '...';
-    
-    container.innerHTML = `
-      <span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>
-      <span class="breadcrumb-separator">›</span>
-      <span class="breadcrumb-current">${nombrePantalla}</span>
-    `;
+    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span><span class="breadcrumb-separator">›</span><span class="breadcrumb-current">${nombrePantalla}</span>`;
     if (backBtn) backBtn.style.visibility = 'visible';
   }
 }
 
 function irAlInicio() {
-  limpiarMateadasVencidas();
+  limpiarMateadasExpiradas();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-home').classList.add('active');
   if (currentMap) { currentMap.remove(); currentMap = null; }
@@ -469,8 +454,9 @@ function goToDetail(mateada) {
   currentMateada = mateada;
   const detailDiv = document.getElementById('detailContent');
   const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
+  const tiempoRestante = getTiempoRestante(mateada);
   detailDiv.innerHTML = `
-    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares libres</span><span class="badge badge-gray">${mateada.hora} · ${mateada.duracion}</span></div></div>
+    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares</span><span class="badge badge-time">⌛ ${tiempoRestante}</span></div></div>
     <div id="detailMap" class="map-container-detail"></div>
     <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro</div></div></div>
     <div class="detail-section"><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
@@ -499,7 +485,7 @@ function irAUnirse() {
 
 // ==================== RENDER HOME ====================
 function renderHome() {
-  limpiarMateadasVencidas();
+  limpiarMateadasExpiradas();
   const container = document.getElementById('homeContent');
   const activas = mateadas.filter(m => m.estado === 'activa' && m.lugares_libres > 0);
   if (activas.length === 0) {
@@ -509,12 +495,13 @@ function renderHome() {
   container.innerHTML = '';
   activas.forEach(m => {
     const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
+    const tiempoRestante = getTiempoRestante(m);
     const card = document.createElement('div');
     card.className = 'mateada-card';
     card.onclick = () => goToDetail(m);
     card.innerHTML = `
       <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">${m.lugares_libres} lugares</span></div>
-      <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> ${m.ubicacion}</span><span class="meta-item"><i class="ti ti-clock"></i> ${m.hora} · ${m.duracion}</span><span class="meta-item"><i class="ti ti-users"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
+      <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> ${m.ubicacion}</span><span class="meta-item"><i class="ti ti-clock"></i> ⌛ ${tiempoRestante}</span><span class="meta-item"><i class="ti ti-users"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
       <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
     `;
     container.appendChild(card);
@@ -527,29 +514,42 @@ function createMateada() {
   const ubicacion = document.getElementById('eventLocation')?.value;
   const maxPersonas = document.getElementById('maxPeopleSelect')?.value;
   const duracion = document.getElementById('eventDuration')?.value;
-  const hora = document.getElementById('eventTime')?.value || '18:00';
   const mateOption = document.querySelector('.option-btn.selected');
   const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
   if (!tema || !ubicacion) { alert('Completá tema y ubicación'); return; }
+  
   const nueva = {
-    id: Date.now().toString(), titulo: tema, ubicacion: ubicacion,
-    latitud: -34.5842, longitud: -58.4073, lugares_totales: parseInt(maxPersonas),
-    lugares_libres: parseInt(maxPersonas), organizador: 'Camila P.', organizador_avatar: 'CP',
-    descripcion: `Mateada de ${tema} · ${tipoMate}`, duracion: duracion, hora: hora,
-    tags: tema.split(' ')[0], estado: 'activa'
+    id: Date.now().toString(),
+    titulo: tema,
+    ubicacion: ubicacion,
+    latitud: -34.5842,
+    longitud: -58.4073,
+    lugares_totales: parseInt(maxPersonas),
+    lugares_libres: parseInt(maxPersonas),
+    organizador: 'Camila P.',
+    organizador_avatar: 'CP',
+    descripcion: `Mateada de ${tema} · ${tipoMate}`,
+    duracion: duracion,
+    tags: tema.split(' ')[0],
+    estado: 'activa',
+    timestamp: Date.now()
   };
   mateadas.push(nueva);
   guardarDatosLocales();
-  alert(`✅ Mateada publicada!\n📌 ${tema}\n👥 ${maxPersonas} personas\n🕒 ${hora}`);
+  alert(`✅ ¡Mateada publicada!\n📌 ${tema}\n👥 Cupo: ${maxPersonas} personas\n⏰ Dura 2 horas`);
   irAlInicio();
 }
 
 function sendJoinRequest() {
   if (!currentMateada) return;
-  if (currentMateada.lugares_libres <= 0) { alert('No hay lugares'); return; }
+  if (currentMateada.lugares_libres <= 0) { alert('No hay lugares disponibles'); return; }
+  if (isMateadaExpirada(currentMateada)) { alert('Esta mateada ya expiró'); irAlInicio(); return; }
   const minutos = document.getElementById('arrivalRange')?.value || 12;
   const index = mateadas.findIndex(m => m.id === currentMateada.id);
-  if (index !== -1) { mateadas[index].lugares_libres--; guardarDatosLocales(); }
+  if (index !== -1 && mateadas[index].lugares_libres > 0) {
+    mateadas[index].lugares_libres--;
+    guardarDatosLocales();
+  }
   document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-sent').classList.add('active');
@@ -562,16 +562,15 @@ function toggleOpt(btn) {
   if (parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 }
 
-// Menú usuario
 function toggleUserMenu() { document.getElementById('userMenuModal').classList.toggle('active'); }
 function verPerfil() { toggleUserMenu(); alert('👤 Perfil: Camila · 25 años · Mate amargo'); }
 function verNotificaciones() { toggleUserMenu(); alert('🔔 No tenés notificaciones nuevas'); }
 
-// Actualización automática cada minuto para limpiar vencidas
+// Actualización automática cada 30 segundos
 setInterval(() => {
-  limpiarMateadasVencidas();
+  limpiarMateadasExpiradas();
   if (document.querySelector('.screen.active')?.id === 'screen-home') renderHome();
-}, 60000);
+}, 30000);
 
 // Inicialización
 cargarDatosLocales();
