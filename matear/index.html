@@ -6,8 +6,6 @@
   <title>Matear by Taragüi — Encuentros con mate en el parque</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Font Awesome 6 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=DM+Sans:opsz,wght@9..40,400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,7 +17,6 @@
       --text-secondary: #6B5A4B;
       --border-light: #EFE3D4;
       --mate-green: #0F7B5E;
-      --mate-green-bright: #1D9E75;
       --mate-green-soft: #DEF5EC;
       --mate-amber: #C47B2E;
       --cta-primary: #2563EB;
@@ -27,6 +24,11 @@
       --cta-soft: #EFF6FF;
       --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
       --radius-card: 28px;
+      
+      /* Colores del countdown */
+      --countdown-green: #10B981;
+      --countdown-orange: #F59E0B;
+      --countdown-red: #EF4444;
     }
     body { background: #E8DDD0; font-family: 'Inter', 'DM Sans', system-ui; min-height: 100vh; width: 100%; }
     .app { width: 100%; max-width: 100%; margin: 0 auto; background: var(--bg-primary); min-height: 100vh; display: flex; flex-direction: column; position: relative; }
@@ -97,11 +99,11 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      font-size: 18px;
       color: var(--text-primary);
       transition: all 0.2s;
     }
     .icon-btn:hover { background: #f0f0f0; }
-    .icon-btn i { font-size: 18px; }
     
     /* BOTÓN FLOTANTE */
     .fab-create {
@@ -162,10 +164,13 @@
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
     .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
     .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
-    .meta-item i { font-size: 13px; width: 16px; color: var(--text-secondary); }
-    .countdown-bar { height: 4px; background: #E5E7EB; border-radius: 2px; margin-top: 8px; overflow: hidden; }
-    .countdown-progress { height: 100%; width: 0%; background: var(--cta-primary); border-radius: 2px; transition: width 1s linear; }
-    .countdown-progress.urgent { background: #DC2626; }
+    .countdown-bar { height: 6px; border-radius: 3px; margin-top: 8px; overflow: hidden; background: #E5E7EB; }
+    .countdown-progress { height: 100%; transition: width 1s linear, background-color 0.3s ease; }
+    .countdown-progress.green { background: var(--countdown-green); }
+    .countdown-progress.orange { background: var(--countdown-orange); animation: pulseOrange 1s infinite; }
+    .countdown-progress.red { background: var(--countdown-red); animation: pulseRed 0.8s infinite; }
+    @keyframes pulseOrange { 0%,100%{opacity:1} 50%{opacity:0.8} }
+    @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.6} }
     .host-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; border-top: 1px solid var(--border-light); padding-top: 14px; }
     .avatar { width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; background: #e4f3ed; color: #0F7B5E; flex-shrink: 0; font-size: 16px; }
     .btn-primary { background: var(--cta-primary); color: white; border: none; padding: 15px; border-radius: 60px; font-weight: 600; font-size: 16px; width: 100%; cursor: pointer; transition: 0.2s; }
@@ -189,7 +194,7 @@
     .profile-card, .notifications-card { background: white; border-radius: 24px; padding: 20px; margin-bottom: 16px; }
     .notification-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
     .notification-item:last-child { border-bottom: none; }
-    .notification-icon { width: 40px; height: 40px; background: var(--cta-soft); border-radius: 30px; display: flex; align-items: center; justify-content: center; color: var(--cta-primary); }
+    .notification-icon { width: 40px; height: 40px; background: var(--cta-soft); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
   </style>
 </head>
 <body>
@@ -207,18 +212,14 @@
       <button class="back-btn" id="backNavBtn" onclick="goBack()" style="visibility: hidden;">←</button>
       <div></div>
       <div style="display: flex; gap: 8px;">
-        <button class="icon-btn" onclick="irANotificaciones()">
-          <i class="fa-regular fa-bell"></i>
-        </button>
-        <button class="icon-btn" onclick="irAPerfil()">
-          <i class="fa-regular fa-user"></i>
-        </button>
+        <button class="icon-btn" onclick="irANotificaciones()">🔔</button>
+        <button class="icon-btn" onclick="irAPerfil()">👤</button>
       </div>
     </div>
   </div>
 
   <div class="breadcrumb" id="breadcrumbContainer">
-    <span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>
+    <span class="breadcrumb-item" onclick="irAlInicio()">🏠 Inicio</span>
   </div>
 
   <!-- SCREEN: HOME -->
@@ -234,22 +235,22 @@
   <!-- SCREEN: JOIN -->
   <div class="screen" id="screen-join">
     <div class="content">
-      <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Estás cerca del parque</div><div class="gps-text">Compartí tu tiempo estimado</div></div></div>
+      <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 Estás cerca del parque</div><div class="gps-text">Compartí tu tiempo estimado</div></div></div>
       <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás caminando?</label><div class="slider-row"><input type="range" id="arrivalRange" min="3" max="40" value="12" step="1"><span id="arrivalValue" style="font-weight:700;color:var(--cta-primary);">12 min</span></div></div>
-      <div style="background:#f7f2ea; border-radius:28px; padding:18px; margin:12px 0 24px;"><div style="font-weight:600;">Tu perfil público</div><div>Camila · 25 años · Mujer · 💼 Diseñadora</div></div>
-      <button class="btn-primary" onclick="sendJoinRequest()">Enviar solicitud 🧉</button>
+      <div style="background:#f7f2ea; border-radius:28px; padding:18px; margin:12px 0 24px;"><div style="font-weight:600;">📋 Tu perfil público</div><div>Camila · 25 años · Mujer · Diseñadora</div></div>
+      <button class="btn-primary" onclick="sendJoinRequest()">🧉 Enviar solicitud</button>
     </div>
   </div>
 
   <!-- SCREEN: SENT -->
   <div class="screen" id="screen-sent">
-    <div class="content"><div class="success-anim"><div style="font-size:68px;">🧉✨</div><div style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div><button class="btn-secondary" onclick="irAlInicio()">Volver al inicio</button></div>
+    <div class="content"><div class="success-anim"><div style="font-size:68px;">🧉✨</div><div style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div><button class="btn-secondary" onclick="irAlInicio()">← Volver al inicio</button></div>
   </div>
 
   <!-- SCREEN: CREATE -->
   <div class="screen" id="screen-create">
     <div class="content">
-      <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
+      <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
       <div class="form-group"><label class="form-label">🎯 Tema de conversación</label>
         <select id="eventTopic" class="form-select">
           <option value="🤝 Emprendedurismo y freelance">🤝 Emprendedurismo y freelance</option>
@@ -266,7 +267,7 @@
           <option value="🎵 Música e instrumentos">🎵 Música e instrumentos</option>
           <option value="🧠 Psicología y desarrollo personal">🧠 Psicología y desarrollo personal</option>
           <option value="🏡 Jardinería y plantas">🏡 Jardinería y plantas</option>
-          <option value="💼 Finanzas e inversiones">💼 Finanzas e inversiones</option>
+          <option value="💰 Finanzas e inversiones">💰 Finanzas e inversiones</option>
           <option value="🐾 Mascotas y bienestar animal">🐾 Mascotas y bienestar animal</option>
           <option value="🎮 Videojuegos y cultura gamer">🎮 Videojuegos y cultura gamer</option>
           <option value="📸 Fotografía y edición">📸 Fotografía y edición</option>
@@ -289,7 +290,7 @@
           <option value="1.5 hs" selected>1.5 hs</option><option value="2 hs">2 hs</option><option value="3 hs">3 hs</option>
         </select>
       </div>
-      <button class="btn-primary" onclick="createMateada()"><i class="fa-regular fa-leaf"></i> Publicar mateada ahora</button>
+      <button class="btn-primary" onclick="createMateada()">🌿 Publicar mateada ahora</button>
     </div>
   </div>
 
@@ -304,9 +305,9 @@
             <div style="color: var(--text-secondary);">25 años · Mujer · CABA</div>
           </div>
         </div>
-        <div class="detail-row"><span><i class="fa-regular fa-mug-hot"></i> Preferencia de mate</span><span>Amargo</span></div>
-        <div class="detail-row"><span><i class="fa-regular fa-temperature-high"></i> Temperatura del agua</span><span>Muy caliente</span></div>
-        <div class="detail-row"><span><i class="fa-regular fa-calendar"></i> Miembro desde</span><span>Enero 2025</span></div>
+        <div class="detail-row"><span>🧉 Preferencia de mate</span><span>Amargo</span></div>
+        <div class="detail-row"><span>🔥 Temperatura del agua</span><span>Muy caliente</span></div>
+        <div class="detail-row"><span>📅 Miembro desde</span><span>Enero 2025</span></div>
       </div>
       <div style="display: flex; gap: 12px; margin-bottom: 16px;">
         <div style="background:#f3efe9; padding:16px; border-radius:28px; flex:1; text-align:center;">
@@ -318,7 +319,7 @@
           <div style="font-size:12px; color:var(--text-secondary);">mateadas organizadas</div>
         </div>
       </div>
-      <button class="btn-secondary" onclick="irAlInicio()"><i class="fa-regular fa-arrow-left"></i> Volver al inicio</button>
+      <button class="btn-secondary" onclick="irAlInicio()">← Volver al inicio</button>
     </div>
   </div>
 
@@ -326,28 +327,28 @@
   <div class="screen" id="screen-notificaciones">
     <div class="content">
       <div class="notifications-card">
-        <div style="font-weight: 700; margin-bottom: 16px; font-size: 16px;"><i class="fa-regular fa-bell"></i> Notificaciones</div>
+        <div style="font-weight: 700; margin-bottom: 16px; font-size: 16px;">🔔 Notificaciones</div>
         <div id="notificacionesLista">
           <div class="notification-item">
-            <div class="notification-icon"><i class="fa-regular fa-user-plus"></i></div>
+            <div class="notification-icon">👤</div>
             <div><div style="font-weight: 600;">Camila quiere sumarse</div><div style="font-size: 12px; color: var(--text-secondary);">Hace 5 minutos</div></div>
           </div>
           <div class="notification-item">
-            <div class="notification-icon"><i class="fa-regular fa-check-circle"></i></div>
+            <div class="notification-icon">✅</div>
             <div><div style="font-weight: 600;">¡Tu solicitud fue aceptada!</div><div style="font-size: 12px; color: var(--text-secondary);">Mateada de Filosofía</div></div>
           </div>
           <div class="notification-item">
-            <div class="notification-icon"><i class="fa-regular fa-clock"></i></div>
+            <div class="notification-icon">⏰</div>
             <div><div style="font-weight: 600;">Mateada cerca de tu zona</div><div style="font-size: 12px; color: var(--text-secondary);">Parque Las Heras - Hoy 17:00</div></div>
           </div>
         </div>
       </div>
-      <button class="btn-secondary" onclick="irAlInicio()"><i class="fa-regular fa-arrow-left"></i> Volver al inicio</button>
+      <button class="btn-secondary" onclick="irAlInicio()">← Volver al inicio</button>
     </div>
   </div>
 
   <button class="fab-create" onclick="goToCreate()">
-    <i class="fa-solid fa-plus"></i> Crear mateada
+    ➕ Crear mateada
   </button>
 </div>
 
@@ -356,10 +357,10 @@
 let mateadas = [];
 let currentMap = null;
 let currentMateada = null;
-let updateInterval = null;
 
-const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000;
-const UMBRAL_URGENTE_MS = 15 * 60 * 1000; // 15 minutos
+const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000; // 2 horas
+const UMBRAL_NARANJA_MS = 60 * 60 * 1000; // 60 minutos (1 hora)
+const UMBRAL_ROJO_MS = 30 * 60 * 1000; // 30 minutos
 
 function isMateadaExpirada(mateada) {
   if (!mateada.timestamp) return true;
@@ -388,8 +389,11 @@ function getPorcentajeRestante(mateada) {
   return Math.max(0, Math.min(100, porcentaje));
 }
 
-function esUrgente(mateada) {
-  return getTiempoRestanteMs(mateada) <= UMBRAL_URGENTE_MS && getTiempoRestanteMs(mateada) > 0;
+function getColorClase(mateada) {
+  const restanteMs = getTiempoRestanteMs(mateada);
+  if (restanteMs <= UMBRAL_ROJO_MS) return 'red';
+  if (restanteMs <= UMBRAL_NARANJA_MS) return 'orange';
+  return 'green';
 }
 
 function limpiarMateadasExpiradas() {
@@ -406,11 +410,12 @@ function cargarDatosLocales() {
   }
   if (mateadas.length === 0) {
     const ahora = Date.now();
+    // Crear mateadas con diferentes tiempos restantes para demostrar los colores
     mateadas = [
-      { id: '1', titulo: '🤝 Emprendedurismo y freelance', ubicacion: 'Parque Tres de Febrero', latitud: -34.5735, longitud: -58.4215, lugares_totales: 6, lugares_libres: 2, organizador: 'Luli, 28', organizador_avatar: 'LM', descripcion: 'Charlas de negocios', duracion: '1.5 hs', tags: 'networking', estado: 'activa', timestamp: ahora - 3000000 },
-      { id: '2', titulo: '📖 Filosofía y vida cotidiana', ubicacion: 'Parque Rivadavia', latitud: -34.6170, longitud: -58.4430, lugares_totales: 5, lugares_libres: 1, organizador: 'Matías, 34', organizador_avatar: 'MP', descripcion: 'Debate filosófico', duracion: '2 hs', tags: 'filosofía', estado: 'activa', timestamp: ahora - 3500000 },
-      { id: '3', titulo: '💻 Tecnología e inteligencia artificial', ubicacion: 'Parque Centenario', latitud: -34.6055, longitud: -58.4345, lugares_totales: 6, lugares_libres: 4, organizador: 'Sofía, 26', organizador_avatar: 'SR', descripcion: 'Networking tech', duracion: '1.5 hs', tags: 'tecnología', estado: 'activa', timestamp: ahora - 4000000 },
-      { id: '4', titulo: '🌳 Mates & Cuentos · Parque Las Heras', ubicacion: 'Parque Las Heras', latitud: -34.5842, longitud: -58.4073, lugares_totales: 8, lugares_libres: 5, organizador: 'Juan, 31', organizador_avatar: 'JV', descripcion: 'Círculo de cuentos', duracion: '2 hs', tags: 'cuentos', estado: 'activa', timestamp: ahora - 1000000 }
+      { id: '1', titulo: '🤝 Emprendedurismo y freelance', ubicacion: 'Parque Tres de Febrero', latitud: -34.5735, longitud: -58.4215, lugares_totales: 6, lugares_libres: 2, organizador: 'Luli, 28', organizador_avatar: 'LM', descripcion: 'Charlas de negocios', duracion: '1.5 hs', tags: 'networking', estado: 'activa', timestamp: ahora - 1000000 },
+      { id: '2', titulo: '📖 Filosofía y vida cotidiana', ubicacion: 'Parque Rivadavia', latitud: -34.6170, longitud: -58.4430, lugares_totales: 5, lugares_libres: 1, organizador: 'Matías, 34', organizador_avatar: 'MP', descripcion: 'Debate filosófico', duracion: '2 hs', tags: 'filosofía', estado: 'activa', timestamp: ahora - 4000000 },
+      { id: '3', titulo: '💻 Tecnología e inteligencia artificial', ubicacion: 'Parque Centenario', latitud: -34.6055, longitud: -58.4345, lugares_totales: 6, lugares_libres: 4, organizador: 'Sofía, 26', organizador_avatar: 'SR', descripcion: 'Networking tech', duracion: '1.5 hs', tags: 'tecnología', estado: 'activa', timestamp: ahora - 5000000 },
+      { id: '4', titulo: '🌳 Mates & Cuentos · Parque Las Heras', ubicacion: 'Parque Las Heras', latitud: -34.5842, longitud: -58.4073, lugares_totales: 8, lugares_libres: 5, organizador: 'Juan, 31', organizador_avatar: 'JV', descripcion: 'Círculo de cuentos', duracion: '2 hs', tags: 'cuentos', estado: 'activa', timestamp: ahora - 6500000 }
     ];
   }
   guardarDatosLocales();
@@ -419,8 +424,10 @@ function cargarDatosLocales() {
 
 function actualizarEstadisticas() {
   const misMateadas = mateadas.filter(m => m.organizador === 'Camila P.').length;
-  document.getElementById('statsMateadas').innerText = mateadas.length;
-  document.getElementById('statsOrganizadas').innerText = misMateadas;
+  const mateadasCount = document.getElementById('statsMateadas');
+  const organizadasCount = document.getElementById('statsOrganizadas');
+  if (mateadasCount) mateadasCount.innerText = mateadas.length;
+  if (organizadasCount) organizadasCount.innerText = misMateadas;
 }
 
 function guardarDatosLocales() { localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas })); }
@@ -442,10 +449,10 @@ function actualizarBreadcrumb() {
   };
   
   if (currentId === 'screen-home') {
-    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>`;
+    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">🏠 Inicio</span>`;
     if (backBtn) backBtn.style.visibility = 'hidden';
   } else {
-    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span><span class="breadcrumb-separator">›</span><span class="breadcrumb-current">${nombres[currentId] || '...'}</span>`;
+    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">🏠 Inicio</span><span class="breadcrumb-separator">›</span><span class="breadcrumb-current">${nombres[currentId] || '...'}</span>`;
     if (backBtn) backBtn.style.visibility = 'visible';
   }
 }
@@ -490,15 +497,15 @@ function goToDetail(mateada) {
   const detailDiv = document.getElementById('detailContent');
   const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
   const tiempoRestante = getTiempoRestanteTexto(mateada);
-  const esUrg = esUrgente(mateada);
-  const badgeTimeClass = esUrg ? 'badge-urgent' : 'badge-time';
+  const colorClase = getColorClase(mateada);
+  const badgeTimeClass = colorClase === 'red' ? 'badge-urgent' : 'badge-time';
   detailDiv.innerHTML = `
-    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares</span><span class="badge ${badgeTimeClass}"><i class="fa-regular fa-hourglass-half"></i> ${tiempoRestante}</span></div></div>
+    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">🎟️ ${mateada.lugares_libres} lugares</span><span class="badge ${badgeTimeClass}">⏳ ${tiempoRestante}</span></div></div>
     <div id="detailMap" class="map-container-detail"></div>
-    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place"><i class="fa-regular fa-location-dot"></i> ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro</div></div></div>
-    <div class="detail-section"><div class="detail-row"><span><i class="fa-regular fa-comments"></i> Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span><i class="fa-regular fa-user-group"></i> Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
+    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro</div></div></div>
+    <div class="detail-section"><div class="detail-row"><span>💬 Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>👥 Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
     <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">${mateada.tags || 'Anfitrión'}</div></div></div>
-    <button class="btn-primary" onclick="irAUnirse()"><i class="fa-regular fa-mug-hot"></i> Quiero sumarme</button>
+    <button class="btn-primary" onclick="irAUnirse()">🧉 Quiero sumarme</button>
   `;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-detail').classList.add('active');
@@ -534,20 +541,19 @@ function renderHome() {
     const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
     const tiempoRestante = getTiempoRestanteTexto(m);
     const porcentaje = getPorcentajeRestante(m);
-    const esUrg = esUrgente(m);
-    const badgeTimeClass = esUrg ? 'badge-urgent' : 'badge-time';
+    const colorClase = getColorClase(m);
     
     const card = document.createElement('div');
     card.className = 'mateada-card';
     card.onclick = () => goToDetail(m);
     card.innerHTML = `
-      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">${m.lugares_libres} lugares</span></div>
+      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">🎟️ ${m.lugares_libres} lugares</span></div>
       <div class="card-meta">
-        <span class="meta-item"><i class="fa-regular fa-location-dot"></i> ${m.ubicacion}</span>
-        <span class="meta-item"><i class="fa-regular fa-clock"></i> ${tiempoRestante}</span>
-        <span class="meta-item"><i class="fa-regular fa-user-group"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span>
+        <span class="meta-item">📍 ${m.ubicacion}</span>
+        <span class="meta-item">⏱️ ${tiempoRestante}</span>
+        <span class="meta-item">👥 ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span>
       </div>
-      <div class="countdown-bar"><div class="countdown-progress ${esUrg ? 'urgent' : ''}" style="width: ${porcentaje}%;"></div></div>
+      <div class="countdown-bar"><div class="countdown-progress ${colorClase}" style="width: ${porcentaje}%;"></div></div>
       <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
     `;
     container.appendChild(card);
@@ -609,11 +615,11 @@ function toggleOpt(btn) {
   if (parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 }
 
-// Actualización automática cada 10 segundos
+// Actualización automática cada 5 segundos
 setInterval(() => {
   limpiarMateadasExpiradas();
   if (document.querySelector('.screen.active')?.id === 'screen-home') renderHome();
-}, 10000);
+}, 5000);
 
 cargarDatosLocales();
 renderHome();
