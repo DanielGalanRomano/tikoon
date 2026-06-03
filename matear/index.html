@@ -6,7 +6,8 @@
   <title>Matear by Taragüi — Encuentros con mate en el parque</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/tabler-icons.min.css">
+  <!-- Tabler Icons CDN correcto -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=DM+Sans:opsz,wght@9..40,400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -101,7 +102,10 @@
       font-size: 20px;
       color: var(--text-primary);
       position: relative;
+      transition: all 0.2s;
     }
+    .icon-circle:hover { background: #f0f0f0; }
+    .icon-circle i { font-size: 20px; }
     .badge-dot {
       position: absolute;
       top: -2px;
@@ -161,6 +165,7 @@
       box-shadow: var(--shadow-sm);
       transition: 0.2s;
     }
+    .mateada-card:active { transform: scale(0.98); }
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
     .card-topic { font-size: 18px; font-weight: 700; color: var(--text-primary); }
     .badge { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 40px; }
@@ -170,8 +175,9 @@
     .badge-time { background: var(--cta-soft); color: var(--cta-primary); }
     .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
     .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-secondary); }
+    .meta-item i { font-size: 16px; }
     .host-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; border-top: 1px solid var(--border-light); padding-top: 14px; }
-    .avatar { width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; background: #e4f3ed; color: #0F7B5E; flex-shrink: 0; }
+    .avatar { width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; background: #e4f3ed; color: #0F7B5E; flex-shrink: 0; font-size: 16px; }
     .btn-primary { background: var(--cta-primary); color: white; border: none; padding: 15px; border-radius: 60px; font-weight: 600; font-size: 16px; width: 100%; cursor: pointer; transition: 0.2s; }
     .btn-primary:active { transform: scale(0.97); background: var(--cta-primary-dark); }
     .btn-secondary { background: white; border: 1px solid var(--border-light); padding: 14px; border-radius: 60px; font-weight: 500; width: 100%; cursor: pointer; }
@@ -181,10 +187,10 @@
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.2)} }
     .form-group { margin-bottom: 18px; }
     .form-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; }
-    .form-input, .form-select { background: white; border: 1px solid var(--border-light); border-radius: 24px; padding: 14px 18px; width: 100%; font-size: 15px; }
+    .form-input, .form-select { background: white; border: 1px solid var(--border-light); border-radius: 24px; padding: 14px 18px; width: 100%; font-size: 15px; font-family: inherit; }
     .form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B5A4B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 18px center; background-size: 16px; }
     .option-grid { display: flex; gap: 12px; }
-    .option-btn { flex: 1; padding: 12px; border-radius: 48px; border: 1px solid var(--border-light); background: white; font-weight: 500; cursor: pointer; }
+    .option-btn { flex: 1; padding: 12px; border-radius: 48px; border: 1px solid var(--border-light); background: white; font-weight: 500; cursor: pointer; transition: 0.2s; }
     .option-btn.selected { background: var(--cta-soft); border-color: var(--cta-primary); color: var(--cta-primary); }
     .slider-row { display: flex; align-items: center; gap: 14px; }
     .detail-section { margin: 16px 0 12px; }
@@ -233,6 +239,7 @@
       border-bottom: 1px solid var(--border-light);
       cursor: pointer;
     }
+    .menu-item i { font-size: 22px; }
     .menu-item:last-child { border-bottom: none; }
   </style>
 </head>
@@ -251,8 +258,13 @@
       <button class="back-btn" id="backNavBtn" onclick="goBack()" style="visibility: hidden;">←</button>
       <div></div>
       <div class="user-menu">
-        <div class="icon-circle" onclick="toggleUserMenu()"><i class="ti ti-bell"></i><span class="badge-dot" id="notifDot" style="display: none;"></span></div>
-        <div class="icon-circle" onclick="toggleUserMenu()"><i class="ti ti-user"></i></div>
+        <div class="icon-circle" onclick="toggleUserMenu()">
+          <i class="ti ti-bell"></i>
+          <span class="badge-dot" id="notifDot" style="display: none;"></span>
+        </div>
+        <div class="icon-circle" onclick="toggleUserMenu()">
+          <i class="ti ti-user"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -332,9 +344,9 @@
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title">Menú</div>
-      <div class="menu-item" onclick="verPerfil()"><i class="ti ti-user" style="font-size: 22px;"></i> Mi perfil</div>
-      <div class="menu-item" onclick="verNotificaciones()"><i class="ti ti-bell" style="font-size: 22px;"></i> Notificaciones<span id="notifCountBadge" style="background:#2563EB; color:white; border-radius:20px; padding:2px 8px; font-size:11px; margin-left:8px;">0</span></div>
-      <div class="menu-item" onclick="toggleUserMenu()"><i class="ti ti-x" style="font-size: 22px;"></i> Cerrar</div>
+      <div class="menu-item" onclick="verPerfil()"><i class="ti ti-user"></i> Mi perfil</div>
+      <div class="menu-item" onclick="verNotificaciones()"><i class="ti ti-bell"></i> Notificaciones<span id="notifCountBadge" style="background:#2563EB; color:white; border-radius:20px; padding:2px 8px; font-size:11px; margin-left:8px;">0</span></div>
+      <div class="menu-item" onclick="toggleUserMenu()"><i class="ti ti-x"></i> Cerrar</div>
     </div>
   </div>
 
@@ -352,13 +364,7 @@ let currentMateada = null;
 // Duración de una mateada: 2 horas (en milisegundos)
 const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000;
 
-// Obtener hora legible actual
-function getHoraActualFormateada() {
-  const ahora = new Date();
-  return ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-}
-
-// Verificar si una mateada ya expiró (pasaron más de 2 horas desde su creación)
+// Verificar si una mateada ya expiró
 function isMateadaExpirada(mateada) {
   if (!mateada.timestamp) return true;
   const ahora = Date.now();
@@ -393,7 +399,7 @@ function cargarDatosLocales() {
 }
 function guardarDatosLocales() { localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas })); }
 
-// Calcular tiempo restante de una mateada
+// Calcular tiempo restante
 function getTiempoRestante(mateada) {
   if (!mateada.timestamp) return "expiró";
   const ahora = Date.now();
