@@ -8,42 +8,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Matear">
   <meta name="theme-color" content="#0F7B5E">
-  <meta name="description" content="Encontrá y creá mateadas en el parque cerca tuyo">
-
-  <!-- Open Graph (para compartir) -->
-  <meta property="og:title" content="Matear — Encuentros con mate en el parque">
-  <meta property="og:description" content="Encontrá mateadas cerca tuyo o creá la tuya">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="icons/icon-512.png">
-
   <title>Matear — Encuentros con mate en el parque</title>
 
-  <!-- Splash screens para iOS -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Matear">
-
-<!-- Splash screens para diferentes dispositivos -->
-<link href="splash/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<link href="splash/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<link href="splash/iphoneplus_splash.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image">
-<link href="splash/iphonex_splash.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image">
-<link href="splash/ipad_splash.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<link href="splash/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<link href="splash/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- Apple Touch Icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -57,10 +29,12 @@
       --texto: #2A241A;
       --subtexto: #6B5A4B;
       --rojo: #DC2626;
-      /* Safe area insets para notch / barra inferior */
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      /* Altura del header fijo — se calcula en JS y se setea aquí */
+      --header-h: 120px;
     }
+
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
@@ -93,34 +67,39 @@
     .sticky-top {
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
       background: var(--crema);
+      border-radius: 32px 32px 0 0;
+      /* Sombra sutil que aparece al hacer scroll */
+      box-shadow: 0 2px 0 var(--borde);
     }
+
     .header {
       padding: calc(20px + var(--safe-top)) 20px 14px;
-      border-bottom: 1px solid var(--borde);
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    .logo-wrap { text-align: center; flex: 1; }
     .logo {
       font-family: 'Fraunces', serif;
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 900;
       color: var(--verde);
       letter-spacing: -0.5px;
     }
     .sub {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--subtexto);
-      margin-top: 3px;
+      margin-top: 2px;
       letter-spacing: 0.3px;
     }
 
-    /* ── NAV ── */
+    /* ── NAV BAR ── */
     .nav-bar {
       display: none;
       align-items: center;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--borde);
+      padding: 10px 16px 12px;
     }
     .nav-bar.visible { display: flex; }
     .back-btn {
@@ -130,9 +109,8 @@
       border-radius: 18px;
       cursor: pointer;
       font-size: 18px;
-      line-height: 1;
-      transition: background 0.15s;
       display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
     }
     .back-btn:active { background: var(--crema-dark); }
     .nav-title {
@@ -143,19 +121,7 @@
       color: var(--texto);
     }
 
-    /* ── CONTENT ── */
-    .content {
-      padding: 20px;
-      overflow-y: auto;
-      flex: 1;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* ── SCREENS ── */
-    .screen { display: none; flex: 1; flex-direction: column; }
-    .screen.active { display: flex; }
-
-    /* ── INSTALL BANNER ── */
+    /* ── BANNERS ── */
     .install-banner {
       display: none;
       align-items: center;
@@ -182,37 +148,129 @@
       font-family: 'DM Sans', sans-serif;
     }
     .install-dismiss {
-      background: none;
-      border: none;
+      background: none; border: none;
       color: rgba(255,255,255,0.7);
-      font-size: 18px;
-      cursor: pointer;
-      line-height: 1;
-      padding: 4px;
+      font-size: 18px; cursor: pointer;
+      line-height: 1; padding: 4px;
     }
     @keyframes slideDown {
       from { transform: translateY(-100%); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
+      to   { transform: translateY(0);     opacity: 1; }
     }
-
-    /* ── OFFLINE BANNER ── */
     .offline-banner {
       display: none;
       background: #FEF3C7;
       color: #92400E;
-      padding: 10px 16px;
+      padding: 8px 16px;
       font-size: 13px;
       text-align: center;
       border-bottom: 1px solid #FCD34D;
     }
     .offline-banner.visible { display: block; }
 
+    /* ── CONTENT ── */
+    .content {
+      padding: 16px 20px 20px;
+      overflow-y: auto;
+      flex: 1;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; flex: 1; }
+    .screen.active { display: flex; }
+
+    /* ════════════════════════════════
+       HOME: MAPA CERCANO + LISTA
+    ════════════════════════════════ */
+    .home-map-section {
+      position: relative;
+      /* 30% del viewport dinámico */
+      height: 30dvh;
+      min-height: 180px;
+      max-height: 260px;
+      background: var(--crema-dark);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    /* El mapa Leaflet dentro */
+    #nearbyMap {
+      width: 100%;
+      height: 100%;
+    }
+    /* Pill overlay con nombre de la mateada más cercana */
+    .nearby-pill {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15,123,94,0.92);
+      backdrop-filter: blur(8px);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      max-width: calc(100% - 32px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 10;
+      pointer-events: none;
+    }
+    /* GPS button */
+    .gps-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: none;
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 10;
+      transition: transform 0.2s;
+    }
+    .gps-btn:active { transform: scale(0.92); }
+    .gps-btn.locating { animation: pulse 1s ease infinite; }
+    @keyframes pulse { 50% { opacity: 0.5; } }
+
+    /* Placeholder cuando no hay mateadas */
+    .map-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--subtexto);
+      gap: 8px;
+      font-size: 14px;
+    }
+    .map-placeholder span { font-size: 36px; }
+
+    /* Separador "Otras mateadas" */
+    .section-label {
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--texto);
+      padding: 14px 20px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     /* ── CARDS ── */
     .card {
       background: white;
       border-radius: 20px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin: 0 20px 10px;
       cursor: pointer;
       border: 1px solid var(--borde);
       transition: transform 0.15s, box-shadow 0.15s;
@@ -220,6 +278,16 @@
     }
     .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .card:active { transform: scale(0.98); }
+    /* Card que desaparece (mateada terminada) */
+    .card.expiring {
+      animation: fadeOut 0.6s ease forwards;
+      pointer-events: none;
+    }
+    @keyframes fadeOut {
+      0%   { opacity: 1; transform: scale(1); max-height: 200px; margin-bottom: 10px; }
+      60%  { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 0; max-height: 0; margin-bottom: 0; padding: 0; border-width: 0; }
+    }
     .card-title {
       font-family: 'Fraunces', serif;
       font-weight: 700;
@@ -228,8 +296,7 @@
       margin-bottom: 8px;
     }
     .card-info {
-      display: flex;
-      gap: 12px;
+      display: flex; gap: 12px;
       font-size: 13px;
       color: var(--subtexto);
       margin: 6px 0;
@@ -240,8 +307,6 @@
       justify-content: space-between;
       margin-top: 10px;
     }
-
-    /* ── BADGE ── */
     .badge {
       background: var(--verde-light);
       color: var(--verde);
@@ -278,7 +343,7 @@
     .countdown-bar-fill {
       height: 100%;
       border-radius: 3px;
-      transition: width 1s linear, background-color 1s ease;
+      transition: width 1s linear, background-color 1.5s ease;
     }
 
     /* ── BOTONES ── */
@@ -295,16 +360,11 @@
       font-size: 15px;
       margin-top: 12px;
       transition: background 0.2s, transform 0.1s;
-      -webkit-user-select: none;
-      user-select: none;
+      -webkit-user-select: none; user-select: none;
     }
     .btn:hover { background: #0a6650; }
     .btn:active { transform: scale(0.98); }
-    .btn-secondary {
-      background: white;
-      border: 1px solid var(--borde);
-      color: var(--texto);
-    }
+    .btn-secondary { background: white; border: 1px solid var(--borde); color: var(--texto); }
     .btn-secondary:hover { background: var(--crema-dark); }
     .btn.loading { opacity: 0.7; pointer-events: none; }
 
@@ -325,11 +385,9 @@
       cursor: pointer;
       box-shadow: 0 4px 20px rgba(15,123,94,0.45);
       transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
       white-space: nowrap;
-      z-index: 200;
+      z-index: 300;
     }
     .fab:hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(15,123,94,0.55); }
     .fab:active { transform: scale(0.96); }
@@ -341,229 +399,117 @@
       padding: 12px 16px;
       border: 1.5px solid var(--borde);
       border-radius: 16px;
-      font-size: 16px; /* 16px evita zoom en iOS */
+      font-size: 16px;
       font-family: 'DM Sans', sans-serif;
       background: white;
       color: var(--texto);
       transition: border-color 0.2s;
-      -webkit-appearance: none;
-      appearance: none;
+      -webkit-appearance: none; appearance: none;
     }
-    .form-input:focus, .form-select:focus {
-      outline: none;
-      border-color: var(--verde);
-    }
-    .form-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--subtexto);
-      margin-bottom: 7px;
-      display: block;
-    }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--verde); }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--subtexto); margin-bottom: 7px; display: block; }
     .option-grid { display: flex; gap: 8px; }
     .option-btn {
-      flex: 1;
-      padding: 10px;
+      flex: 1; padding: 10px;
       border-radius: 40px;
       border: 1.5px solid var(--borde);
-      background: white;
-      cursor: pointer;
+      background: white; cursor: pointer;
       font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      transition: all 0.15s;
+      font-size: 14px; transition: all 0.15s;
     }
-    .option-btn.selected {
-      background: var(--verde-light);
-      border-color: var(--verde);
-      color: var(--verde);
-      font-weight: 600;
-    }
+    .option-btn.selected { background: var(--verde-light); border-color: var(--verde); color: var(--verde); font-weight: 600; }
     .duracion-grid { display: flex; gap: 8px; }
     .duracion-btn {
-      flex: 1;
-      padding: 10px 6px;
+      flex: 1; padding: 10px 6px;
       border-radius: 40px;
       border: 1.5px solid var(--borde);
-      background: white;
-      cursor: pointer;
+      background: white; cursor: pointer;
       font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
+      font-size: 13px; font-weight: 600; text-align: center;
       transition: all 0.15s;
     }
-    .duracion-btn.selected {
-      background: var(--verde-light);
-      border-color: var(--verde);
-      color: var(--verde);
-    }
-
-    /* ── MAPA ── */
-    .map {
-      height: 180px;
-      border-radius: 16px;
-      margin: 12px 0;
-      overflow: hidden;
-      border: 1px solid var(--borde);
-    }
-
-    /* ── EMPTY STATE ── */
-    .empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--subtexto);
-      line-height: 1.7;
-    }
-    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .duracion-btn.selected { background: var(--verde-light); border-color: var(--verde); color: var(--verde); }
 
     /* ── SLIDER ── */
     input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: var(--borde);
-      outline: none;
-      margin: 12px 0;
+      -webkit-appearance: none; width: 100%;
+      height: 6px; border-radius: 3px;
+      background: var(--borde); outline: none; margin: 12px 0;
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 28px; height: 28px;
-      border-radius: 14px;
-      background: var(--verde);
-      cursor: pointer;
+      width: 28px; height: 28px; border-radius: 14px;
+      background: var(--verde); cursor: pointer;
       box-shadow: 0 2px 8px rgba(15,123,94,0.35);
     }
 
+    /* ── MAPA DETALLE ── */
+    .map {
+      height: 180px; border-radius: 16px; margin: 12px 0;
+      overflow: hidden; border: 1px solid var(--borde);
+    }
+
+    /* ── EMPTY ── */
+    .empty {
+      text-align: center; padding: 40px 20px;
+      color: var(--subtexto); line-height: 1.7;
+      margin: 0 20px;
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
     /* ── DETALLE ── */
     .detail-header {
-      background: white;
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 12px;
+      background: white; border-radius: 20px;
+      padding: 18px; margin-bottom: 12px;
       border: 1px solid var(--borde);
     }
-    .detail-title {
-      font-family: 'Fraunces', serif;
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--texto);
-      margin-bottom: 10px;
-    }
-    .detail-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: var(--subtexto);
-      margin: 6px 0;
-    }
+    .detail-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
+    .detail-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--subtexto); margin: 6px 0; }
     .detail-row strong { color: var(--texto); }
-    .detail-countdown {
-      background: white;
-      border-radius: 16px;
-      padding: 14px 16px;
-      border: 1px solid var(--borde);
-      margin-bottom: 12px;
-    }
-    .detail-countdown-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
+    .detail-countdown { background: white; border-radius: 16px; padding: 14px 16px; border: 1px solid var(--borde); margin-bottom: 12px; }
+    .detail-countdown-label { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 8px; }
     .detail-countdown-label span:first-child { color: var(--subtexto); }
     .detail-countdown-label .tiempo-restante { font-weight: 700; font-size: 14px; }
     .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background-color 2s ease; }
 
     /* ── JOIN ── */
-    .join-card {
-      background: #FFF8EC;
-      border: 1px solid #F5D9A8;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .join-card-title {
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--texto);
-      margin-bottom: 4px;
-    }
+    .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+    .join-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 4px; }
 
     /* ── SENT ── */
     .sent-screen {
-      text-align: center;
-      padding: 60px 20px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      text-align: center; padding: 60px 20px; flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
     .sent-icon { font-size: 72px; margin-bottom: 16px; animation: pop 0.4s ease; }
-    @keyframes pop {
-      0%   { transform: scale(0.5); opacity: 0; }
-      80%  { transform: scale(1.1); }
-      100% { transform: scale(1);   opacity: 1; }
-    }
-    .sent-title {
-      font-family: 'Fraunces', serif;
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--texto);
-      margin-bottom: 10px;
-    }
+    @keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+    .sent-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
     .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
 
     /* ── MAPS LINK ── */
     .maps-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--verde);
-      text-decoration: none;
-      background: var(--verde-light);
-      padding: 5px 12px;
-      border-radius: 20px;
-      transition: background 0.15s;
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 10px; font-size: 12px; font-weight: 600;
+      color: var(--verde); text-decoration: none;
+      background: var(--verde-light); padding: 5px 12px;
+      border-radius: 20px; transition: background 0.15s;
     }
     .maps-link:hover { background: #c6edd9; }
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
     /* ── REFRESH BTN ── */
     .refresh-btn {
-      background: none;
-      border: 1px solid var(--borde);
-      width: 36px; height: 36px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: transform 0.3s;
+      background: none; border: 1px solid var(--borde);
+      width: 36px; height: 36px; border-radius: 18px;
+      cursor: pointer; font-size: 16px;
       display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s;
     }
     .refresh-btn.spinning { animation: spin 0.6s linear; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* ── HEADER ROW con refresh ── */
-    .header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px 14px;
-    }
-    .header-row .logo-wrap { text-align: center; flex: 1; }
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ── MOBILE FULL SCREEN ── */
     @media (max-width: 500px) {
@@ -571,14 +517,21 @@
       .app { border-radius: 0; max-width: 100%; min-height: 100vh; min-height: 100dvh; }
       .fab { bottom: calc(20px + var(--safe-bottom)); right: 16px; }
     }
+
+    /* Scrollable list on home */
+    #homeListContainer {
+      overflow-y: auto;
+      flex: 1;
+      padding-bottom: calc(80px + var(--safe-bottom));
+    }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- STICKY TOP -->
-  <div class="sticky-top">
-    <!-- Install banner (Android Chrome) -->
+  <!-- ══════════ STICKY TOP ══════════ -->
+  <div class="sticky-top" id="stickyTop">
+    <!-- Install banner -->
     <div class="install-banner" id="installBanner">
       <span style="font-size:28px;">🧉</span>
       <div class="install-banner-text">
@@ -595,24 +548,41 @@
     </div>
 
     <!-- Header principal -->
-    <div class="header">
-      <div class="logo">🧉 matear</div>
-      <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
+    <div class="header" id="mainHeader">
+      <div style="width:36px;"></div>
+      <div class="logo-wrap">
+        <div class="logo">🧉 matear</div>
+        <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
     </div>
 
-    <!-- Nav bar (pantallas secundarias) -->
+    <!-- Nav bar pantallas secundarias -->
     <div class="nav-bar" id="navBar">
       <button class="back-btn" onclick="goBack()">←</button>
       <span class="nav-title" id="navTitle"></span>
     </div>
   </div>
 
-  <!-- PANTALLA: INICIO -->
+  <!-- ══════════ PANTALLA: INICIO ══════════ -->
   <div id="screen-home" class="screen active">
-    <div class="content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <span style="font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:var(--texto);">Mateadas activas</span>
-        <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
+    <!-- Mapa: 30dvh, mateada más cercana -->
+    <div class="home-map-section" id="homeMapSection">
+      <div id="nearbyMap"></div>
+      <div class="nearby-pill" id="nearbyPill" style="display:none;"></div>
+      <button class="gps-btn" id="gpsBtn" onclick="pedirUbicacion()" title="Mi ubicación">📍</button>
+      <!-- placeholder mientras no hay mapa -->
+      <div class="map-placeholder" id="mapPlaceholder">
+        <span>🗺️</span>
+        <span>Activá el GPS para ver la mateada más cercana</span>
+      </div>
+    </div>
+
+    <!-- Lista scrollable -->
+    <div id="homeListContainer">
+      <div class="section-label">
+        <span>Mateadas activas</span>
+        <span id="contadorMateadas" style="font-size:13px;font-weight:500;color:var(--subtexto);font-family:'DM Sans',sans-serif;"></span>
       </div>
       <div id="homeContent">
         <div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>
@@ -620,12 +590,12 @@
     </div>
   </div>
 
-  <!-- PANTALLA: DETALLE -->
+  <!-- ══════════ PANTALLA: DETALLE ══════════ -->
   <div id="screen-detail" class="screen">
     <div class="content" id="detailContent"></div>
   </div>
 
-  <!-- PANTALLA: CREAR -->
+  <!-- ══════════ PANTALLA: CREAR ══════════ -->
   <div id="screen-create" class="screen">
     <div class="content">
       <div class="form-group">
@@ -676,7 +646,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA: UNIRSE -->
+  <!-- ══════════ PANTALLA: UNIRSE ══════════ -->
   <div id="screen-join" class="screen">
     <div class="content">
       <div id="joinInfo"></div>
@@ -689,7 +659,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA: ENVIADO -->
+  <!-- ══════════ PANTALLA: ENVIADO ══════════ -->
   <div id="screen-sent" class="screen">
     <div class="sent-screen">
       <div class="sent-icon">🧉✨</div>
@@ -713,16 +683,17 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAofWb7nAkresEU6OSS
 let mateadasActuales     = [];
 let mateadaSeleccionada  = null;
 let mapaDetalle          = null;
+let mapaNearby           = null;
+let nearbyMarkers        = [];
 let duracionSeleccionada = 60;
 let countdownIntervals   = {};
 let deferredInstallPrompt = null;
+let userLat = null, userLng = null;
 
-// ─── SERVICE WORKER (PWA) ─────────────────────────────────
+// ─── SERVICE WORKER ───────────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('[SW] Registrado:', reg.scope))
-      .catch(err => console.warn('[SW] Error:', err));
+    navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
 
@@ -730,47 +701,34 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredInstallPrompt = e;
-  // No mostrar si ya fue descartado esta sesión
   if (!sessionStorage.getItem('installDismissed')) {
-    setTimeout(() => {
-      document.getElementById('installBanner').classList.add('visible');
-    }, 2000);
+    setTimeout(() => document.getElementById('installBanner').classList.add('visible'), 2000);
   }
 });
-
 document.getElementById('installBtnBanner').addEventListener('click', async () => {
   if (!deferredInstallPrompt) return;
   deferredInstallPrompt.prompt();
-  const { outcome } = await deferredInstallPrompt.userChoice;
-  console.log('[PWA] Install outcome:', outcome);
+  await deferredInstallPrompt.userChoice;
   deferredInstallPrompt = null;
   document.getElementById('installBanner').classList.remove('visible');
 });
-
 document.getElementById('installDismiss').addEventListener('click', () => {
   document.getElementById('installBanner').classList.remove('visible');
   sessionStorage.setItem('installDismissed', '1');
 });
-
-// Ocultar banner si ya está instalada
 window.addEventListener('appinstalled', () => {
   document.getElementById('installBanner').classList.remove('visible');
 });
 
 // ─── OFFLINE / ONLINE ─────────────────────────────────────
 function actualizarEstadoRed() {
-  const banner = document.getElementById('offlineBanner');
-  if (!navigator.onLine) {
-    banner.classList.add('visible');
-  } else {
-    banner.classList.remove('visible');
-  }
+  document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine);
 }
 window.addEventListener('online',  actualizarEstadoRed);
 window.addEventListener('offline', actualizarEstadoRed);
 actualizarEstadoRed();
 
-// ─── HELPERS TIEMPO ───────────────────────────────────────
+// ─── HELPERS ──────────────────────────────────────────────
 function parseHoraToMs(horaStr) {
   if (!horaStr) return null;
   const [h, m] = horaStr.split(':').map(Number);
@@ -779,38 +737,187 @@ function parseHoraToMs(horaStr) {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0).getTime();
 }
 function duracionTexto(mins) {
-  if (mins === 30) return '30 min';
-  if (mins === 60) return '1 hora';
-  if (mins === 120) return '2 horas';
+  if (mins == 30)  return '30 min';
+  if (mins == 60)  return '1 hora';
+  if (mins == 120) return '2 horas';
   return mins + ' min';
 }
 function formatTiempoRestante(msRestante) {
   if (msRestante <= 0) return 'Terminada';
-  const totalSec = Math.floor(msRestante / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
+  const s = Math.floor(msRestante / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
   if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
-  if (m > 0) return `${m}m ${s.toString().padStart(2,'0')}s`;
-  return `${s}s`;
+  if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`;
+  return `${sec}s`;
 }
 function colorBarra(pct) {
   if (pct > 0.5) return '#0F7B5E';
   if (pct > 0.25) return '#D97706';
   return '#DC2626';
 }
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// Devuelve true si la mateada ya terminó
+function estaTerminada(m) {
+  const inicioMs = parseHoraToMs(m.hora);
+  if (!inicioMs) return false;
+  const durMs = (parseInt(m.duracion_minutos) || 60) * 60 * 1000;
+  return Date.now() > inicioMs + durMs;
+}
+
+// ─── GPS ──────────────────────────────────────────────────
+function pedirUbicacion() {
+  const btn = document.getElementById('gpsBtn');
+  btn.classList.add('locating');
+  if (!navigator.geolocation) {
+    btn.classList.remove('locating');
+    alert('Tu navegador no soporta geolocalización');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      btn.classList.remove('locating');
+      btn.textContent = '✅';
+      actualizarMapaCercano();
+    },
+    (err) => {
+      btn.classList.remove('locating');
+      console.warn('GPS error:', err);
+      // Si el usuario niega, usar coordenadas de Buenos Aires como fallback
+      userLat = -34.5842;
+      userLng = -58.4073;
+      actualizarMapaCercano();
+    },
+    { timeout: 8000, enableHighAccuracy: false }
+  );
+}
+
+// ─── MAPA CERCANO ─────────────────────────────────────────
+function actualizarMapaCercano() {
+  const placeholder = document.getElementById('mapPlaceholder');
+  const pill = document.getElementById('nearbyPill');
+
+  // Filtrar mateadas vigentes con coordenadas
+  const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
+
+  if (vigentes.length === 0) {
+    placeholder.style.display = 'flex';
+    placeholder.innerHTML = '<span>🧉</span><span>No hay mateadas activas cerca</span>';
+    pill.style.display = 'none';
+    return;
+  }
+
+  // Ordenar por distancia si tenemos ubicación
+  let ordenadas = vigentes;
+  if (userLat && userLng) {
+    ordenadas = [...vigentes].sort((a, b) => {
+      return haversineKm(userLat, userLng, a.latitud, a.longitud)
+           - haversineKm(userLat, userLng, b.latitud, b.longitud);
+    });
+  }
+  const cercana = ordenadas[0];
+
+  // Ocultar placeholder
+  placeholder.style.display = 'none';
+
+  // Inicializar o mover mapa
+  if (!mapaNearby) {
+    mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false })
+                  .setView([cercana.latitud, cercana.longitud], 15);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
+  } else {
+    mapaNearby.setView([cercana.latitud, cercana.longitud], 15);
+    // Limpiar markers anteriores
+    nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk));
+    nearbyMarkers = [];
+  }
+
+  // Marker mateada más cercana (grande)
+  const iconCercana = L.divIcon({
+    className: '',
+    html: `<div style="
+      background: #0F7B5E;
+      color: white;
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 3px 10px rgba(15,123,94,0.5);
+      border: 3px solid white;
+    ">🧉</div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18]
+  });
+  const mk = L.marker([cercana.latitud, cercana.longitud], { icon: iconCercana })
+               .addTo(mapaNearby)
+               .bindPopup(cercana.titulo);
+  nearbyMarkers.push(mk);
+
+  // Resto de mateadas (chico)
+  ordenadas.slice(1).forEach(m => {
+    const iconOtra = L.divIcon({
+      className: '',
+      html: `<div style="
+        background: rgba(15,123,94,0.6);
+        color:white; width:24px; height:24px;
+        border-radius:12px; display:flex; align-items:center; justify-content:center;
+        font-size:12px; border:2px solid white;
+      ">🧉</div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+    const mk2 = L.marker([m.latitud, m.longitud], { icon: iconOtra })
+                  .addTo(mapaNearby).bindPopup(m.titulo);
+    nearbyMarkers.push(mk2);
+  });
+
+  // Marker usuario
+  if (userLat && userLng) {
+    const iconUser = L.divIcon({
+      className: '',
+      html: `<div style="
+        background: #3B82F6;
+        width: 14px; height: 14px; border-radius: 7px;
+        border: 3px solid white;
+        box-shadow: 0 2px 6px rgba(59,130,246,0.6);
+      "></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
+    });
+    const mkUser = L.marker([userLat, userLng], { icon: iconUser }).addTo(mapaNearby);
+    nearbyMarkers.push(mkUser);
+  }
+
+  // Pill info
+  const dist = userLat ? ` · ${haversineKm(userLat, userLng, cercana.latitud, cercana.longitud).toFixed(1)} km` : '';
+  pill.style.display = 'block';
+  pill.textContent = `📍 ${cercana.titulo}${dist}`;
+
+  // Click en el mapa → ir al detalle
+  mapaNearby.on('click', () => verDetalle(cercana));
+  setTimeout(() => mapaNearby.invalidateSize(), 200);
+}
 
 // ─── COUNTDOWN ────────────────────────────────────────────
-function iniciarCountdown(mateada, fillId, labelId) {
+function iniciarCountdown(mateada, fillId, labelId, onTerminada) {
   const inicioMs = parseHoraToMs(mateada.hora);
   const durMs    = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
   function tick() {
     const fill  = document.getElementById(fillId);
     const label = document.getElementById(labelId);
     if (!fill || !label) { clearInterval(countdownIntervals[mateada.id]); return; }
-    const now = Date.now();
     const fin = inicioMs ? inicioMs + durMs : null;
-    const msRestante = fin ? fin - now : null;
+    const msRestante = fin ? fin - Date.now() : null;
     if (!fin || msRestante === null) {
       fill.style.width = '100%';
       fill.style.background = colorBarra(1);
@@ -824,6 +931,8 @@ function iniciarCountdown(mateada, fillId, labelId) {
       label.textContent = 'Terminada';
       label.style.color = '#DC2626';
       clearInterval(countdownIntervals[mateada.id]);
+      // Notificar: esta mateada terminó
+      if (onTerminada) onTerminada(mateada.id);
     } else {
       label.textContent = formatTiempoRestante(msRestante);
       label.style.color = colorBarra(pct);
@@ -834,28 +943,66 @@ function iniciarCountdown(mateada, fillId, labelId) {
   countdownIntervals[mateada.id] = setInterval(tick, 1000);
 }
 
+// Cuando una mateada termina: animar su card y removerla
+function mateadaTerminada(id) {
+  const card = document.getElementById(`card-${id}`);
+  if (card) {
+    card.classList.add('expiring');
+    // Después de la animación, eliminar del DOM y del array
+    setTimeout(() => {
+      card.remove();
+      mateadasActuales = mateadasActuales.filter(m => m.id !== id);
+      actualizarContador();
+      // Si quedó vacío
+      if (mateadasActuales.filter(m => !estaTerminada(m)).length === 0) {
+        document.getElementById('homeContent').innerHTML =
+          '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+      }
+      // Refrescar mapa
+      actualizarMapaCercano();
+    }, 700);
+  }
+}
+
+function actualizarContador() {
+  const vigentes = mateadasActuales.filter(m => !estaTerminada(m)).length;
+  document.getElementById('contadorMateadas').textContent = vigentes > 0 ? `${vigentes} activa${vigentes !== 1 ? 's' : ''}` : '';
+}
+
 // ─── CARGAR MATEADAS ──────────────────────────────────────
 async function cargarMateadas() {
   Object.values(countdownIntervals).forEach(clearInterval);
   countdownIntervals = {};
+
   const container = document.getElementById('homeContent');
   container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+
   try {
     const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
     const data = await response.json();
-    mateadasActuales = (data.success && data.mateadas) ? data.mateadas : [];
+    let todasMateadas = (data.success && data.mateadas) ? data.mateadas : [];
+
+    // Filtrar las ya terminadas antes de mostrar
+    mateadasActuales = todasMateadas.filter(m => !estaTerminada(m));
+
+    actualizarContador();
+
     if (mateadasActuales.length === 0) {
       container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+      actualizarMapaCercano();
       return;
     }
+
     container.innerHTML = '';
     mateadasActuales.forEach((m, i) => {
       const libres  = parseInt(m.lugares_libres) || 0;
       const durMins = parseInt(m.duracion_minutos) || 60;
       const fillId  = `fill-${m.id}`;
       const labelId = `label-${m.id}`;
+
       const card = document.createElement('div');
       card.className = 'card';
+      card.id = `card-${m.id}`;
       card.style.animationDelay = `${i * 60}ms`;
       card.onclick = () => verDetalle(m);
       card.innerHTML = `
@@ -884,8 +1031,15 @@ async function cargarMateadas() {
           </div>
         </div>`;
       container.appendChild(card);
-      setTimeout(() => iniciarCountdown(m, fillId, labelId), 50);
+
+      setTimeout(() => {
+        iniciarCountdown(m, fillId, labelId, mateadaTerminada);
+      }, 50);
     });
+
+    // Actualizar mapa cercano
+    actualizarMapaCercano();
+
   } catch (error) {
     console.error(error);
     container.innerHTML = navigator.onLine
@@ -910,15 +1064,19 @@ async function crearMateada() {
   const mateOption  = document.querySelector('.option-btn.selected');
   const tipoMate    = mateOption ? mateOption.innerText : 'Dulce';
   const hora        = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
   if (!organizador) { alert('Ingresá tu nombre'); return; }
   if (!ubicacion)   { alert('Ingresá la ubicación'); return; }
+
   const btn = document.getElementById('btnPublicar');
   btn.classList.add('loading');
   btn.innerText = 'Publicando...';
+
   try {
     const params = new URLSearchParams({
       accion: 'crearMateada', titulo, ubicacion,
-      latitud: -34.5842, longitud: -58.4073,
+      latitud: userLat || -34.5842,
+      longitud: userLng || -58.4073,
       lugares_totales: cupo, organizador,
       organizador_avatar: organizador.charAt(0).toUpperCase(),
       descripcion: `Mateada de ${titulo} · ${tipoMate}`,
@@ -935,8 +1093,7 @@ async function crearMateada() {
       alert('❌ Error: ' + (resultado.error || 'No se pudo publicar'));
     }
   } catch (error) {
-    console.error(error);
-    alert('❌ Error de conexión. Verificá la URL del script.');
+    alert('❌ Error de conexión');
   } finally {
     btn.classList.remove('loading');
     btn.innerText = '🌿 Publicar mateada';
@@ -966,7 +1123,6 @@ async function enviarSolicitud() {
       alert('❌ ' + (resultado.error || 'No se pudo enviar la solicitud'));
     }
   } catch (error) {
-    console.error(error);
     alert('❌ Error de conexión');
   } finally {
     btn.classList.remove('loading');
@@ -983,6 +1139,7 @@ function verDetalle(mateada) {
   const durMins   = parseInt(mateada.duracion_minutos) || 60;
   const fillId    = `detail-fill-${mateada.id}`;
   const labelId   = `detail-label-${mateada.id}`;
+
   container.innerHTML = `
     <div class="detail-header">
       <div class="detail-title">${mateada.titulo}</div>
@@ -1001,8 +1158,7 @@ function verDetalle(mateada) {
     </div>
     <div class="map" id="detailMap"></div>
     <div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;">
-      <div class="detail-row">
-        📍 <strong>${mateada.ubicacion}</strong>
+      <div class="detail-row">📍 <strong>${mateada.ubicacion}</strong>
         <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}"
            target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;">🗺️ Maps</a>
       </div>
@@ -1013,13 +1169,18 @@ function verDetalle(mateada) {
     </div>
     ${libres > 0
       ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`
-      : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`
-    }
+      : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`}
     <div style="height: calc(80px + var(--safe-bottom));"></div>`;
+
   setNavTitle(mateada.titulo);
   mostrarScreen('screen-detail');
+
   setTimeout(() => {
-    iniciarCountdown(mateada, fillId, labelId);
+    iniciarCountdown(mateada, fillId, labelId, (id) => {
+      // Si la mateada termina mientras estamos viendo el detalle, avisar y volver
+      const label = document.getElementById(labelId);
+      if (label) { label.textContent = '⏰ Terminada'; label.style.color = '#DC2626'; }
+    });
     const mapEl = document.getElementById('detailMap');
     if (mapEl && mateada.latitud && mateada.longitud) {
       if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
@@ -1044,12 +1205,13 @@ function mostrarUnirse() {
 function irInicio() {
   mostrarScreen('screen-home');
   document.getElementById('navBar').classList.remove('visible');
+  // Mostrar el header completo (ocultar nav)
+  document.getElementById('mainHeader').style.display = '';
   cargarMateadas();
 }
 function irACrear() {
   setNavTitle('Nueva mateada');
   mostrarScreen('screen-create');
-  document.getElementById('navBar').classList.add('visible');
 }
 function goBack() {
   if (document.getElementById('screen-join').classList.contains('active')) {
@@ -1066,8 +1228,8 @@ function mostrarScreen(id) {
   document.getElementById(id).classList.add('active');
   const isHome = id === 'screen-home';
   document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
+  document.getElementById('mainHeader').style.display = isHome ? '' : 'none';
   document.getElementById('navBar').classList.toggle('visible', !isHome);
-  // Scroll al inicio de la pantalla
   document.querySelector(`#${id} .content`)?.scrollTo(0, 0);
 }
 
@@ -1088,7 +1250,23 @@ document.getElementById('tiempoLlegada').oninput = function() {
 };
 
 // ─── INIT ─────────────────────────────────────────────────
-cargarMateadas();
+// Pedir GPS automáticamente al cargar
+window.addEventListener('load', () => {
+  cargarMateadas();
+  // Intentar GPS silenciosamente (sin forzar)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        document.getElementById('gpsBtn').textContent = '✅';
+        actualizarMapaCercano();
+      },
+      () => { /* silencioso: el usuario puede hacer clic en el botón */ },
+      { timeout: 5000 }
+    );
+  }
+});
 </script>
 </body>
 </html>
