@@ -123,6 +123,7 @@
       transition: all 0.2s ease;
     }
     .fab-create:active { transform: scale(0.95); background: var(--cta-primary-dark); }
+    .fab-create.hidden { display: none; }
     @media (min-width: 500px) { .fab-create { right: calc(50% - 220px); } }
     
     .breadcrumb {
@@ -239,7 +240,6 @@
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
       
-      <!-- CAMPO PARA NOMBRE DEL ORGANIZADOR -->
       <div class="form-group">
         <label class="form-label">👤 Tu nombre (como aparecerás como organizador)</label>
         <input class="form-input" id="organizadorNombre" placeholder="Ej: Camila, Juan, Ana..." value="Anfitrión">
@@ -301,7 +301,7 @@
     </div>
   </div>
 
-  <button class="fab-create" onclick="goToCreate()">➕ Crear mateada</button>
+  <button class="fab-create" id="fabCreateBtn" onclick="goToCreate()">➕ Crear mateada</button>
 </div>
 
 <script>
@@ -426,6 +426,16 @@ function actualizarBreadcrumb() {
   } else if (currentId) {
     container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">🏠 Inicio</span><span class="breadcrumb-separator">›</span><span class="breadcrumb-current">${nombres[currentId] || ''}</span>`;
     if (backBtn) backBtn.style.visibility = 'visible';
+  }
+  
+  // Mostrar u ocultar botón flotante según la pantalla
+  const fabBtn = document.getElementById('fabCreateBtn');
+  if (fabBtn) {
+    if (currentId === 'screen-create') {
+      fabBtn.classList.add('hidden');
+    } else {
+      fabBtn.classList.remove('hidden');
+    }
   }
 }
 
