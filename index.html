@@ -31,6 +31,8 @@
       --rojo: #DC2626;
       --gris: #6B7280;
       --gris-claro: #E5E7EB;
+      --azul: #3B82F6;
+      --azul-claro: #EFF6FF;
       --header-bg: #F2F2F7;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -158,6 +160,8 @@
     .btn-secondary { background: white; border: 1px solid var(--borde); color: var(--texto); }
     .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
     .btn-back:active { transform: scale(0.98); background: #D1D5DB; }
+    .btn-small { background: var(--azul); color: white; border: none; padding: 10px 16px; border-radius: 40px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; font-size: 13px; transition: background 0.2s; }
+    .btn-small:active { transform: scale(0.97); }
     .btn.loading { opacity: 0.7; pointer-events: none; }
 
     .fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--verde); color: white; border: none; height: 52px; padding: 0 22px; border-radius: 26px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 300; }
@@ -190,6 +194,18 @@
     .detail-countdown-label .tiempo-restante { font-weight: 700; font-size: 14px; }
     .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background-color 2s ease; }
+
+    /* Chat styles */
+    .chat-section { background: white; border-radius: 20px; padding: 16px; border: 1px solid var(--borde); margin-bottom: 12px; }
+    .chat-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px; color: var(--texto); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .chat-bubble { background: var(--azul-claro); border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+    .chat-bubble-question { background: var(--verde-light); border-radius: 16px 16px 16px 4px; padding: 12px; margin-bottom: 10px; }
+    .chat-bubble-answer { background: #F3F4F6; border-radius: 16px 16px 4px 16px; padding: 12px; margin-bottom: 10px; border-left: 3px solid var(--verde); }
+    .chat-meta { font-size: 11px; color: var(--subtexto); margin-top: 6px; display: flex; justify-content: space-between; }
+    .chat-input-group { display: flex; gap: 8px; margin-top: 12px; }
+    .chat-input { flex: 1; padding: 10px 14px; border: 1.5px solid var(--borde); border-radius: 40px; font-size: 14px; font-family: 'DM Sans', sans-serif; }
+    .chat-input:focus { outline: none; border-color: var(--verde); }
+    .chat-disabled { background: #F9F9F9; padding: 12px; border-radius: 12px; text-align: center; color: var(--subtexto); font-size: 13px; }
 
     .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
     .join-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 4px; }
@@ -351,9 +367,146 @@ let ubicacionSeleccionadaMapa = null;
 let mapaSelector = null;
 let markerSelector = null;
 
+// Datos del usuario capturados automáticamente
+let usuarioActual = {
+    nombre: '',
+    dispositivo: '',
+    navegador: '',
+    sistema: '',
+    idioma: '',
+    zonaHoraria: '',
+    resolucion: '',
+    conexion: '',
+    memoria: ''
+};
+
+// Chat storage (simulado localmente, idealmente iría a backend)
+let chatsPorMateada = {};
+
+// ─── CAPTURA DE DATOS DEL USUARIO ─────────────────────────
+function capturarDatosUsuario() {
+    // Detectar navegador
+    const userAgent = navigator.userAgent;
+    let navegador = 'Desconocido';
+    if (userAgent.indexOf('Chrome') > -1) navegador = 'Chrome';
+    else if (userAgent.indexOf('Safari') > -1) navegador = 'Safari';
+    else if (userAgent.indexOf('Firefox') > -1) navegador = 'Firefox';
+    else if (userAgent.indexOf('Edge') > -1) navegador = 'Edge';
+    else if (userAgent.indexOf('Opera') > -1) navegador = 'Opera';
+    
+    // Detectar sistema operativo
+    let sistema = 'Desconocido';
+    if (userAgent.indexOf('Windows') > -1) sistema = 'Windows';
+    else if (userAgent.indexOf('Mac') > -1) sistema = 'macOS';
+    else if (userAgent.indexOf('Linux') > -1) sistema = 'Linux';
+    else if (userAgent.indexOf('Android') > -1) sistema = 'Android';
+    else if (userAgent.indexOf('iOS') > -1 || userAgent.indexOf('iPhone') > -1 || userAgent.indexOf('iPad') > -1) sistema = 'iOS';
+    
+    // Detectar dispositivo
+    let dispositivo = 'Desktop';
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(userAgent)) dispositivo = 'Móvil/Tablet';
+    
+    usuarioActual = {
+        nombre: localStorage.getItem('usuarioNombre') || '',
+        dispositivo: dispositivo,
+        navegador: navegador,
+        sistema: sistema,
+        idioma: navigator.language || navigator.userLanguage || 'es',
+        zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        resolucion: `${window.screen.width}x${window.screen.height}`,
+        conexion: navigator.connection ? navigator.connection.effectiveType : 'desconocida',
+        memoria: navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'desconocida',
+        fechaVisita: new Date().toISOString()
+    };
+    
+    console.log('📱 Datos capturados:', usuarioActual);
+    
+    // Intentar guardar en localStorage
+    localStorage.setItem('usuarioDatos', JSON.stringify(usuarioActual));
+}
+
+// ─── GUARDAR NOMBRE DEL USUARIO ───────────────────────────
+function guardarNombreUsuario(nombre) {
+    if (nombre && nombre.trim()) {
+        usuarioActual.nombre = nombre.trim();
+        localStorage.setItem('usuarioNombre', nombre.trim());
+        localStorage.setItem('usuarioDatos', JSON.stringify(usuarioActual));
+    }
+}
+
+// ─── FUNCIONES DEL CHAT ───────────────────────────────────
+function inicializarChat(mateadaId) {
+    if (!chatsPorMateada[mateadaId]) {
+        // Verificar si ya hay datos guardados localmente
+        const saved = localStorage.getItem(`chat_${mateadaId}`);
+        if (saved) {
+            chatsPorMateada[mateadaId] = JSON.parse(saved);
+        } else {
+            chatsPorMateada[mateadaId] = {
+                pregunta: null,
+                respuesta: null,
+                preguntaHecha: false,
+                respondido: false,
+                preguntaAutor: null,
+                preguntaFecha: null,
+                respuestaAutor: null,
+                respuestaFecha: null
+            };
+        }
+    }
+    return chatsPorMateada[mateadaId];
+}
+
+function hacerPregunta(mateadaId, pregunta) {
+    const chat = inicializarChat(mateadaId);
+    if (chat.preguntaHecha) {
+        alert('❌ Ya hiciste una pregunta para esta mateada. Solo se permite una por persona.');
+        return false;
+    }
+    
+    chat.pregunta = pregunta;
+    chat.preguntaHecha = true;
+    chat.preguntaAutor = usuarioActual.nombre || 'Anónimo';
+    chat.preguntaFecha = new Date().toISOString();
+    chat.respondido = false;
+    
+    // Guardar en localStorage
+    localStorage.setItem(`chat_${mateadaId}`, JSON.stringify(chat));
+    
+    // Aquí se podría enviar al backend
+    console.log(`📝 Pregunta guardada para mateada ${mateadaId}:`, pregunta);
+    
+    return true;
+}
+
+function responderPregunta(mateadaId, respuesta, esOrganizador) {
+    const chat = inicializarChat(mateadaId);
+    if (!chat.preguntaHecha) {
+        alert('❌ No hay pregunta para responder aún.');
+        return false;
+    }
+    
+    if (chat.respondido) {
+        alert('❌ Esta pregunta ya fue respondida.');
+        return false;
+    }
+    
+    chat.respuesta = respuesta;
+    chat.respondido = true;
+    chat.respuestaAutor = esOrganizador ? mateadaSeleccionada?.organizador || 'Organizador' : usuarioActual.nombre || 'Anónimo';
+    chat.respuestaFecha = new Date().toISOString();
+    
+    // Guardar en localStorage
+    localStorage.setItem(`chat_${mateadaId}`, JSON.stringify(chat));
+    
+    console.log(`💬 Respuesta guardada para mateada ${mateadaId}:`, respuesta);
+    
+    return true;
+}
+
 // ─── SERVICE WORKER ───────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 
 // ─── DETECTAR iOS ─────────────────────────────────────────
@@ -362,41 +515,41 @@ const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').match
 
 let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  if (!sessionStorage.getItem('installDismissed')) { setTimeout(() => document.getElementById('installBanner').classList.add('visible'), 2000); }
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (!sessionStorage.getItem('installDismissed')) { setTimeout(() => document.getElementById('installBanner').classList.add('visible'), 2000); }
 });
 document.getElementById('installBtnBanner')?.addEventListener('click', async () => {
-  if (!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  await deferredInstallPrompt.userChoice;
-  deferredInstallPrompt = null;
-  document.getElementById('installBanner').classList.remove('visible');
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    document.getElementById('installBanner').classList.remove('visible');
 });
 document.getElementById('installDismiss')?.addEventListener('click', () => {
-  document.getElementById('installBanner').classList.remove('visible');
-  sessionStorage.setItem('installDismissed', '1');
+    document.getElementById('installBanner').classList.remove('visible');
+    sessionStorage.setItem('installDismissed', '1');
 });
 window.addEventListener('appinstalled', () => {
-  document.getElementById('installBanner').classList.remove('visible');
-  document.getElementById('iosInstallBtn').style.display = 'none';
+    document.getElementById('installBanner').classList.remove('visible');
+    document.getElementById('iosInstallBtn').style.display = 'none';
 });
 
 if (isIOS && !isInStandaloneMode) {
-  document.getElementById('iosInstallBtn').style.display = 'block';
-  document.getElementById('headerSpacer1').style.display = 'none';
-  if (!sessionStorage.getItem('iosSheetShown')) {
-    setTimeout(() => { document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown', '1'); }, 2500);
-  }
+    document.getElementById('iosInstallBtn').style.display = 'block';
+    document.getElementById('headerSpacer1').style.display = 'none';
+    if (!sessionStorage.getItem('iosSheetShown')) {
+        setTimeout(() => { document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown', '1'); }, 2500);
+    }
 }
 
 function abrirIosSheet() { document.getElementById('iosSheetOverlay').classList.add('visible'); }
 function cerrarIosSheet(e) { if (!e || e.target === document.getElementById('iosSheetOverlay') || !e.target) { document.getElementById('iosSheetOverlay').classList.remove('visible'); } }
 
 function ajustarSpacer() {
-  const h = document.getElementById('stickyTop').getBoundingClientRect().height;
-  document.getElementById('headerSpacer').style.height = h + 'px';
-  document.documentElement.style.setProperty('--header-h', h + 'px');
+    const h = document.getElementById('stickyTop').getBoundingClientRect().height;
+    document.getElementById('headerSpacer').style.height = h + 'px';
+    document.documentElement.style.setProperty('--header-h', h + 'px');
 }
 if (window.ResizeObserver) { new ResizeObserver(ajustarSpacer).observe(document.getElementById('stickyTop')); } else { window.addEventListener('resize', ajustarSpacer); }
 document.addEventListener('DOMContentLoaded', ajustarSpacer);
@@ -412,223 +565,294 @@ function formatTiempoRestante(msRestante) { if (msRestante <= 0) return 'Termina
 function haversineKm(lat1, lng1, lat2, lng2) { const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLng = (lng2 - lng1) * Math.PI / 180; const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
 
 function getInicioMs(m) {
-  if (m.timestamp_unix) return parseInt(m.timestamp_unix) * 1000;
-  if (m.timestamp_ms) return parseInt(m.timestamp_ms);
-  if (m.fecha_hora) { const d = new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
-  if (m.fecha && m.hora) { const d = new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
-  if (m.hora) { const [h, min] = m.hora.split(':').map(Number); if (!isNaN(h) && !isNaN(min)) { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, min, 0).getTime(); } }
-  return null;
+    if (m.timestamp_unix) return parseInt(m.timestamp_unix) * 1000;
+    if (m.timestamp_ms) return parseInt(m.timestamp_ms);
+    if (m.fecha_hora) { const d = new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
+    if (m.fecha && m.hora) { const d = new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
+    if (m.hora) { const [h, min] = m.hora.split(':').map(Number); if (!isNaN(h) && !isNaN(min)) { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, min, 0).getTime(); } }
+    return null;
 }
 function estaTerminada(m) { const inicioMs = getInicioMs(m); if (!inicioMs) return false; const durMs = (parseInt(m.duracion_minutos) || 60) * 60 * 1000; return Date.now() > (inicioMs + durMs); }
 function getMsRestante(m) { const inicioMs = getInicioMs(m); if (!inicioMs) return null; const durMs = (parseInt(m.duracion_minutos) || 60) * 60 * 1000; return (inicioMs + durMs) - Date.now(); }
 
 // ─── GEOCODIFICACIÓN ──────────────────────────────────────
 async function geocodificarUbicacion(direccion) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}, Argentina&limit=1`;
-    const response = await fetch(url, { headers: { 'Accept-Language': 'es-AR', 'User-Agent': 'MatearApp/1.0' } });
-    const data = await response.json();
-    if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), nombre: data[0].display_name };
-    const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`;
-    const response2 = await fetch(url2, { headers: { 'User-Agent': 'MatearApp/1.0' } });
-    const data2 = await response2.json();
-    if (data2 && data2.length > 0) return { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon), nombre: data2[0].display_name };
-    return null;
-  } catch (error) { console.error('Error geocodificando:', error); return null; }
+    try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}, Argentina&limit=1`;
+        const response = await fetch(url, { headers: { 'Accept-Language': 'es-AR', 'User-Agent': 'MatearApp/1.0' } });
+        const data = await response.json();
+        if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), nombre: data[0].display_name };
+        const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`;
+        const response2 = await fetch(url2, { headers: { 'User-Agent': 'MatearApp/1.0' } });
+        const data2 = await response2.json();
+        if (data2 && data2.length > 0) return { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon), nombre: data2[0].display_name };
+        return null;
+    } catch (error) { console.error('Error geocodificando:', error); return null; }
 }
 
 // ─── SELECTOR DE UBICACIÓN EN MAPA ────────────────────────
 function abrirSelectorUbicacion() {
-  const modal = document.createElement('div');
-  modal.className = 'map-modal';
-  modal.innerHTML = `
-    <div class="map-modal-header"><span>📍 Seleccioná la ubicación en el mapa</span><button onclick="this.closest('.map-modal').remove()">✕</button></div>
-    <div id="mapaSelectorContainer" class="map-modal-content"></div>
-    <div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>
-  `;
-  document.body.appendChild(modal);
-  setTimeout(() => {
-    const container = document.getElementById('mapaSelectorContainer');
-    if (!container) return;
-    mapaSelector = L.map(container).setView([userLat || -34.5842, userLng || -58.4073], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
-    if (userLat && userLng) { L.marker([userLat, userLng]).addTo(mapaSelector).bindPopup('📍 Tu ubicación actual'); }
-    mapaSelector.on('click', (e) => {
-      if (markerSelector) mapaSelector.removeLayer(markerSelector);
-      markerSelector = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapaSelector);
-      ubicacionSeleccionadaMapa = { lat: e.latlng.lat, lng: e.latlng.lng };
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18&addressdetails=1`)
-        .then(res => res.json()).then(data => {
-          const direccion = data.display_name?.split(',')[0] || 'Ubicación seleccionada';
-          document.getElementById('ubicacionMateada').value = direccion;
-        }).catch(() => { document.getElementById('ubicacionMateada').value = `Ubicación en mapa`; });
-    });
-    document.getElementById('confirmarUbicacionBtn').onclick = () => {
-      if (ubicacionSeleccionadaMapa) { modal.remove(); mapaSelector = null; markerSelector = null; alert('✅ Ubicación seleccionada correctamente'); }
-      else { alert('📍 Hacé clic en el mapa para seleccionar la ubicación'); }
-    };
-  }, 100);
+    const modal = document.createElement('div');
+    modal.className = 'map-modal';
+    modal.innerHTML = `
+        <div class="map-modal-header"><span>📍 Seleccioná la ubicación en el mapa</span><button onclick="this.closest('.map-modal').remove()">✕</button></div>
+        <div id="mapaSelectorContainer" class="map-modal-content"></div>
+        <div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        const container = document.getElementById('mapaSelectorContainer');
+        if (!container) return;
+        mapaSelector = L.map(container).setView([userLat || -34.5842, userLng || -58.4073], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
+        if (userLat && userLng) { L.marker([userLat, userLng]).addTo(mapaSelector).bindPopup('📍 Tu ubicación actual'); }
+        mapaSelector.on('click', (e) => {
+            if (markerSelector) mapaSelector.removeLayer(markerSelector);
+            markerSelector = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapaSelector);
+            ubicacionSeleccionadaMapa = { lat: e.latlng.lat, lng: e.latlng.lng };
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18&addressdetails=1`)
+                .then(res => res.json()).then(data => {
+                    const direccion = data.display_name?.split(',')[0] || 'Ubicación seleccionada';
+                    document.getElementById('ubicacionMateada').value = direccion;
+                }).catch(() => { document.getElementById('ubicacionMateada').value = `Ubicación en mapa`; });
+        });
+        document.getElementById('confirmarUbicacionBtn').onclick = () => {
+            if (ubicacionSeleccionadaMapa) { modal.remove(); mapaSelector = null; markerSelector = null; alert('✅ Ubicación seleccionada correctamente'); }
+            else { alert('📍 Hacé clic en el mapa para seleccionar la ubicación'); }
+        };
+    }, 100);
 }
 
 // ─── GPS ──────────────────────────────────────────────────
 function pedirUbicacion() {
-  const btn = document.getElementById('gpsBtn');
-  btn.classList.add('locating');
-  if (!navigator.geolocation) { btn.classList.remove('locating'); alert('Tu navegador no soporta geolocalización'); return; }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; btn.classList.remove('locating'); btn.textContent = '✅'; actualizarMapaCercano(); },
-    (err) => { btn.classList.remove('locating'); console.warn('GPS error:', err); userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
-    { timeout: 8000, enableHighAccuracy: false }
-  );
+    const btn = document.getElementById('gpsBtn');
+    btn.classList.add('locating');
+    if (!navigator.geolocation) { btn.classList.remove('locating'); alert('Tu navegador no soporta geolocalización'); return; }
+    navigator.geolocation.getCurrentPosition(
+        (pos) => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; btn.classList.remove('locating'); btn.textContent = '✅'; actualizarMapaCercano(); },
+        (err) => { btn.classList.remove('locating'); console.warn('GPS error:', err); userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
+        { timeout: 8000, enableHighAccuracy: false }
+    );
 }
 
 // ─── MAPA CERCANO ─────────────────────────────────────────
 function actualizarMapaCercano() {
-  const placeholder = document.getElementById('mapPlaceholder');
-  const pill = document.getElementById('nearbyPill');
-  const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
-  if (vigentes.length === 0) {
-    placeholder.style.display = 'flex'; placeholder.innerHTML = '<span>🧉</span><span>No hay mateadas activas cerca</span>'; pill.style.display = 'none';
-    if (mapaNearby) { nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk)); nearbyMarkers = []; }
-    return;
-  }
-  placeholder.style.display = 'none';
-  let ordenadas = vigentes;
-  if (userLat && userLng) { ordenadas = [...vigentes].sort((a,b) => haversineKm(userLat, userLng, a.latitud, a.longitud) - haversineKm(userLat, userLng, b.latitud, b.longitud)); }
-  const cercana = ordenadas[0];
-  if (!mapaNearby) {
-    mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false, dragging: true, scrollWheelZoom: false }).setView([-34.6, -64.0], 4);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
-  } else { nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk)); nearbyMarkers = []; }
-  const bounds = [];
-  ordenadas.forEach((m, idx) => {
-    const esCercana = (idx === 0);
-    const icon = L.divIcon({ className: '', html: `<div style="background: ${esCercana ? '#0F7B5E' : 'rgba(15,123,94,0.55)'}; color: white; width: ${esCercana ? '38px' : '26px'}; height: ${esCercana ? '38px' : '26px'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: ${esCercana ? '18px' : '13px'}; box-shadow: 0 3px 10px rgba(15,123,94,0.45); border: ${esCercana ? '3px' : '2px'} solid white;">🧉</div>`, iconSize: esCercana ? [38,38] : [26,26], iconAnchor: esCercana ? [19,19] : [13,13] });
-    const msR = getMsRestante(m);
-    const tiempoInfo = msR !== null && msR > 0 ? `⏳ ${formatTiempoRestante(msR)}` : (msR === null ? '' : '✓ Terminada');
-    const popup = L.popup({ closeButton: false }).setContent(`<div style="font-family:'DM Sans',sans-serif;padding:2px 0"><strong style="font-size:13px;color:#2A241A">${m.titulo}</strong><br><span style="font-size:11px;color:#6B5A4B">📍 ${m.ubicacion}</span><br><span style="font-size:11px;color:#0F7B5E">${tiempoInfo}</span></div>`);
-    const mk = L.marker([m.latitud, m.longitud], { icon }).bindPopup(popup).addTo(mapaNearby);
-    mk.on('click', () => verDetalle(m));
-    nearbyMarkers.push(mk);
-    bounds.push([m.latitud, m.longitud]);
-  });
-  if (userLat && userLng) {
-    const iconUser = L.divIcon({ className: '', html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`, iconSize: [14,14], iconAnchor: [7,7] });
-    const mkUser = L.marker([userLat, userLng], { icon: iconUser }).bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:12px">📍 Vos estás acá</div>').addTo(mapaNearby);
-    nearbyMarkers.push(mkUser);
-    bounds.push([userLat, userLng]);
-  }
-  if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
-  else if (bounds.length > 1) mapaNearby.fitBounds(bounds, { padding: [24,24], maxZoom: 14 });
-  const dist = (userLat && userLng) ? ` · ${haversineKm(userLat, userLng, cercana.latitud, cercana.longitud).toFixed(1)} km` : '';
-  pill.style.display = 'block'; pill.textContent = `📍 ${cercana.titulo}${dist}`;
-  setTimeout(() => mapaNearby?.invalidateSize(), 220);
+    const placeholder = document.getElementById('mapPlaceholder');
+    const pill = document.getElementById('nearbyPill');
+    const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
+    if (vigentes.length === 0) {
+        placeholder.style.display = 'flex'; placeholder.innerHTML = '<span>🧉</span><span>No hay mateadas activas cerca</span>'; pill.style.display = 'none';
+        if (mapaNearby) { nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk)); nearbyMarkers = []; }
+        return;
+    }
+    placeholder.style.display = 'none';
+    let ordenadas = vigentes;
+    if (userLat && userLng) { ordenadas = [...vigentes].sort((a,b) => haversineKm(userLat, userLng, a.latitud, a.longitud) - haversineKm(userLat, userLng, b.latitud, b.longitud)); }
+    const cercana = ordenadas[0];
+    if (!mapaNearby) {
+        mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false, dragging: true, scrollWheelZoom: false }).setView([-34.6, -64.0], 4);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
+    } else { nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk)); nearbyMarkers = []; }
+    const bounds = [];
+    ordenadas.forEach((m, idx) => {
+        const esCercana = (idx === 0);
+        const icon = L.divIcon({ className: '', html: `<div style="background: ${esCercana ? '#0F7B5E' : 'rgba(15,123,94,0.55)'}; color: white; width: ${esCercana ? '38px' : '26px'}; height: ${esCercana ? '38px' : '26px'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: ${esCercana ? '18px' : '13px'}; box-shadow: 0 3px 10px rgba(15,123,94,0.45); border: ${esCercana ? '3px' : '2px'} solid white;">🧉</div>`, iconSize: esCercana ? [38,38] : [26,26], iconAnchor: esCercana ? [19,19] : [13,13] });
+        const msR = getMsRestante(m);
+        const tiempoInfo = msR !== null && msR > 0 ? `⏳ ${formatTiempoRestante(msR)}` : (msR === null ? '' : '✓ Terminada');
+        const popup = L.popup({ closeButton: false }).setContent(`<div style="font-family:'DM Sans',sans-serif;padding:2px 0"><strong style="font-size:13px;color:#2A241A">${m.titulo}</strong><br><span style="font-size:11px;color:#6B5A4B">📍 ${m.ubicacion}</span><br><span style="font-size:11px;color:#0F7B5E">${tiempoInfo}</span></div>`);
+        const mk = L.marker([m.latitud, m.longitud], { icon }).bindPopup(popup).addTo(mapaNearby);
+        mk.on('click', () => verDetalle(m));
+        nearbyMarkers.push(mk);
+        bounds.push([m.latitud, m.longitud]);
+    });
+    if (userLat && userLng) {
+        const iconUser = L.divIcon({ className: '', html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`, iconSize: [14,14], iconAnchor: [7,7] });
+        const mkUser = L.marker([userLat, userLng], { icon: iconUser }).bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:12px">📍 Vos estás acá</div>').addTo(mapaNearby);
+        nearbyMarkers.push(mkUser);
+        bounds.push([userLat, userLng]);
+    }
+    if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
+    else if (bounds.length > 1) mapaNearby.fitBounds(bounds, { padding: [24,24], maxZoom: 14 });
+    const dist = (userLat && userLng) ? ` · ${haversineKm(userLat, userLng, cercana.latitud, cercana.longitud).toFixed(1)} km` : '';
+    pill.style.display = 'block'; pill.textContent = `📍 ${cercana.titulo}${dist}`;
+    setTimeout(() => mapaNearby?.invalidateSize(), 220);
 }
 
 function iniciarCountdown(mateada, fillId, labelId, onTerminada) {
-  const durMs = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
-  let notif15Fired = false;
-  function tick() {
-    const fill = document.getElementById(fillId), label = document.getElementById(labelId);
-    if (!fill || !label) { clearInterval(countdownIntervals[mateada.id]); return; }
-    const msRestante = getMsRestante(mateada);
-    if (msRestante === null) { fill.style.width = '100%'; fill.style.background = '#0F7B5E'; label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60); label.style.color = '#0F7B5E'; return; }
-    const pct = Math.max(0, Math.min(1, msRestante / durMs));
-    let color; if (pct > 0.5) color = '#0F7B5E'; else if (pct > 0.25) color = '#D97706'; else color = '#DC2626';
-    fill.style.width = (pct * 100) + '%'; fill.style.background = color;
-    if (msRestante <= 0) { fill.style.width = '0%'; label.textContent = 'Terminada ✓'; label.style.color = '#DC2626'; clearInterval(countdownIntervals[mateada.id]); if (onTerminada) onTerminada(mateada.id); }
-    else { label.textContent = formatTiempoRestante(msRestante); label.style.color = color; }
-  }
-  clearInterval(countdownIntervals[mateada.id]); tick(); countdownIntervals[mateada.id] = setInterval(tick, 1000);
+    const durMs = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
+    function tick() {
+        const fill = document.getElementById(fillId), label = document.getElementById(labelId);
+        if (!fill || !label) { clearInterval(countdownIntervals[mateada.id]); return; }
+        const msRestante = getMsRestante(mateada);
+        if (msRestante === null) { fill.style.width = '100%'; fill.style.background = '#0F7B5E'; label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60); label.style.color = '#0F7B5E'; return; }
+        const pct = Math.max(0, Math.min(1, msRestante / durMs));
+        let color; if (pct > 0.5) color = '#0F7B5E'; else if (pct > 0.25) color = '#D97706'; else color = '#DC2626';
+        fill.style.width = (pct * 100) + '%'; fill.style.background = color;
+        if (msRestante <= 0) { fill.style.width = '0%'; label.textContent = 'Terminada ✓'; label.style.color = '#DC2626'; clearInterval(countdownIntervals[mateada.id]); if (onTerminada) onTerminada(mateada.id); }
+        else { label.textContent = formatTiempoRestante(msRestante); label.style.color = color; }
+    }
+    clearInterval(countdownIntervals[mateada.id]); tick(); countdownIntervals[mateada.id] = setInterval(tick, 1000);
 }
 
 function mateadaTerminada(id) {
-  const card = document.getElementById(`card-${id}`);
-  if (card) {
-    card.classList.add('expiring');
-    setTimeout(() => { card.remove(); mateadasActuales = mateadasActuales.filter(m => m.id != id); actualizarContador(); if (mateadasActuales.filter(m => !estaTerminada(m)).length === 0) document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); }, 700);
-  }
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+        card.classList.add('expiring');
+        setTimeout(() => { card.remove(); mateadasActuales = mateadasActuales.filter(m => m.id != id); actualizarContador(); if (mateadasActuales.filter(m => !estaTerminada(m)).length === 0) document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); }, 700);
+    }
 }
 function actualizarContador() { const vigentes = mateadasActuales.filter(m => !estaTerminada(m)).length; document.getElementById('contadorMateadas').textContent = vigentes > 0 ? `${vigentes} activa${vigentes !== 1 ? 's' : ''}` : ''; }
 
 async function cargarMateadas() {
-  Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals = {};
-  const container = document.getElementById('homeContent'); container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
-  try {
-    const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
-    const data = await response.json();
-    let todasMateadas = (data.success && data.mateadas) ? data.mateadas : [];
-    mateadasActuales = todasMateadas.filter(m => !estaTerminada(m));
-    actualizarContador();
-    if (mateadasActuales.length === 0) { container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); return; }
-    container.innerHTML = '';
-    mateadasActuales.forEach((m, i) => {
-      const libres = parseInt(m.lugares_libres) || 0, durMins = parseInt(m.duracion_minutos) || 60, fillId = `fill-${m.id}`, labelId = `label-${m.id}`;
-      const card = document.createElement('div'); card.className = 'card'; card.id = `card-${m.id}`; card.style.animationDelay = `${i * 60}ms`; card.onclick = () => verDetalle(m);
-      const tieneCoordenadas = m.latitud && m.latitud !== -34.5842;
-      card.innerHTML = `<div class="card-title">${m.titulo} ${tieneCoordenadas ? '📍' : '⚠️'}</div><div class="card-info"><span>📍 ${m.ubicacion}</span><span>⏰ ${m.hora || 'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres === 0 ? 'lleno' : ''}">${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}</span><span class="organizador-chip">🧑 ${m.organizador}</span></div><a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.ubicacion)}" target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">🗺️ Ver en Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}" style="font-weight:600;">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div></div></div>`;
-      container.appendChild(card);
-      setTimeout(() => { iniciarCountdown(m, fillId, labelId, mateadaTerminada); }, 50);
-    });
-    actualizarMapaCercano();
-  } catch (error) { console.error(error); container.innerHTML = navigator.onLine ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>' : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>'; }
+    Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals = {};
+    const container = document.getElementById('homeContent'); container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+    try {
+        const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+        const data = await response.json();
+        let todasMateadas = (data.success && data.mateadas) ? data.mateadas : [];
+        mateadasActuales = todasMateadas.filter(m => !estaTerminada(m));
+        actualizarContador();
+        if (mateadasActuales.length === 0) { container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); return; }
+        container.innerHTML = '';
+        mateadasActuales.forEach((m, i) => {
+            const libres = parseInt(m.lugares_libres) || 0, durMins = parseInt(m.duracion_minutos) || 60, fillId = `fill-${m.id}`, labelId = `label-${m.id}`;
+            const card = document.createElement('div'); card.className = 'card'; card.id = `card-${m.id}`; card.style.animationDelay = `${i * 60}ms`; card.onclick = () => verDetalle(m);
+            const tieneCoordenadas = m.latitud && m.latitud !== -34.5842;
+            card.innerHTML = `<div class="card-title">${m.titulo} ${tieneCoordenadas ? '📍' : '⚠️'}</div><div class="card-info"><span>📍 ${m.ubicacion}</span><span>⏰ ${m.hora || 'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres === 0 ? 'lleno' : ''}">${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}</span><span class="organizador-chip">🧑 ${m.organizador}</span></div><a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.ubicacion)}" target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">🗺️ Ver en Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}" style="font-weight:600;">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div></div></div>`;
+            container.appendChild(card);
+            setTimeout(() => { iniciarCountdown(m, fillId, labelId, mateadaTerminada); }, 50);
+        });
+        actualizarMapaCercano();
+    } catch (error) { console.error(error); container.innerHTML = navigator.onLine ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>' : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>'; }
 }
 function recargar() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(() => btn.classList.remove('spinning'), 600); cargarMateadas(); }
 
 async function crearMateada() {
-  const organizador = document.getElementById('nombreOrganizador').value.trim();
-  const titulo = document.getElementById('temaMateada').value;
-  const ubicacion = document.getElementById('ubicacionMateada').value.trim();
-  const cupo = parseInt(document.getElementById('cupoMateada').value);
-  const mateOption = document.querySelector('.option-btn.selected');
-  const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
-  const hora = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-  if (!organizador) { alert('Ingresá tu nombre'); return; }
-  if (!ubicacion) { alert('Ingresá la ubicación'); return; }
-  const btn = document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText = 'Buscando ubicación...';
-  let latitud = userLat || -34.5842, longitud = userLng || -58.4073;
-  const coordenadas = await geocodificarUbicacion(ubicacion);
-  if (coordenadas) { latitud = coordenadas.lat; longitud = coordenadas.lng; console.log(`📍 Ubicación encontrada: ${coordenadas.nombre}`); }
-  else { console.warn(`⚠️ No se encontró "${ubicacion}"`); if (!userLat && !userLng) alert(`⚠️ No pudimos ubicar "${ubicacion}". Se usará una ubicación aproximada.`); }
-  btn.innerText = 'Publicando...';
-  try {
-    const params = new URLSearchParams({ accion:'crearMateada', titulo, ubicacion, latitud, longitud, lugares_totales:cupo, organizador, organizador_avatar:organizador.charAt(0).toUpperCase(), descripcion:`Mateada de ${titulo} · ${tipoMate}`, duracion_minutos:duracionSeleccionada, duracion:duracionTexto(duracionSeleccionada), hora, tags:titulo.split(' ')[0] });
-    const response = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await response.json();
-    if (resultado.success) { alert(`✅ ¡Mateada publicada!\n📍 ${ubicacion}\n👥 Cupo: ${cupo} · ⏳ ${duracionTexto(duracionSeleccionada)}`); irInicio(); }
-    else { alert('❌ Error: ' + (resultado.error || 'No se pudo publicar')); }
-  } catch (error) { alert('❌ Error de conexión'); }
-  finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
+    const organizador = document.getElementById('nombreOrganizador').value.trim();
+    const titulo = document.getElementById('temaMateada').value;
+    const ubicacion = document.getElementById('ubicacionMateada').value.trim();
+    const cupo = parseInt(document.getElementById('cupoMateada').value);
+    const mateOption = document.querySelector('.option-btn.selected');
+    const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
+    const hora = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+    if (!organizador) { alert('Ingresá tu nombre'); return; }
+    if (!ubicacion) { alert('Ingresá la ubicación'); return; }
+    
+    // Guardar nombre del organizador
+    guardarNombreUsuario(organizador);
+    
+    const btn = document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText = 'Buscando ubicación...';
+    let latitud = userLat || -34.5842, longitud = userLng || -58.4073;
+    const coordenadas = await geocodificarUbicacion(ubicacion);
+    if (coordenadas) { latitud = coordenadas.lat; longitud = coordenadas.lng; console.log(`📍 Ubicación encontrada: ${coordenadas.nombre}`); }
+    else { console.warn(`⚠️ No se encontró "${ubicacion}"`); if (!userLat && !userLng) alert(`⚠️ No pudimos ubicar "${ubicacion}". Se usará una ubicación aproximada.`); }
+    btn.innerText = 'Publicando...';
+    try {
+        const params = new URLSearchParams({ accion:'crearMateada', titulo, ubicacion, latitud, longitud, lugares_totales:cupo, organizador, organizador_avatar:organizador.charAt(0).toUpperCase(), descripcion:`Mateada de ${titulo} · ${tipoMate}`, duracion_minutos:duracionSeleccionada, duracion:duracionTexto(duracionSeleccionada), hora, tags:titulo.split(' ')[0] });
+        const response = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await response.json();
+        if (resultado.success) { alert(`✅ ¡Mateada publicada!\n📍 ${ubicacion}\n👥 Cupo: ${cupo} · ⏳ ${duracionTexto(duracionSeleccionada)}`); irInicio(); }
+        else { alert('❌ Error: ' + (resultado.error || 'No se pudo publicar')); }
+    } catch (error) { alert('❌ Error de conexión'); }
+    finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
 }
 
 async function enviarSolicitud() {
-  if (!mateadaSeleccionada) return;
-  const minutos = document.getElementById('tiempoLlegada').value;
-  const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
-  try {
-    const params = new URLSearchParams({ accion:'enviarSolicitud', mateada_id:mateadaSeleccionada.id, usuario_nombre:'Visitante', tiempo_llegada:minutos + ' min' });
-    const response = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await response.json();
-    if (resultado.success) { document.getElementById('tiempoEnviado').innerText = minutos; mostrarScreen('screen-sent'); }
-    else { alert('❌ ' + (resultado.error || 'No se pudo enviar la solicitud')); }
-  } catch (error) { alert('❌ Error de conexión'); }
-  finally { btn.classList.remove('loading'); btn.innerText = '🧉 Quiero sumarme'; }
+    if (!mateadaSeleccionada) return;
+    const minutos = document.getElementById('tiempoLlegada').value;
+    const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
+    try {
+        const params = new URLSearchParams({ accion:'enviarSolicitud', mateada_id:mateadaSeleccionada.id, usuario_nombre:usuarioActual.nombre || 'Visitante', tiempo_llegada:minutos + ' min' });
+        const response = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await response.json();
+        if (resultado.success) { document.getElementById('tiempoEnviado').innerText = minutos; mostrarScreen('screen-sent'); }
+        else { alert('❌ ' + (resultado.error || 'No se pudo enviar la solicitud')); }
+    } catch (error) { alert('❌ Error de conexión'); }
+    finally { btn.classList.remove('loading'); btn.innerText = '🧉 Quiero sumarme'; }
 }
 
 function verDetalle(mateada) {
-  mateadaSeleccionada = mateada;
-  const container = document.getElementById('detailContent');
-  const libres = parseInt(mateada.lugares_libres) || 0, ocupados = (parseInt(mateada.lugares_totales) || 0) - libres, durMins = parseInt(mateada.duracion_minutos) || 60, fillId = `detail-fill-${mateada.id}`, labelId = `detail-label-${mateada.id}`;
-  container.innerHTML = `<div class="detail-header"><div class="detail-title">${mateada.titulo}</div><span class="badge ${libres === 0 ? 'lleno' : ''}">${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}</span></div><div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ Duración: ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div></div></div><div class="map" id="detailMap"></div><div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;"><div class="detail-row">📍 <strong>${mateada.ubicacion}</strong><a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}" target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div><div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div><div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div></div>${libres > 0 ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button><button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>` : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button><button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>`}<div style="height: calc(80px + var(--safe-bottom));"></div>`;
-  setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
-  setTimeout(() => {
-    iniciarCountdown(mateada, fillId, labelId, (id) => { const label = document.getElementById(labelId); if (label) { label.textContent = '⏰ Terminada'; label.style.color = '#DC2626'; } });
-    const mapEl = document.getElementById('detailMap');
-    if (mapEl && mateada.latitud && mateada.longitud) { if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; } mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle); L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle); }
-  }, 150);
+    mateadaSeleccionada = mateada;
+    const container = document.getElementById('detailContent');
+    const libres = parseInt(mateada.lugares_libres) || 0, ocupados = (parseInt(mateada.lugares_totales) || 0) - libres, durMins = parseInt(mateada.duracion_minutos) || 60, fillId = `detail-fill-${mateada.id}`, labelId = `detail-label-${mateada.id}`;
+    
+    // Obtener chat de esta mateada
+    const chat = inicializarChat(mateada.id);
+    const esOrganizador = (usuarioActual.nombre === mateada.organizador);
+    
+    // Construir sección de chat
+    let chatHtml = '';
+    if (!chat.preguntaHecha) {
+        // Mostrar formulario para hacer pregunta (solo si no se ha hecho)
+        if (!esOrganizador) {
+            chatHtml = `
+                <div class="chat-section">
+                    <div class="chat-title">💬 Preguntale algo al organizador</div>
+                    <div class="chat-bubble-question">
+                        <textarea id="preguntaInput" class="chat-input" rows="2" placeholder="Escribí tu pregunta aquí... (máximo 1 pregunta por persona)" style="width:100%; resize:none;"></textarea>
+                        <button class="btn-small" onclick="enviarPregunta('${mateada.id}')" style="margin-top:8px;">📨 Enviar pregunta</button>
+                    </div>
+                </div>
+            `;
+        }
+    } else {
+        // Mostrar pregunta y respuesta si existe
+        chatHtml = `<div class="chat-section"><div class="chat-title">💬 Conversación</div>`;
+        chatHtml += `<div class="chat-bubble-question"><strong>❓ Pregunta:</strong><br>${chat.pregunta}<div class="chat-meta"><span>👤 ${chat.preguntaAutor}</span><span>📅 ${new Date(chat.preguntaFecha).toLocaleString()}</span></div></div>`;
+        if (chat.respondido) {
+            chatHtml += `<div class="chat-bubble-answer"><strong>💬 Respuesta del organizador:</strong><br>${chat.respuesta}<div class="chat-meta"><span>👤 ${chat.respuestaAutor}</span><span>📅 ${new Date(chat.respuestaFecha).toLocaleString()}</span></div></div>`;
+        } else if (esOrganizador && !chat.respondido) {
+            chatHtml += `<div class="chat-bubble"><textarea id="respuestaInput" class="chat-input" rows="2" placeholder="Respondé la pregunta..." style="width:100%; resize:none;"></textarea><button class="btn-small" onclick="enviarRespuesta('${mateada.id}')" style="margin-top:8px;">✏️ Responder pregunta</button></div>`;
+        } else if (!chat.respondido) {
+            chatHtml += `<div class="chat-disabled">⏳ Esperando respuesta del organizador...</div>`;
+        }
+        chatHtml += `</div>`;
+    }
+    
+    container.innerHTML = `<div class="detail-header"><div class="detail-title">${mateada.titulo}</div><span class="badge ${libres === 0 ? 'lleno' : ''}">${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}</span></div><div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ Duración: ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div></div></div><div class="map" id="detailMap"></div><div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;"><div class="detail-row">📍 <strong>${mateada.ubicacion}</strong><a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}" target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div><div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div><div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div></div>${chatHtml}${libres > 0 ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button><button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>` : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button><button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>`}<div style="height: calc(80px + var(--safe-bottom));"></div>`;
+    setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
+    setTimeout(() => {
+        iniciarCountdown(mateada, fillId, labelId, (id) => { const label = document.getElementById(labelId); if (label) { label.textContent = '⏰ Terminada'; label.style.color = '#DC2626'; } });
+        const mapEl = document.getElementById('detailMap');
+        if (mapEl && mateada.latitud && mateada.longitud) { if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; } mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle); L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle); }
+    }, 150);
 }
+
+function enviarPregunta(mateadaId) {
+    const preguntaInput = document.getElementById('preguntaInput');
+    if (!preguntaInput) return;
+    const pregunta = preguntaInput.value.trim();
+    if (!pregunta) {
+        alert('📝 Escribí una pregunta antes de enviar.');
+        return;
+    }
+    if (!usuarioActual.nombre) {
+        const nombre = prompt('Por favor, ingresá tu nombre para hacer la pregunta:');
+        if (nombre) guardarNombreUsuario(nombre);
+        else return;
+    }
+    if (hacerPregunta(mateadaId, pregunta)) {
+        alert('✅ Pregunta enviada. El organizador te responderá pronto.');
+        verDetalle(mateadaSeleccionada); // Recargar detalle
+    }
+}
+
+function enviarRespuesta(mateadaId) {
+    const respuestaInput = document.getElementById('respuestaInput');
+    if (!respuestaInput) return;
+    const respuesta = respuestaInput.value.trim();
+    if (!respuesta) {
+        alert('✏️ Escribí una respuesta antes de enviar.');
+        return;
+    }
+    if (responderPregunta(mateadaId, respuesta, true)) {
+        alert('✅ Respuesta enviada al usuario.');
+        verDetalle(mateadaSeleccionada); // Recargar detalle
+    }
+}
+
 function mostrarUnirse() { 
-  document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; 
-  setNavTitle('Sumarme'); 
-  mostrarScreen('screen-join'); 
+    document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; 
+    setNavTitle('Sumarme'); 
+    mostrarScreen('screen-join'); 
 }
 function volverADetalle() { verDetalle(mateadaSeleccionada); }
 function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(() => { if (mapaNearby) { mapaNearby.invalidateSize(); actualizarMapaCercano(); } }, 500); }
@@ -639,10 +863,27 @@ function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s => s
 function seleccionarMate(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 function seleccionarDuracion(btn, mins) { document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada = mins; }
 document.getElementById('tiempoLlegada').oninput = function() { document.getElementById('tiempoMostrar').innerText = this.value + ' minutos'; };
-window.addEventListener('load', () => { cargarMateadas(); if (navigator.geolocation) { navigator.geolocation.getCurrentPosition( (pos) => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); }, () => {}, { timeout:5000 } ); } });
+window.addEventListener('load', () => { 
+    capturarDatosUsuario();
+    // Cargar nombre guardado
+    const nombreGuardado = localStorage.getItem('usuarioNombre');
+    if (nombreGuardado) {
+        usuarioActual.nombre = nombreGuardado;
+        if (document.getElementById('nombreOrganizador')) {
+            document.getElementById('nombreOrganizador').value = nombreGuardado;
+        }
+    }
+    cargarMateadas(); 
+    if (navigator.geolocation) { 
+        navigator.geolocation.getCurrentPosition( 
+            (pos) => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); }, 
+            () => {}, 
+            { timeout:5000 } 
+        ); 
+    } 
+});
 function pedirPermisoNotif() { if ('Notification' in window) { Notification.requestPermission(); document.getElementById('notifBanner').classList.remove('visible'); } }
 function descartarNotifBanner() { document.getElementById('notifBanner').classList.remove('visible'); sessionStorage.setItem('notifDismissed', '1'); }
-function dispararNotifLocal(notif) { if ('Notification' in window && Notification.permission === 'granted') { new Notification(notif.title, { body: notif.body, tag: notif.tag }); } }
 if (!sessionStorage.getItem('notifDismissed')) { setTimeout(() => document.getElementById('notifBanner')?.classList.add('visible'), 3000); }
 </script>
 </body>
