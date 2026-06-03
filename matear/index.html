@@ -21,26 +21,146 @@
       --mate-green-bright: #1D9E75;
       --mate-green-soft: #DEF5EC;
       --mate-amber: #C47B2E;
+      --cta-primary: #2563EB;
+      --cta-primary-dark: #1D4ED8;
+      --cta-soft: #EFF6FF;
       --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
       --radius-card: 28px;
     }
     body { background: #E8DDD0; font-family: 'Inter', 'DM Sans', system-ui; min-height: 100vh; width: 100%; }
     .app { width: 100%; max-width: 100%; margin: 0 auto; background: var(--bg-primary); min-height: 100vh; display: flex; flex-direction: column; }
     @media (min-width: 500px) { body { display: flex; align-items: center; justify-content: center; padding: 20px; background: #cfc3b4; } .app { max-width: 480px; border-radius: 36px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); min-height: auto; } }
+    
     .screen { display: none; flex-direction: column; flex: 1; animation: fadeSlide 0.2s ease; }
     .screen.active { display: flex; }
     @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .content { flex: 1; overflow-y: auto; padding: 20px 20px 24px; scrollbar-width: thin; }
-    .topbar { padding: 18px 20px 12px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--bg-primary); border-bottom: 1px solid var(--border-light); }
-    .back-btn { background: #FFFFFF; border: 1px solid var(--border-light); width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: all 0.2s; color: var(--text-primary); }
-    .back-btn i { font-size: 24px; }
-    .topbar-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
-    .brand-main { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #0F7B5E 0%, #1D9E75 100%); background-clip: text; -webkit-background-clip: text; color: transparent; }
-    .brand-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
-    .nav-tabs { display: flex; gap: 12px; padding: 8px 20px; border-bottom: 1px solid var(--border-light); }
-    .nav-tab { flex: 1; background: transparent; border: none; font-size: 15px; font-weight: 500; padding: 10px 0; border-radius: 40px; color: var(--text-secondary); cursor: pointer; }
-    .nav-tab.active { background: var(--mate-green); color: white; }
-    .mateada-card { background: var(--surface-card); border-radius: var(--radius-card); padding: 18px; margin-bottom: 16px; cursor: pointer; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); transition: 0.2s; }
+
+    /* HEADER FIJO */
+    .header-fixed {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-light);
+      padding: 16px 20px 12px;
+    }
+    .logo-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .logo-main {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0F7B5E 0%, #1D9E75 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-main span { font-size: 36px; }
+    .brand-sub { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 4px; font-weight: 500; }
+    
+    /* Barra de navegación superior */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .back-btn {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      width: 40px;
+      height: 40px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--text-primary);
+    }
+    .create-btn {
+      background: var(--cta-primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+    .create-btn:active { transform: scale(0.96); background: var(--cta-primary-dark); }
+    .user-menu {
+      display: flex;
+      gap: 8px;
+    }
+    .icon-circle {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      width: 40px;
+      height: 40px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--text-primary);
+      position: relative;
+    }
+    .badge-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      background: var(--cta-primary);
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+      padding: 12px 20px 0 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .breadcrumb-item {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .breadcrumb-item:hover { color: var(--cta-primary); }
+    .breadcrumb-separator { color: var(--border-light); font-size: 12px; }
+    .breadcrumb-current { color: var(--text-primary); font-weight: 500; }
+    
+    /* Cards */
+    .mateada-card {
+      background: var(--surface-card);
+      border-radius: var(--radius-card);
+      padding: 18px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      transition: 0.2s;
+    }
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
     .card-topic { font-size: 18px; font-weight: 700; color: var(--text-primary); }
     .badge { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 40px; }
@@ -50,90 +170,130 @@
     .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-secondary); }
     .host-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; border-top: 1px solid var(--border-light); padding-top: 14px; }
     .avatar { width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; background: #e4f3ed; color: #0F7B5E; flex-shrink: 0; }
-    .btn-primary { background: var(--mate-green-bright); color: white; border: none; padding: 15px; border-radius: 60px; font-weight: 600; font-size: 16px; width: 100%; cursor: pointer; transition: 0.2s; }
+    .btn-primary { background: var(--cta-primary); color: white; border: none; padding: 15px; border-radius: 60px; font-weight: 600; font-size: 16px; width: 100%; cursor: pointer; transition: 0.2s; }
+    .btn-primary:active { transform: scale(0.97); background: var(--cta-primary-dark); }
     .btn-secondary { background: white; border: 1px solid var(--border-light); padding: 14px; border-radius: 60px; font-weight: 500; width: 100%; cursor: pointer; }
-    .bottomnav { background: var(--surface-card); border-top: 1px solid var(--border-light); display: flex; padding: 8px 16px 12px; justify-content: space-around; }
-    .bnav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
-    .bnav-item i { font-size: 24px; }
-    .bnav-item.active { color: var(--mate-green); }
     .map-container-detail { border-radius: 28px; overflow: hidden; margin: 16px 0; border: 1px solid var(--border-light); height: 220px; }
     .gps-box { background: #FFF5E8; border-radius: 24px; padding: 14px; display: flex; gap: 12px; margin-bottom: 16px; border: 1px solid #e8dacb; }
-    .gps-dot { width: 10px; height: 10px; background: #1D9E75; border-radius: 12px; animation: pulse 1.6s infinite; margin-top: 5px; }
+    .gps-dot { width: 10px; height: 10px; background: var(--cta-primary); border-radius: 12px; animation: pulse 1.6s infinite; margin-top: 5px; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.2)} }
     .form-group { margin-bottom: 18px; }
     .form-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; }
-    .form-input, .form-select { background: white; border: 1px solid var(--border-light); border-radius: 24px; padding: 14px 18px; width: 100%; font-size: 15px; font-family: inherit; }
+    .form-input, .form-select { background: white; border: 1px solid var(--border-light); border-radius: 24px; padding: 14px 18px; width: 100%; font-size: 15px; }
     .form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B5A4B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 18px center; background-size: 16px; }
     .option-grid { display: flex; gap: 12px; }
     .option-btn { flex: 1; padding: 12px; border-radius: 48px; border: 1px solid var(--border-light); background: white; font-weight: 500; cursor: pointer; }
-    .option-btn.selected { background: var(--mate-green-soft); border-color: var(--mate-green); color: var(--mate-green); }
+    .option-btn.selected { background: var(--cta-soft); border-color: var(--cta-primary); color: var(--cta-primary); }
     .slider-row { display: flex; align-items: center; gap: 14px; }
-    .notification-item { background: white; border-radius: 24px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border-light); }
-    .accept-reject { display: flex; gap: 12px; margin-top: 14px; }
-    .btn-accept { background: var(--mate-green); color: white; border: none; border-radius: 40px; padding: 8px 20px; font-weight: 600; cursor: pointer; }
     .detail-section { margin: 16px 0 12px; }
     .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border-light); }
     .success-anim { text-align: center; padding: 24px; }
     .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+    
+    /* Modal de perfil / notificaciones */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-sheet {
+      background: white;
+      border-radius: 28px 28px 0 0;
+      width: 100%;
+      max-width: 480px;
+      padding: 24px 20px 32px;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border-light);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+    }
+    .menu-item:last-child { border-bottom: none; }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- SCREEN: HOME -->
-  <div class="screen active" id="screen-home">
-    <div class="topbar">
-      <div><div class="brand-main">🧉 matear</div><div class="brand-sub">by Taragüi · Encuentros con mate</div></div>
-      <button class="back-btn" onclick="goScreen('screen-notifs')"><i class="ti ti-bell"></i></button>
+  <!-- HEADER FIJO con logo centrado + botones -->
+  <div class="header-fixed">
+    <div class="logo-area">
+      <div class="logo-main" onclick="irAlInicio()">
+        <span>🧉</span> matear
+      </div>
     </div>
-    <div class="nav-tabs">
-      <button class="nav-tab active">Mateadas</button>
-      <button class="nav-tab" onclick="goScreen('screen-create')">+ Crear</button>
-    </div>
-    <div class="content" id="homeContent"></div>
-    <div class="bottomnav">
-      <button class="bnav-item active"><i class="ti ti-home"></i><span>Inicio</span></button>
-      <button class="bnav-item" onclick="goScreen('screen-profile')"><i class="ti ti-user"></i><span>Perfil</span></button>
-      <button class="bnav-item" onclick="goScreen('screen-notifs')"><i class="ti ti-bell"></i><span>Avisos</span></button>
+    <div class="brand-sub">by Taragüi · Encuentros con mate en el parque</div>
+    
+    <div class="nav-bar">
+      <button class="back-btn" id="backNavBtn" onclick="goBack()" style="visibility: hidden;">←</button>
+      <button class="create-btn" onclick="goToCreate()">+ Crear mateada</button>
+      <div class="user-menu">
+        <div class="icon-circle" onclick="toggleUserMenu()">
+          <i class="ti ti-bell"></i>
+          <span class="badge-dot" id="notifDot" style="display: none;"></span>
+        </div>
+        <div class="icon-circle" onclick="toggleUserMenu()">
+          <i class="ti ti-user"></i>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- SCREEN: Detail -->
+  <!-- BREADCRUMB de navegación -->
+  <div class="breadcrumb" id="breadcrumbContainer">
+    <span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screen active" id="screen-home">
+    <div class="content" id="homeContent"></div>
+  </div>
+
   <div class="screen" id="screen-detail">
-    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Detalle mateada</div><div style="width:44px;"></div></div>
     <div class="content" id="detailContent"></div>
   </div>
 
-  <!-- SCREEN: Join -->
   <div class="screen" id="screen-join">
-    <div class="topbar"><button class="back-btn" onclick="historyBack()"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Sumarse</div><div style="width:44px;"></div></div>
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Estás cerca del parque</div><div class="gps-text">Compartí tu tiempo estimado</div></div></div>
-      <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás caminando?</label><div class="slider-row"><input type="range" id="arrivalRange" min="3" max="40" value="12" step="1"><span id="arrivalValue" style="font-weight:700;color:var(--mate-green);">12 min</span></div></div>
+      <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás caminando?</label><div class="slider-row"><input type="range" id="arrivalRange" min="3" max="40" value="12" step="1"><span id="arrivalValue" style="font-weight:700;color:var(--cta-primary);">12 min</span></div></div>
       <div style="background:#f7f2ea; border-radius:28px; padding:18px; margin:12px 0 24px;"><div style="font-weight:600;">Tu perfil público</div><div>Camila · 25 años · Mujer · 💼 Diseñadora</div></div>
       <button class="btn-primary" onclick="sendJoinRequest()">Enviar solicitud 🧉</button>
     </div>
   </div>
 
   <div class="screen" id="screen-sent">
-    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Solicitud enviada</div><div style="width:44px;"></div></div>
-    <div class="content"><div class="success-anim"><div style="font-size:68px;">🧉✨</div><div style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div><button class="btn-secondary" onclick="goScreen('screen-home')">Volver al inicio</button></div>
+    <div class="content"><div class="success-anim"><div style="font-size:68px;">🧉✨</div><div style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div><button class="btn-secondary" onclick="irAlInicio()">Volver al inicio</button></div>
   </div>
 
-  <div class="screen" id="screen-notifs">
-    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Avisos</div><div style="width:44px;"></div></div>
-    <div class="content"><div class="notification-item" id="notifRequestItem"><div class="avatar">CP</div><div><div class="notif-title">Camila quiere sumarse</div><div class="notif-sub">A tu mateada</div><div class="accept-reject"><button class="btn-accept" onclick="acceptJoinRequest()">Aceptar</button><button class="btn-secondary" style="padding:8px 16px;">Rechazar</button></div></div></div></div>
-  </div>
-
-  <!-- SCREEN: CREATE con DROPDOWNS -->
   <div class="screen" id="screen-create">
-    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Nueva mateada</div><div style="width:44px;"></div></div>
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
-      
-      <div class="form-group">
-        <label class="form-label">🎯 Tema de conversación</label>
+      <div class="form-group"><label class="form-label">🎯 Tema de conversación</label>
         <select id="eventTopic" class="form-select">
           <option value="🤝 Emprendedurismo y freelance">🤝 Emprendedurismo y freelance</option>
           <option value="📖 Filosofía y vida cotidiana" selected>📖 Filosofía y vida cotidiana</option>
@@ -157,204 +317,173 @@
           <option value="🗣️ Idiomas e intercambio cultural">🗣️ Idiomas e intercambio cultural</option>
         </select>
       </div>
-      
-      <div class="form-group">
-        <label class="form-label">📍 Ubicación</label>
-        <input class="form-input" id="eventLocation" placeholder="Parque, plaza" value="Parque Las Heras">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">🧉 ¿Cómo tomás el mate?</label>
-        <div class="option-grid">
-          <button class="option-btn" type="button" onclick="toggleOpt(this)">Amargo</button>
-          <button class="option-btn selected" type="button" onclick="toggleOpt(this)">Dulce</button>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">👥 Cantidad máxima de participantes</label>
+      <div class="form-group"><label class="form-label">📍 Ubicación</label><input class="form-input" id="eventLocation" placeholder="Parque, plaza" value="Parque Las Heras"></div>
+      <div class="form-group"><label class="form-label">🧉 ¿Cómo tomás el mate?</label><div class="option-grid"><button class="option-btn" type="button" onclick="toggleOpt(this)">Amargo</button><button class="option-btn selected" type="button" onclick="toggleOpt(this)">Dulce</button></div></div>
+      <div class="form-group"><label class="form-label">👥 Cantidad máxima de participantes</label>
         <select id="maxPeopleSelect" class="form-select">
-          <option value="2">2 personas</option><option value="3">3 personas</option><option value="4">4 personas</option>
-          <option value="5">5 personas</option><option value="6" selected>6 personas</option><option value="7">7 personas</option>
-          <option value="8">8 personas</option><option value="9">9 personas</option><option value="10">10 personas</option>
-          <option value="12">12 personas</option><option value="15">15 personas</option><option value="20">20 personas</option>
+          <option value="2">2 personas</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          <option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option>
+          <option value="10">10</option><option value="12">12</option><option value="15">15</option><option value="20">20</option>
         </select>
       </div>
-      
-      <div class="form-group">
-        <label class="form-label">⏰ Duración</label>
+      <div class="form-group"><label class="form-label">⏰ Duración</label>
         <select id="eventDuration" class="form-select">
-          <option value="30 min">30 minutos</option><option value="1 hora">1 hora</option>
-          <option value="1.5 hs" selected>1 hora y media</option><option value="2 hs">2 horas</option><option value="3 hs">3 horas</option>
+          <option value="30 min">30 min</option><option value="1 hora">1 hora</option>
+          <option value="1.5 hs" selected>1.5 hs</option><option value="2 hs">2 hs</option><option value="3 hs">3 hs</option>
         </select>
       </div>
-      
       <button class="btn-primary" onclick="createMateada()">🌿 Publicar mateada</button>
     </div>
   </div>
 
-  <div class="screen" id="screen-profile">
-    <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Mi perfil</div><div style="width:44px;"></div></div>
-    <div class="content"><div style="display:flex; gap:16px;"><div class="avatar" style="width:70px;height:70px;font-size:28px;">CP</div><div><div style="font-size:20px;font-weight:700;">Camila P.</div><div>25 · Mujer · CABA</div></div></div><div style="margin:20px 0;"><div>🍃 Preferencias: Mate amargo, agua muy caliente</div></div><div style="display:flex; gap:12px;"><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsMateadas">0</div><div>mateadas</div></div><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsOrganizadas">0</div><div>organizadas</div></div></div><button class="btn-secondary">Editar perfil</button></div>
+  <!-- MODAL de menú usuario (perfil + notificaciones) -->
+  <div id="userMenuModal" class="modal-overlay" onclick="if(event.target===this) toggleUserMenu()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Menú</div>
+      <div class="menu-item" onclick="verPerfil()">
+        <i class="ti ti-user" style="font-size: 22px;"></i> Mi perfil
+      </div>
+      <div class="menu-item" onclick="verNotificaciones()">
+        <i class="ti ti-bell" style="font-size: 22px;"></i> Notificaciones
+        <span id="notifCountBadge" style="background:#2563EB; color:white; border-radius:20px; padding:2px 8px; font-size:11px; margin-left:8px;">0</span>
+      </div>
+      <div class="menu-item" onclick="toggleUserMenu()">
+        <i class="ti ti-x" style="font-size: 22px;"></i> Cerrar
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// ==================== DATOS LOCALES (sin Google Sheets) ====================
+// ==================== DATOS LOCALES ====================
 let mateadas = [];
 let currentMap = null;
 let currentMateada = null;
-let solicitudesPendientes = [];
+let screenHistory = ['home'];
 
-// Cargar datos guardados en localStorage
+// Cargar datos guardados
 function cargarDatosLocales() {
   const guardado = localStorage.getItem('matear_datos');
   if (guardado) {
     const datos = JSON.parse(guardado);
     mateadas = datos.mateadas || [];
-    solicitudesPendientes = datos.solicitudesPendientes || [];
   }
-  
-  // Si no hay datos, cargar mateadas de ejemplo
   if (mateadas.length === 0) {
     mateadas = [
-      {
-        id: '1',
-        titulo: '🤝 Emprendedurismo y freelance',
-        ubicacion: 'Parque Tres de Febrero',
-        latitud: -34.5735,
-        longitud: -58.4215,
-        lugares_totales: 6,
-        lugares_libres: 2,
-        organizador: 'Luli, 28',
-        organizador_avatar: 'LM',
-        descripcion: 'Charlas de negocios y ronda de mates amargos',
-        duracion: '1.5 hs',
-        hora: '17:00',
-        tags: 'networking, emprendedores',
-        estado: 'activa'
-      },
-      {
-        id: '2',
-        titulo: '📖 Filosofía y vida cotidiana',
-        ubicacion: 'Parque Rivadavia',
-        latitud: -34.6170,
-        longitud: -58.4430,
-        lugares_totales: 5,
-        lugares_libres: 1,
-        organizador: 'Matías, 34',
-        organizador_avatar: 'MP',
-        descripcion: 'Debate filosófico + mate dulce',
-        duracion: '2 hs',
-        hora: '18:30',
-        tags: 'filosofía, debate',
-        estado: 'activa'
-      },
-      {
-        id: '3',
-        titulo: '💻 Tecnología e inteligencia artificial',
-        ubicacion: 'Parque Centenario',
-        latitud: -34.6055,
-        longitud: -58.4345,
-        lugares_totales: 6,
-        lugares_libres: 4,
-        organizador: 'Sofía, 26',
-        organizador_avatar: 'SR',
-        descripcion: 'Networking tech, IA y desarrollo',
-        duracion: '1.5 hs',
-        hora: '19:00',
-        tags: 'tecnología, ia',
-        estado: 'activa'
-      },
-      {
-        id: '4',
-        titulo: '🌳 Mates & Cuentos · Parque Las Heras',
-        ubicacion: 'Parque Las Heras',
-        latitud: -34.5842,
-        longitud: -58.4073,
-        lugares_totales: 8,
-        lugares_libres: 5,
-        organizador: 'Juan, 31',
-        organizador_avatar: 'JV',
-        descripcion: 'Círculo de cuentos e historias',
-        duracion: '2 hs',
-        hora: '16:30',
-        tags: 'cuentos, literatura',
-        estado: 'activa'
-      }
+      { id: '1', titulo: '🤝 Emprendedurismo y freelance', ubicacion: 'Parque Tres de Febrero', latitud: -34.5735, longitud: -58.4215, lugares_totales: 6, lugares_libres: 2, organizador: 'Luli, 28', organizador_avatar: 'LM', descripcion: 'Charlas de negocios', duracion: '1.5 hs', hora: '17:00', tags: 'networking', estado: 'activa' },
+      { id: '2', titulo: '📖 Filosofía y vida cotidiana', ubicacion: 'Parque Rivadavia', latitud: -34.6170, longitud: -58.4430, lugares_totales: 5, lugares_libres: 1, organizador: 'Matías, 34', organizador_avatar: 'MP', descripcion: 'Debate filosófico', duracion: '2 hs', hora: '18:30', tags: 'filosofía', estado: 'activa' },
+      { id: '3', titulo: '💻 Tecnología e inteligencia artificial', ubicacion: 'Parque Centenario', latitud: -34.6055, longitud: -58.4345, lugares_totales: 6, lugares_libres: 4, organizador: 'Sofía, 26', organizador_avatar: 'SR', descripcion: 'Networking tech', duracion: '1.5 hs', hora: '19:00', tags: 'tecnología', estado: 'activa' },
+      { id: '4', titulo: '🌳 Mates & Cuentos · Parque Las Heras', ubicacion: 'Parque Las Heras', latitud: -34.5842, longitud: -58.4073, lugares_totales: 8, lugares_libres: 5, organizador: 'Juan, 31', organizador_avatar: 'JV', descripcion: 'Círculo de cuentos', duracion: '2 hs', hora: '16:30', tags: 'cuentos', estado: 'activa' }
     ];
   }
-  
-  actualizarEstadisticas();
+  guardarDatosLocales();
 }
+function guardarDatosLocales() { localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas })); }
 
-function guardarDatosLocales() {
-  localStorage.setItem('matear_datos', JSON.stringify({
-    mateadas: mateadas,
-    solicitudesPendientes: solicitudesPendientes
-  }));
-}
-
-function actualizarEstadisticas() {
-  const misMateadas = mateadas.filter(m => m.organizador === 'Camila P.').length;
-  document.getElementById('statsMateadas').innerText = mateadas.length;
-  document.getElementById('statsOrganizadas').innerText = misMateadas;
-}
-
-// ==================== RENDERIZADO ====================
-function renderHome() {
-  const container = document.getElementById('homeContent');
-  const mateadasActivas = mateadas.filter(m => m.estado === 'activa' && m.lugares_libres > 0);
+// ==================== BREADCRUMB Y NAVEGACIÓN ====================
+function actualizarBreadcrumb() {
+  const container = document.getElementById('breadcrumbContainer');
+  const backBtn = document.getElementById('backNavBtn');
+  const currentScreenId = document.querySelector('.screen.active')?.id;
   
-  if (mateadasActivas.length === 0) {
-    container.innerHTML = '<div class="empty-state">✨ No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
-    return;
-  }
+  if (!container) return;
   
-  container.innerHTML = `<div class="section-title" style="margin-bottom:12px;">✨ ${mateadasActivas.length} mateadas activas</div>`;
-  
-  mateadasActivas.forEach(m => {
-    const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
-    const badgeText = m.lugares_libres <= 1 ? `${m.lugares_libres} lugar` : `${m.lugares_libres} lugares`;
+  if (currentScreenId === 'screen-home') {
+    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>`;
+    if (backBtn) backBtn.style.visibility = 'hidden';
+  } else {
+    let nombrePantalla = '';
+    if (currentScreenId === 'screen-detail') nombrePantalla = 'Detalle';
+    else if (currentScreenId === 'screen-create') nombrePantalla = 'Crear mateada';
+    else if (currentScreenId === 'screen-join') nombrePantalla = 'Sumarse';
+    else if (currentScreenId === 'screen-sent') nombrePantalla = 'Solicitud enviada';
+    else nombrePantalla = '...';
     
-    const card = document.createElement('div');
-    card.className = 'mateada-card';
-    card.onclick = () => goToDetail(m);
-    card.innerHTML = `
-      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">${badgeText}</span></div>
-      <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> ${m.ubicacion}</span><span class="meta-item"><i class="ti ti-clock"></i> ${m.hora} · ${m.duracion}</span><span class="meta-item"><i class="ti ti-users"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
-      <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
+    container.innerHTML = `
+      <span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-current">${nombrePantalla}</span>
     `;
-    container.appendChild(card);
-  });
+    if (backBtn) backBtn.style.visibility = 'visible';
+  }
+}
+
+function irAlInicio() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-home').classList.add('active');
+  if (currentMap) { currentMap.remove(); currentMap = null; }
+  screenHistory = ['home'];
+  renderHome();
+  actualizarBreadcrumb();
+}
+
+function goBack() {
+  const currentId = document.querySelector('.screen.active')?.id;
+  if (currentId === 'screen-home') return;
+  irAlInicio();
+}
+
+function goToCreate() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-create').classList.add('active');
+  if (currentMap) { currentMap.remove(); currentMap = null; }
+  actualizarBreadcrumb();
 }
 
 function goToDetail(mateada) {
   currentMateada = mateada;
   const detailDiv = document.getElementById('detailContent');
   const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
-  
   detailDiv.innerHTML = `
     <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares libres</span><span class="badge badge-gray">${mateada.hora} · ${mateada.duracion}</span></div></div>
     <div id="detailMap" class="map-container-detail"></div>
-    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro en el parque</div></div></div>
-    <div class="detail-section"><div class="section-title">📋 Sobre la mateada</div><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Descripción</span><strong>${mateada.descripcion}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres} de ${mateada.lugares_totales}</strong></div></div>
-    <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">Anfitrión · ${mateada.tags || 'buena onda'}</div></div></div>
-    <button class="btn-primary" onclick="goScreen('screen-join')">🧉 Quiero sumarme</button>
+    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro</div></div></div>
+    <div class="detail-section"><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
+    <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">${mateada.tags || 'Anfitrión'}</div></div></div>
+    <button class="btn-primary" onclick="irAUnirse()">🧉 Quiero sumarme</button>
   `;
-  
-  goScreen('screen-detail');
-  
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-detail').classList.add('active');
+  actualizarBreadcrumb();
   setTimeout(() => {
     const mapContainer = document.getElementById('detailMap');
     if (mapContainer && mateada.latitud && mateada.longitud) {
       if (currentMap) currentMap.remove();
       currentMap = L.map('detailMap').setView([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], 16);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(currentMap);
-      const icon = L.divIcon({ html: '🧉', iconSize: [28,28], className: 'custom-mate-marker' });
-      L.marker([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], { icon }).addTo(currentMap).bindPopup(mateada.titulo);
+      L.marker([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], { icon: L.divIcon({ html: '🧉', iconSize: [28,28] }) }).addTo(currentMap).bindPopup(mateada.titulo);
     }
   }, 80);
+}
+
+function irAUnirse() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-join').classList.add('active');
+  actualizarBreadcrumb();
+}
+
+// ==================== RENDER HOME ====================
+function renderHome() {
+  const container = document.getElementById('homeContent');
+  const activas = mateadas.filter(m => m.estado === 'activa' && m.lugares_libres > 0);
+  if (activas.length === 0) {
+    container.innerHTML = '<div class="empty-state">✨ No hay mateadas activas<br>¡Creá la primera!</div>';
+    return;
+  }
+  container.innerHTML = '';
+  activas.forEach(m => {
+    const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
+    const card = document.createElement('div');
+    card.className = 'mateada-card';
+    card.onclick = () => goToDetail(m);
+    card.innerHTML = `
+      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">${m.lugares_libres} lugares</span></div>
+      <div class="card-meta"><span class="meta-item"><i class="ti ti-map-pin"></i> ${m.ubicacion}</span><span class="meta-item"><i class="ti ti-clock"></i> ${m.hora} · ${m.duracion}</span><span class="meta-item"><i class="ti ti-users"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
+      <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
+    `;
+    container.appendChild(card);
+  });
 }
 
 // ==================== ACCIONES ====================
@@ -365,96 +494,61 @@ function createMateada() {
   const duracion = document.getElementById('eventDuration')?.value;
   const mateOption = document.querySelector('.option-btn.selected');
   const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
-  
-  if (!tema || !ubicacion) {
-    alert('Completá el tema y la ubicación');
-    return;
-  }
-  
-  const nuevaMateada = {
-    id: Date.now().toString(),
-    titulo: tema,
-    ubicacion: ubicacion,
-    latitud: -34.5842,
-    longitud: -58.4073,
-    lugares_totales: parseInt(maxPersonas),
-    lugares_libres: parseInt(maxPersonas),
-    organizador: 'Camila P.',
-    organizador_avatar: 'CP',
-    descripcion: `Mateada de ${tema} · ${tipoMate === 'Amargo' ? 'Mate amargo' : 'Mate dulce'}`,
-    duracion: duracion,
-    hora: '18:00',
-    tags: tema.split(' ')[0],
-    estado: 'activa'
+  if (!tema || !ubicacion) { alert('Completá tema y ubicación'); return; }
+  const nueva = {
+    id: Date.now().toString(), titulo: tema, ubicacion: ubicacion,
+    latitud: -34.5842, longitud: -58.4073, lugares_totales: parseInt(maxPersonas),
+    lugares_libres: parseInt(maxPersonas), organizador: 'Camila P.', organizador_avatar: 'CP',
+    descripcion: `Mateada de ${tema} · ${tipoMate}`, duracion: duracion, hora: '18:00',
+    tags: tema.split(' ')[0], estado: 'activa'
   };
-  
-  mateadas.push(nuevaMateada);
+  mateadas.push(nueva);
   guardarDatosLocales();
-  actualizarEstadisticas();
-  
-  alert(`✅ ¡Mateada publicada!\n\n📌 Tema: ${tema}\n👥 Cupo: ${maxPersonas} personas\n📍 ${ubicacion}`);
-  goScreen('screen-home');
-  renderHome();
+  alert(`✅ Mateada publicada!\n📌 ${tema}\n👥 ${maxPersonas} personas`);
+  irAlInicio();
 }
 
 function sendJoinRequest() {
   if (!currentMateada) return;
-  
-  if (currentMateada.lugares_libres <= 0) {
-    alert('❌ No hay lugares disponibles en esta mateada');
-    return;
-  }
-  
+  if (currentMateada.lugares_libres <= 0) { alert('No hay lugares'); return; }
   const minutos = document.getElementById('arrivalRange')?.value || 12;
-  
-  // Reducir lugares libres
   const index = mateadas.findIndex(m => m.id === currentMateada.id);
-  if (index !== -1) {
-    mateadas[index].lugares_libres--;
-    guardarDatosLocales();
-  }
-  
+  if (index !== -1) { mateadas[index].lugares_libres--; guardarDatosLocales(); }
   document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
-  goScreen('screen-sent');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-sent').classList.add('active');
+  actualizarBreadcrumb();
   renderHome();
 }
 
-function acceptJoinRequest() {
-  const notifDiv = document.getElementById('notifRequestItem');
-  if(notifDiv) notifDiv.innerHTML = `<div class="avatar">✓</div><div><div class="notif-title">Camila confirmada ✅</div><div class="notif-sub">Se suma a tu mateada</div></div>`;
+function toggleOpt(btn) {
+  const parent = btn.parentElement;
+  if (parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 }
 
-function goScreen(id) {
-  if (id !== 'screen-detail' && currentMap) { currentMap.remove(); currentMap = null; }
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+// Menú usuario
+function toggleUserMenu() { document.getElementById('userMenuModal').classList.toggle('active'); }
+function verPerfil() { toggleUserMenu(); alert('Perfil: Camila · 25 años · Mate amargo'); }
+function verNotificaciones() { toggleUserMenu(); alert('No tenés notificaciones nuevas'); }
 
-function historyBack() { goScreen('screen-home'); }
-function toggleOpt(btn) { 
-  const parent = btn.parentElement; 
-  if(parent) { 
-    parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); 
-    btn.classList.add('selected'); 
-  } 
-}
-
-// Inicializar
-const arrivalSlider = document.getElementById('arrivalRange');
-if(arrivalSlider) arrivalSlider.addEventListener('input', function() { 
-  document.getElementById('arrivalValue').innerText = this.value + ' min'; 
-});
-
+// Inicialización
 cargarDatosLocales();
 renderHome();
+actualizarBreadcrumb();
+const arrivalSlider = document.getElementById('arrivalRange');
+if(arrivalSlider) arrivalSlider.addEventListener('input', function() { document.getElementById('arrivalValue').innerText = this.value + ' min'; });
 
-window.goScreen = goScreen;
+window.irAlInicio = irAlInicio;
+window.goBack = goBack;
+window.goToCreate = goToCreate;
 window.createMateada = createMateada;
 window.sendJoinRequest = sendJoinRequest;
-window.acceptJoinRequest = acceptJoinRequest;
 window.toggleOpt = toggleOpt;
 window.goToDetail = goToDetail;
-window.historyBack = historyBack;
+window.irAUnirse = irAUnirse;
+window.toggleUserMenu = toggleUserMenu;
+window.verPerfil = verPerfil;
+window.verNotificaciones = verNotificaciones;
 </script>
 </body>
 </html>
