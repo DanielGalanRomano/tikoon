@@ -17,8 +17,7 @@
       --borde: #EFE3D4;
       --texto: #2A241A;
       --subtexto: #6B5A4B;
-      --azul: #2563EB;
-      --azul-light: #EFF6FF;
+      --rojo: #DC2626;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -27,11 +26,12 @@
       font-family: 'DM Sans', system-ui, sans-serif;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 16px;
     }
 
+    /* ── APP SHELL ── */
     .app {
       max-width: 480px;
       width: 100%;
@@ -42,15 +42,21 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
+      /* header fijo dentro del app */
+      position: relative;
     }
 
-    /* HEADER */
-    .header {
+    /* ── HEADER FIXED ── */
+    .sticky-top {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       background: var(--crema);
-      padding: 20px 20px 16px;
+    }
+    .header {
+      padding: 20px 20px 14px;
       border-bottom: 1px solid var(--borde);
       text-align: center;
-      flex-shrink: 0;
     }
     .logo {
       font-family: 'Fraunces', serif;
@@ -66,14 +72,12 @@
       letter-spacing: 0.3px;
     }
 
-    /* NAV */
+    /* ── NAV ── */
     .nav-bar {
       display: none;
       align-items: center;
       padding: 10px 16px;
-      background: var(--crema);
       border-bottom: 1px solid var(--borde);
-      flex-shrink: 0;
     }
     .nav-bar.visible { display: flex; }
     .back-btn {
@@ -95,18 +99,18 @@
       color: var(--texto);
     }
 
-    /* CONTENT */
+    /* ── CONTENT ── */
     .content {
       padding: 20px;
       overflow-y: auto;
       flex: 1;
     }
 
-    /* SCREENS */
+    /* ── SCREENS ── */
     .screen { display: none; flex: 1; flex-direction: column; }
     .screen.active { display: flex; }
 
-    /* CARDS */
+    /* ── CARDS ── */
     .card {
       background: white;
       border-radius: 20px;
@@ -115,6 +119,7 @@
       cursor: pointer;
       border: 1px solid var(--borde);
       transition: transform 0.15s, box-shadow 0.15s;
+      animation: fadeUp 0.3s ease both;
     }
     .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .card:active { transform: scale(0.98); }
@@ -138,6 +143,8 @@
       justify-content: space-between;
       margin-top: 10px;
     }
+
+    /* ── BADGE ── */
     .badge {
       background: var(--verde-light);
       color: var(--verde);
@@ -147,10 +154,7 @@
       font-weight: 600;
       display: inline-block;
     }
-    .badge.lleno {
-      background: #FEE2E2;
-      color: #DC2626;
-    }
+    .badge.lleno { background: #FEE2E2; color: var(--rojo); }
     .organizador-chip {
       font-size: 12px;
       color: var(--subtexto);
@@ -159,7 +163,30 @@
       border-radius: 20px;
     }
 
-    /* BOTONES */
+    /* ── COUNTDOWN BAR ── */
+    .countdown-wrap {
+      margin-top: 10px;
+    }
+    .countdown-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--subtexto);
+      margin-bottom: 5px;
+    }
+    .countdown-bar-track {
+      height: 6px;
+      background: var(--crema-dark);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .countdown-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s linear, background-color 1s ease;
+    }
+
+    /* ── BOTONES ── */
     .btn {
       background: var(--verde);
       color: white;
@@ -184,7 +211,7 @@
     .btn-secondary:hover { background: var(--crema-dark); }
     .btn.loading { opacity: 0.7; pointer-events: none; }
 
-    /* FAB */
+    /* ── FAB ── */
     .fab {
       position: fixed;
       bottom: 24px;
@@ -192,20 +219,24 @@
       background: var(--verde);
       color: white;
       border: none;
-      width: 56px; height: 56px;
-      border-radius: 28px;
-      font-size: 26px;
+      height: 48px;
+      padding: 0 20px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
       cursor: pointer;
       box-shadow: 0 4px 16px rgba(15,123,94,0.4);
       transition: transform 0.2s, box-shadow 0.2s;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
     }
-    .fab:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(15,123,94,0.5); }
+    .fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(15,123,94,0.5); }
     .fab:active { transform: scale(0.96); }
 
-    /* FORMULARIO */
+    /* ── FORMULARIO ── */
     .form-group { margin-bottom: 16px; }
     .form-input, .form-select {
       width: 100%;
@@ -248,7 +279,28 @@
       font-weight: 600;
     }
 
-    /* MAPA */
+    /* Duracion pills */
+    .duracion-grid { display: flex; gap: 8px; }
+    .duracion-btn {
+      flex: 1;
+      padding: 10px 6px;
+      border-radius: 40px;
+      border: 1.5px solid var(--borde);
+      background: white;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .duracion-btn.selected {
+      background: var(--verde-light);
+      border-color: var(--verde);
+      color: var(--verde);
+    }
+
+    /* ── MAPA ── */
     .map {
       height: 180px;
       border-radius: 16px;
@@ -257,7 +309,7 @@
       border: 1px solid var(--borde);
     }
 
-    /* EMPTY STATE */
+    /* ── EMPTY STATE ── */
     .empty {
       text-align: center;
       padding: 60px 20px;
@@ -266,7 +318,7 @@
     }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
 
-    /* SLIDER CUSTOM */
+    /* ── SLIDER ── */
     input[type="range"] {
       -webkit-appearance: none;
       width: 100%;
@@ -285,7 +337,7 @@
       box-shadow: 0 2px 6px rgba(15,123,94,0.3);
     }
 
-    /* DETALLE */
+    /* ── DETALLE ── */
     .detail-header {
       background: white;
       border-radius: 20px;
@@ -310,7 +362,39 @@
     }
     .detail-row strong { color: var(--texto); }
 
-    /* JOIN INFO */
+    /* countdown detalle */
+    .detail-countdown {
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--borde);
+      margin-bottom: 12px;
+    }
+    .detail-countdown-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .detail-countdown-label span:first-child { color: var(--subtexto); }
+    .detail-countdown-label .tiempo-restante {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .bar-track {
+      height: 8px;
+      background: var(--crema-dark);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s linear, background-color 2s ease;
+    }
+
+    /* ── JOIN ── */
     .join-card {
       background: #FFF8EC;
       border: 1px solid #F5D9A8;
@@ -326,7 +410,7 @@
       margin-bottom: 4px;
     }
 
-    /* SENT */
+    /* ── SENT ── */
     .sent-screen {
       text-align: center;
       padding: 60px 20px;
@@ -351,47 +435,39 @@
     }
     .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
 
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MOBILE ── */
     @media (max-width: 500px) {
-      body { padding: 0; }
+      body { padding: 0; align-items: flex-start; }
       .app { border-radius: 0; max-width: 100%; min-height: 100vh; }
       .fab { bottom: 20px; right: 16px; }
     }
-
-    /* Animación entrada de cards */
-    .card { animation: fadeUp 0.3s ease both; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .card:nth-child(1) { animation-delay: 0ms; }
-    .card:nth-child(2) { animation-delay: 60ms; }
-    .card:nth-child(3) { animation-delay: 120ms; }
-    .card:nth-child(4) { animation-delay: 180ms; }
-    .card:nth-child(5) { animation-delay: 240ms; }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo">🧉 matear</div>
-    <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
-  </div>
-
-  <!-- NAV BAR -->
-  <div class="nav-bar" id="navBar">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <span class="nav-title" id="navTitle"></span>
+  <!-- STICKY TOP: header + navbar -->
+  <div class="sticky-top">
+    <div class="header">
+      <div class="logo">🧉 matear</div>
+      <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
+    </div>
+    <div class="nav-bar" id="navBar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <span class="nav-title" id="navTitle"></span>
+    </div>
   </div>
 
   <!-- PANTALLA: INICIO -->
   <div id="screen-home" class="screen active">
     <div class="content" id="homeContent">
-      <div class="empty">
-        <div class="empty-icon">🧉</div>
-        Cargando mateadas...
-      </div>
+      <div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>
     </div>
   </div>
 
@@ -405,7 +481,7 @@
     <div class="content">
       <div class="form-group">
         <label class="form-label">👤 Tu nombre</label>
-        <input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" value="">
+        <input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila">
       </div>
       <div class="form-group">
         <label class="form-label">🎯 Tema</label>
@@ -422,7 +498,15 @@
       </div>
       <div class="form-group">
         <label class="form-label">📍 Ubicación</label>
-        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras" value="">
+        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras">
+      </div>
+      <div class="form-group">
+        <label class="form-label">⏳ Duración de la mateada</label>
+        <div class="duracion-grid" id="duracionGrid">
+          <button class="duracion-btn" onclick="seleccionarDuracion(this, 30)">30 min</button>
+          <button class="duracion-btn selected" onclick="seleccionarDuracion(this, 60)">1 hora</button>
+          <button class="duracion-btn" onclick="seleccionarDuracion(this, 120)">2 horas</button>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">🧉 ¿Cómo tomás el mate?</label>
@@ -449,7 +533,7 @@
       <div class="form-group">
         <label class="form-label">⏱️ ¿En cuántos minutos llegás?</label>
         <input type="range" id="tiempoLlegada" min="3" max="40" value="10">
-        <span id="tiempoMostrar" style="font-weight:700; font-size:18px; color: var(--verde);">10 minutos</span>
+        <span id="tiempoMostrar" style="font-weight:700; font-size:18px; color:var(--verde);">10 minutos</span>
       </div>
       <button class="btn" id="btnUnirse" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
     </div>
@@ -465,26 +549,120 @@
     </div>
   </div>
 
-  <button class="fab" id="fabBtn" onclick="irACrear()">+</button>
+  <button class="fab" id="fabBtn" onclick="irACrear()">
+    <span style="font-size:18px;">+</span> Agregar mateada
+  </button>
 </div>
 
 <script>
 // 🔴 Reemplazá con tu URL de Google Apps Script
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDvTdECAbf1jS8g3JSrXMrh9kVIqkKyGLCJaIdc_xKvAiFNkBsGEwWXoBS1S8hq0f0/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYuly94rNuSYMvS4wTQeI4x_-4eqLOB7l5AZAGdf8CYKPfrFg25jGqXpCoCR6d4ZBB/exec';
 
-let mateadasActuales = [];
+let mateadasActuales  = [];
 let mateadaSeleccionada = null;
-let mapaDetalle = null;
+let mapaDetalle       = null;
+let duracionSeleccionada = 60; // minutos, default 1 hora
+let countdownIntervals = {}; // timers por mateada id
 
-// ========== CARGA DE MATEADAS ==========
+// ─────────────────────────────────────────────
+//  HELPERS TIEMPO
+// ─────────────────────────────────────────────
+function parseHoraToMs(horaStr) {
+  // horaStr = "14:35"
+  if (!horaStr) return null;
+  const [h, m] = horaStr.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return null;
+  const now = new Date();
+  const inicio = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  return inicio.getTime();
+}
+
+function duracionTexto(mins) {
+  if (mins === 30) return '30 min';
+  if (mins === 60) return '1 hora';
+  if (mins === 120) return '2 horas';
+  return mins + ' min';
+}
+
+function formatTiempoRestante(msRestante) {
+  if (msRestante <= 0) return 'Terminada';
+  const totalSec = Math.floor(msRestante / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
+  if (m > 0) return `${m}m ${s.toString().padStart(2,'0')}s`;
+  return `${s}s`;
+}
+
+// pct 0-1 → color verde→amarillo→rojo
+function colorBarra(pct) {
+  if (pct > 0.5) return '#0F7B5E';
+  if (pct > 0.25) return '#D97706';
+  return '#DC2626';
+}
+
+// ─────────────────────────────────────────────
+//  COUNTDOWN — arranca un intervalo para un elemento
+//  fillId: id del .bar-fill
+//  labelId: id del span de texto
+// ─────────────────────────────────────────────
+function iniciarCountdown(mateada, fillId, labelId) {
+  const inicioMs = parseHoraToMs(mateada.hora);
+  const durMs    = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
+
+  function tick() {
+    const fill  = document.getElementById(fillId);
+    const label = document.getElementById(labelId);
+    if (!fill || !label) {
+      clearInterval(countdownIntervals[mateada.id]);
+      return;
+    }
+
+    const now        = Date.now();
+    const fin        = inicioMs ? inicioMs + durMs : null;
+    const msRestante = fin ? fin - now : null;
+
+    if (!fin || msRestante === null) {
+      fill.style.width = '100%';
+      fill.style.background = colorBarra(1);
+      label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60);
+      return;
+    }
+
+    const pct = Math.max(0, Math.min(1, msRestante / durMs));
+    fill.style.width = (pct * 100) + '%';
+    fill.style.background = colorBarra(pct);
+
+    if (msRestante <= 0) {
+      label.textContent = 'Terminada';
+      label.style.color = '#DC2626';
+      clearInterval(countdownIntervals[mateada.id]);
+    } else {
+      label.textContent = formatTiempoRestante(msRestante);
+      label.style.color = colorBarra(pct);
+    }
+  }
+
+  clearInterval(countdownIntervals[mateada.id]);
+  tick();
+  countdownIntervals[mateada.id] = setInterval(tick, 1000);
+}
+
+// ─────────────────────────────────────────────
+//  CARGAR MATEADAS
+// ─────────────────────────────────────────────
 async function cargarMateadas() {
+  // limpiar countdowns viejos
+  Object.values(countdownIntervals).forEach(clearInterval);
+  countdownIntervals = {};
+
   const container = document.getElementById('homeContent');
   container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
 
   try {
     const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
     const data = await response.json();
-
     mateadasActuales = (data.success && data.mateadas) ? data.mateadas : [];
 
     if (mateadasActuales.length === 0) {
@@ -494,7 +672,11 @@ async function cargarMateadas() {
 
     container.innerHTML = '';
     mateadasActuales.forEach((m, i) => {
-      const libres = parseInt(m.lugares_libres) || 0;
+      const libres    = parseInt(m.lugares_libres) || 0;
+      const durMins   = parseInt(m.duracion_minutos) || 60;
+      const fillId    = `fill-${m.id}`;
+      const labelId   = `label-${m.id}`;
+
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = `${i * 60}ms`;
@@ -503,7 +685,7 @@ async function cargarMateadas() {
         <div class="card-title">${m.titulo}</div>
         <div class="card-info">
           <span>📍 ${m.ubicacion}</span>
-          <span>⏱️ ${m.hora || 'Ahora'}</span>
+          <span>⏰ ${m.hora || 'Ahora'}</span>
         </div>
         <div class="card-footer">
           <span class="badge ${libres === 0 ? 'lleno' : ''}">
@@ -511,27 +693,41 @@ async function cargarMateadas() {
           </span>
           <span class="organizador-chip">🧑 ${m.organizador}</span>
         </div>
+        <div class="countdown-wrap">
+          <div class="countdown-label">
+            <span>⏳ ${duracionTexto(durMins)}</span>
+            <span id="${labelId}" style="font-weight:600;">—</span>
+          </div>
+          <div class="countdown-bar-track">
+            <div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
+          </div>
+        </div>
       `;
       container.appendChild(card);
+
+      // arrancar timer después de que el DOM exista
+      setTimeout(() => iniciarCountdown(m, fillId, labelId), 50);
     });
   } catch (error) {
-    console.error('Error al cargar mateadas:', error);
+    console.error(error);
     container.innerHTML = '<div class="empty"><div class="empty-icon">❌</div>Error de conexión<br>Verificá la URL del script</div>';
   }
 }
 
-// ========== CREAR MATEADA (GET) ==========
+// ─────────────────────────────────────────────
+//  CREAR MATEADA
+// ─────────────────────────────────────────────
 async function crearMateada() {
   const organizador = document.getElementById('nombreOrganizador').value.trim();
-  const titulo = document.getElementById('temaMateada').value;
-  const ubicacion = document.getElementById('ubicacionMateada').value.trim();
-  const cupo = parseInt(document.getElementById('cupoMateada').value);
-  const mateOption = document.querySelector('.option-btn.selected');
-  const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
-  const hora = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  const titulo      = document.getElementById('temaMateada').value;
+  const ubicacion   = document.getElementById('ubicacionMateada').value.trim();
+  const cupo        = parseInt(document.getElementById('cupoMateada').value);
+  const mateOption  = document.querySelector('.option-btn.selected');
+  const tipoMate    = mateOption ? mateOption.innerText : 'Dulce';
+  const hora        = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
   if (!organizador) { alert('Ingresá tu nombre'); return; }
-  if (!ubicacion) { alert('Ingresá la ubicación'); return; }
+  if (!ubicacion)   { alert('Ingresá la ubicación'); return; }
 
   const btn = document.getElementById('btnPublicar');
   btn.classList.add('loading');
@@ -540,24 +736,25 @@ async function crearMateada() {
   try {
     const params = new URLSearchParams({
       accion: 'crearMateada',
-      titulo: titulo,
-      ubicacion: ubicacion,
+      titulo,
+      ubicacion,
       latitud: -34.5842,
       longitud: -58.4073,
       lugares_totales: cupo,
-      organizador: organizador,
+      organizador,
       organizador_avatar: organizador.charAt(0).toUpperCase(),
       descripcion: `Mateada de ${titulo} · ${tipoMate}`,
-      duracion: '1.5 hs',
-      hora: hora,
+      duracion_minutos: duracionSeleccionada,
+      duracion: duracionTexto(duracionSeleccionada),
+      hora,
       tags: titulo.split(' ')[0]
     });
 
-    const response = await fetch(`${SCRIPT_URL}?${params}`);
+    const response  = await fetch(`${SCRIPT_URL}?${params}`);
     const resultado = await response.json();
 
     if (resultado.success) {
-      alert(`✅ ¡Mateada publicada!\n📌 ${titulo}\n📍 ${ubicacion}\n👥 Cupo: ${cupo} personas`);
+      alert(`✅ ¡Mateada publicada!\n📌 ${titulo}\n📍 ${ubicacion}\n👥 Cupo: ${cupo} · ⏳ ${duracionTexto(duracionSeleccionada)}`);
       irInicio();
     } else {
       alert('❌ Error: ' + (resultado.error || 'No se pudo publicar'));
@@ -571,10 +768,11 @@ async function crearMateada() {
   }
 }
 
-// ========== ENVIAR SOLICITUD (GET) ==========
+// ─────────────────────────────────────────────
+//  ENVIAR SOLICITUD
+// ─────────────────────────────────────────────
 async function enviarSolicitud() {
   if (!mateadaSeleccionada) return;
-
   const minutos = document.getElementById('tiempoLlegada').value;
   const btn = document.getElementById('btnUnirse');
   btn.classList.add('loading');
@@ -588,7 +786,7 @@ async function enviarSolicitud() {
       tiempo_llegada: minutos + ' min'
     });
 
-    const response = await fetch(`${SCRIPT_URL}?${params}`);
+    const response  = await fetch(`${SCRIPT_URL}?${params}`);
     const resultado = await response.json();
 
     if (resultado.success) {
@@ -606,12 +804,17 @@ async function enviarSolicitud() {
   }
 }
 
-// ========== DETALLE ==========
+// ─────────────────────────────────────────────
+//  DETALLE
+// ─────────────────────────────────────────────
 function verDetalle(mateada) {
   mateadaSeleccionada = mateada;
   const container = document.getElementById('detailContent');
-  const libres = parseInt(mateada.lugares_libres) || 0;
-  const ocupados = (parseInt(mateada.lugares_totales) || 0) - libres;
+  const libres    = parseInt(mateada.lugares_libres) || 0;
+  const ocupados  = (parseInt(mateada.lugares_totales) || 0) - libres;
+  const durMins   = parseInt(mateada.duracion_minutos) || 60;
+  const fillId    = `detail-fill-${mateada.id}`;
+  const labelId   = `detail-label-${mateada.id}`;
 
   container.innerHTML = `
     <div class="detail-header">
@@ -620,17 +823,30 @@ function verDetalle(mateada) {
         ${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}
       </span>
     </div>
+
+    <div class="detail-countdown">
+      <div class="detail-countdown-label">
+        <span>⏳ Duración: ${duracionTexto(durMins)}</span>
+        <span class="tiempo-restante" id="${labelId}">—</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
+      </div>
+    </div>
+
     <div class="map" id="detailMap"></div>
+
     <div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;">
       <div class="detail-row">📍 <strong>${mateada.ubicacion}</strong></div>
       <div class="detail-row">📋 ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div>
       <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
       <div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div>
-      <div class="detail-row">⏱️ ${mateada.hora || 'Ahora'} · ${mateada.duracion || '1.5 hs'}</div>
+      <div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div>
     </div>
+
     ${libres > 0
       ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`
-      : `<button class="btn btn-secondary" style="opacity:0.6; pointer-events:none;">Sin lugares disponibles</button>`
+      : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`
     }
   `;
 
@@ -638,6 +854,7 @@ function verDetalle(mateada) {
   mostrarScreen('screen-detail');
 
   setTimeout(() => {
+    iniciarCountdown(mateada, fillId, labelId);
     const mapEl = document.getElementById('detailMap');
     if (mapEl && mateada.latitud && mateada.longitud) {
       if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
@@ -652,14 +869,16 @@ function mostrarUnirse() {
   document.getElementById('joinInfo').innerHTML = `
     <div class="join-card">
       <div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div>
-      <div style="font-size:14px; color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
+      <div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
     </div>
   `;
   setNavTitle('Sumarme');
   mostrarScreen('screen-join');
 }
 
-// ========== NAVEGACIÓN ==========
+// ─────────────────────────────────────────────
+//  NAVEGACIÓN
+// ─────────────────────────────────────────────
 function irInicio() {
   mostrarScreen('screen-home');
   document.getElementById('navBar').classList.remove('visible');
@@ -673,11 +892,8 @@ function irACrear() {
 }
 
 function goBack() {
-  const detailActive = document.getElementById('screen-detail').classList.contains('active');
-  const joinActive = document.getElementById('screen-join').classList.contains('active');
-
-  if (joinActive) {
-    verDetalle(mateadaSeleccionada); // volver al detalle
+  if (document.getElementById('screen-join').classList.contains('active')) {
+    verDetalle(mateadaSeleccionada);
   } else {
     irInicio();
   }
@@ -691,24 +907,30 @@ function mostrarScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 
-  const isHome = id === 'screen-home';
+  const isHome   = id === 'screen-home';
   const isCreate = id === 'screen-create';
 
   document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
-
-  if (isHome || isCreate) {
-    document.getElementById('navBar').classList.toggle('visible', isCreate);
-  } else {
-    document.getElementById('navBar').classList.add('visible');
-  }
+  document.getElementById('navBar').classList.toggle('visible', !isHome);
 }
 
+// ─────────────────────────────────────────────
+//  SELECCIÓN OPCIONES
+// ─────────────────────────────────────────────
 function seleccionarMate(btn) {
   btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
 
-// Slider
+function seleccionarDuracion(btn, mins) {
+  document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  duracionSeleccionada = mins;
+}
+
+// ─────────────────────────────────────────────
+//  SLIDER
+// ─────────────────────────────────────────────
 document.getElementById('tiempoLlegada').oninput = function() {
   document.getElementById('tiempoMostrar').innerText = this.value + ' minutos';
 };
