@@ -3,11 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Matear">
+  <meta name="theme-color" content="#0F7B5E">
+  <meta name="description" content="Encontrá y creá mateadas en el parque cerca tuyo">
+
+  <!-- Open Graph (para compartir) -->
+  <meta property="og:title" content="Matear — Encuentros con mate en el parque">
+  <meta property="og:description" content="Encontrá mateadas cerca tuyo o creá la tuya">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="icons/icon-512.png">
+
   <title>Matear — Encuentros con mate en el parque</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
     :root {
       --verde: #0F7B5E;
@@ -18,17 +43,22 @@
       --texto: #2A241A;
       --subtexto: #6B5A4B;
       --rojo: #DC2626;
+      /* Safe area insets para notch / barra inferior */
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       background: var(--crema-dark);
       font-family: 'DM Sans', system-ui, sans-serif;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       align-items: flex-start;
       justify-content: center;
       padding: 16px;
+      overscroll-behavior: none;
     }
 
     /* ── APP SHELL ── */
@@ -42,11 +72,10 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
-      /* header fijo dentro del app */
       position: relative;
     }
 
-    /* ── HEADER FIXED ── */
+    /* ── HEADER FIJO ── */
     .sticky-top {
       position: sticky;
       top: 0;
@@ -54,7 +83,7 @@
       background: var(--crema);
     }
     .header {
-      padding: 20px 20px 14px;
+      padding: calc(20px + var(--safe-top)) 20px 14px;
       border-bottom: 1px solid var(--borde);
       text-align: center;
     }
@@ -89,6 +118,7 @@
       font-size: 18px;
       line-height: 1;
       transition: background 0.15s;
+      display: flex; align-items: center; justify-content: center;
     }
     .back-btn:active { background: var(--crema-dark); }
     .nav-title {
@@ -104,11 +134,64 @@
       padding: 20px;
       overflow-y: auto;
       flex: 1;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* ── SCREENS ── */
     .screen { display: none; flex: 1; flex-direction: column; }
     .screen.active { display: flex; }
+
+    /* ── INSTALL BANNER ── */
+    .install-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #0F7B5E, #0a6650);
+      color: white;
+      padding: 12px 16px;
+      font-size: 13px;
+      animation: slideDown 0.4s ease;
+    }
+    .install-banner.visible { display: flex; }
+    .install-banner-text { flex: 1; line-height: 1.4; }
+    .install-banner-text strong { display: block; font-size: 14px; }
+    .install-btn-banner {
+      background: white;
+      color: var(--verde);
+      border: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .install-dismiss {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* ── OFFLINE BANNER ── */
+    .offline-banner {
+      display: none;
+      background: #FEF3C7;
+      color: #92400E;
+      padding: 10px 16px;
+      font-size: 13px;
+      text-align: center;
+      border-bottom: 1px solid #FCD34D;
+    }
+    .offline-banner.visible { display: block; }
 
     /* ── CARDS ── */
     .card {
@@ -164,9 +247,7 @@
     }
 
     /* ── COUNTDOWN BAR ── */
-    .countdown-wrap {
-      margin-top: 10px;
-    }
+    .countdown-wrap { margin-top: 10px; }
     .countdown-label {
       display: flex;
       justify-content: space-between;
@@ -200,6 +281,8 @@
       font-size: 15px;
       margin-top: 12px;
       transition: background 0.2s, transform 0.1s;
+      -webkit-user-select: none;
+      user-select: none;
     }
     .btn:hover { background: #0a6650; }
     .btn:active { transform: scale(0.98); }
@@ -214,26 +297,27 @@
     /* ── FAB ── */
     .fab {
       position: fixed;
-      bottom: 24px;
+      bottom: calc(24px + var(--safe-bottom));
       right: 24px;
       background: var(--verde);
       color: white;
       border: none;
-      height: 48px;
-      padding: 0 20px;
-      border-radius: 24px;
+      height: 52px;
+      padding: 0 22px;
+      border-radius: 26px;
       font-size: 14px;
       font-weight: 700;
       font-family: 'DM Sans', sans-serif;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(15,123,94,0.4);
+      box-shadow: 0 4px 20px rgba(15,123,94,0.45);
       transition: transform 0.2s, box-shadow 0.2s;
       display: flex;
       align-items: center;
       gap: 8px;
       white-space: nowrap;
+      z-index: 200;
     }
-    .fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(15,123,94,0.5); }
+    .fab:hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(15,123,94,0.55); }
     .fab:active { transform: scale(0.96); }
 
     /* ── FORMULARIO ── */
@@ -243,11 +327,13 @@
       padding: 12px 16px;
       border: 1.5px solid var(--borde);
       border-radius: 16px;
-      font-size: 14px;
+      font-size: 16px; /* 16px evita zoom en iOS */
       font-family: 'DM Sans', sans-serif;
       background: white;
       color: var(--texto);
       transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
     }
     .form-input:focus, .form-select:focus {
       outline: none;
@@ -278,8 +364,6 @@
       color: var(--verde);
       font-weight: 600;
     }
-
-    /* Duracion pills */
     .duracion-grid { display: flex; gap: 8px; }
     .duracion-btn {
       flex: 1;
@@ -330,11 +414,11 @@
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 22px; height: 22px;
-      border-radius: 11px;
+      width: 28px; height: 28px;
+      border-radius: 14px;
       background: var(--verde);
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(15,123,94,0.3);
+      box-shadow: 0 2px 8px rgba(15,123,94,0.35);
     }
 
     /* ── DETALLE ── */
@@ -361,8 +445,6 @@
       margin: 6px 0;
     }
     .detail-row strong { color: var(--texto); }
-
-    /* countdown detalle */
     .detail-countdown {
       background: white;
       border-radius: 16px;
@@ -378,21 +460,9 @@
       margin-bottom: 8px;
     }
     .detail-countdown-label span:first-child { color: var(--subtexto); }
-    .detail-countdown-label .tiempo-restante {
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .bar-track {
-      height: 8px;
-      background: var(--crema-dark);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 1s linear, background-color 2s ease;
-    }
+    .detail-countdown-label .tiempo-restante { font-weight: 700; font-size: 14px; }
+    .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background-color 2s ease; }
 
     /* ── JOIN ── */
     .join-card {
@@ -422,9 +492,9 @@
     }
     .sent-icon { font-size: 72px; margin-bottom: 16px; animation: pop 0.4s ease; }
     @keyframes pop {
-      0% { transform: scale(0.5); opacity: 0; }
-      80% { transform: scale(1.1); }
-      100% { transform: scale(1); opacity: 1; }
+      0%   { transform: scale(0.5); opacity: 0; }
+      80%  { transform: scale(1.1); }
+      100% { transform: scale(1);   opacity: 1; }
     }
     .sent-title {
       font-family: 'Fraunces', serif;
@@ -434,19 +504,6 @@
       margin-bottom: 10px;
     }
     .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── MOBILE ── */
-    @media (max-width: 500px) {
-      body { padding: 0; align-items: flex-start; }
-      .app { border-radius: 0; max-width: 100%; min-height: 100vh; }
-      .fab { bottom: 20px; right: 16px; }
-    }
 
     /* ── MAPS LINK ── */
     .maps-link {
@@ -464,17 +521,72 @@
       transition: background 0.15s;
     }
     .maps-link:hover { background: #c6edd9; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── REFRESH BTN ── */
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--borde);
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .refresh-btn.spinning { animation: spin 0.6s linear; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ── HEADER ROW con refresh ── */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 14px;
+    }
+    .header-row .logo-wrap { text-align: center; flex: 1; }
+
+    /* ── MOBILE FULL SCREEN ── */
+    @media (max-width: 500px) {
+      body { padding: 0; align-items: flex-start; }
+      .app { border-radius: 0; max-width: 100%; min-height: 100vh; min-height: 100dvh; }
+      .fab { bottom: calc(20px + var(--safe-bottom)); right: 16px; }
+    }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- STICKY TOP: header + navbar -->
+  <!-- STICKY TOP -->
   <div class="sticky-top">
+    <!-- Install banner (Android Chrome) -->
+    <div class="install-banner" id="installBanner">
+      <span style="font-size:28px;">🧉</span>
+      <div class="install-banner-text">
+        <strong>Instalá Matear</strong>
+        Usala sin internet, como una app nativa
+      </div>
+      <button class="install-btn-banner" id="installBtnBanner">Instalar</button>
+      <button class="install-dismiss" id="installDismiss">✕</button>
+    </div>
+
+    <!-- Offline banner -->
+    <div class="offline-banner" id="offlineBanner">
+      📵 Sin conexión — mostrando datos en caché
+    </div>
+
+    <!-- Header principal -->
     <div class="header">
       <div class="logo">🧉 matear</div>
       <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
     </div>
+
+    <!-- Nav bar (pantallas secundarias) -->
     <div class="nav-bar" id="navBar">
       <button class="back-btn" onclick="goBack()">←</button>
       <span class="nav-title" id="navTitle"></span>
@@ -483,8 +595,14 @@
 
   <!-- PANTALLA: INICIO -->
   <div id="screen-home" class="screen active">
-    <div class="content" id="homeContent">
-      <div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>
+    <div class="content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:var(--texto);">Mateadas activas</span>
+        <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
+      </div>
+      <div id="homeContent">
+        <div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>
+      </div>
     </div>
   </div>
 
@@ -498,7 +616,7 @@
     <div class="content">
       <div class="form-group">
         <label class="form-label">👤 Tu nombre</label>
-        <input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila">
+        <input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name">
       </div>
       <div class="form-group">
         <label class="form-label">🎯 Tema</label>
@@ -515,7 +633,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">📍 Ubicación</label>
-        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras">
+        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras" autocomplete="off">
       </div>
       <div class="form-group">
         <label class="form-label">⏳ Duración de la mateada</label>
@@ -540,6 +658,7 @@
         </select>
       </div>
       <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
+      <div style="height: calc(80px + var(--safe-bottom));"></div>
     </div>
   </div>
 
@@ -550,7 +669,7 @@
       <div class="form-group">
         <label class="form-label">⏱️ ¿En cuántos minutos llegás?</label>
         <input type="range" id="tiempoLlegada" min="3" max="40" value="10">
-        <span id="tiempoMostrar" style="font-weight:700; font-size:18px; color:var(--verde);">10 minutos</span>
+        <span id="tiempoMostrar" style="font-weight:700; font-size:22px; color:var(--verde);">10 minutos</span>
       </div>
       <button class="btn" id="btnUnirse" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
     </div>
@@ -566,41 +685,91 @@
     </div>
   </div>
 
+  <!-- FAB -->
   <button class="fab" id="fabBtn" onclick="irACrear()">
-    <span style="font-size:18px;">+</span> Agregar mateada
+    <span style="font-size:20px;">+</span> Agregar mateada
   </button>
 </div>
 
 <script>
-// 🔴 Reemplazá con tu URL de Google Apps Script
+// ─── CONFIG ───────────────────────────────────────────────
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAofWb7nAkresEU6OSSLSa_BwIoHUyVdQ8q2_lM85UDF3QwWiHjgLo1pWg2-r3Ul8F/exec';
 
-let mateadasActuales  = [];
-let mateadaSeleccionada = null;
-let mapaDetalle       = null;
-let duracionSeleccionada = 60; // minutos, default 1 hora
-let countdownIntervals = {}; // timers por mateada id
+// ─── STATE ────────────────────────────────────────────────
+let mateadasActuales     = [];
+let mateadaSeleccionada  = null;
+let mapaDetalle          = null;
+let duracionSeleccionada = 60;
+let countdownIntervals   = {};
+let deferredInstallPrompt = null;
 
-// ─────────────────────────────────────────────
-//  HELPERS TIEMPO
-// ─────────────────────────────────────────────
+// ─── SERVICE WORKER (PWA) ─────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('[SW] Registrado:', reg.scope))
+      .catch(err => console.warn('[SW] Error:', err));
+  });
+}
+
+// ─── INSTALL BANNER ───────────────────────────────────────
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // No mostrar si ya fue descartado esta sesión
+  if (!sessionStorage.getItem('installDismissed')) {
+    setTimeout(() => {
+      document.getElementById('installBanner').classList.add('visible');
+    }, 2000);
+  }
+});
+
+document.getElementById('installBtnBanner').addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  console.log('[PWA] Install outcome:', outcome);
+  deferredInstallPrompt = null;
+  document.getElementById('installBanner').classList.remove('visible');
+});
+
+document.getElementById('installDismiss').addEventListener('click', () => {
+  document.getElementById('installBanner').classList.remove('visible');
+  sessionStorage.setItem('installDismissed', '1');
+});
+
+// Ocultar banner si ya está instalada
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').classList.remove('visible');
+});
+
+// ─── OFFLINE / ONLINE ─────────────────────────────────────
+function actualizarEstadoRed() {
+  const banner = document.getElementById('offlineBanner');
+  if (!navigator.onLine) {
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+window.addEventListener('online',  actualizarEstadoRed);
+window.addEventListener('offline', actualizarEstadoRed);
+actualizarEstadoRed();
+
+// ─── HELPERS TIEMPO ───────────────────────────────────────
 function parseHoraToMs(horaStr) {
-  // horaStr = "14:35"
   if (!horaStr) return null;
   const [h, m] = horaStr.split(':').map(Number);
   if (isNaN(h) || isNaN(m)) return null;
   const now = new Date();
-  const inicio = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-  return inicio.getTime();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0).getTime();
 }
-
 function duracionTexto(mins) {
   if (mins === 30) return '30 min';
   if (mins === 60) return '1 hora';
   if (mins === 120) return '2 horas';
   return mins + ' min';
 }
-
 function formatTiempoRestante(msRestante) {
   if (msRestante <= 0) return 'Terminada';
   const totalSec = Math.floor(msRestante / 1000);
@@ -611,46 +780,32 @@ function formatTiempoRestante(msRestante) {
   if (m > 0) return `${m}m ${s.toString().padStart(2,'0')}s`;
   return `${s}s`;
 }
-
-// pct 0-1 → color verde→amarillo→rojo
 function colorBarra(pct) {
   if (pct > 0.5) return '#0F7B5E';
   if (pct > 0.25) return '#D97706';
   return '#DC2626';
 }
 
-// ─────────────────────────────────────────────
-//  COUNTDOWN — arranca un intervalo para un elemento
-//  fillId: id del .bar-fill
-//  labelId: id del span de texto
-// ─────────────────────────────────────────────
+// ─── COUNTDOWN ────────────────────────────────────────────
 function iniciarCountdown(mateada, fillId, labelId) {
   const inicioMs = parseHoraToMs(mateada.hora);
   const durMs    = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
-
   function tick() {
     const fill  = document.getElementById(fillId);
     const label = document.getElementById(labelId);
-    if (!fill || !label) {
-      clearInterval(countdownIntervals[mateada.id]);
-      return;
-    }
-
-    const now        = Date.now();
-    const fin        = inicioMs ? inicioMs + durMs : null;
+    if (!fill || !label) { clearInterval(countdownIntervals[mateada.id]); return; }
+    const now = Date.now();
+    const fin = inicioMs ? inicioMs + durMs : null;
     const msRestante = fin ? fin - now : null;
-
     if (!fin || msRestante === null) {
       fill.style.width = '100%';
       fill.style.background = colorBarra(1);
       label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60);
       return;
     }
-
     const pct = Math.max(0, Math.min(1, msRestante / durMs));
     fill.style.width = (pct * 100) + '%';
     fill.style.background = colorBarra(pct);
-
     if (msRestante <= 0) {
       label.textContent = 'Terminada';
       label.style.color = '#DC2626';
@@ -660,40 +815,31 @@ function iniciarCountdown(mateada, fillId, labelId) {
       label.style.color = colorBarra(pct);
     }
   }
-
   clearInterval(countdownIntervals[mateada.id]);
   tick();
   countdownIntervals[mateada.id] = setInterval(tick, 1000);
 }
 
-// ─────────────────────────────────────────────
-//  CARGAR MATEADAS
-// ─────────────────────────────────────────────
+// ─── CARGAR MATEADAS ──────────────────────────────────────
 async function cargarMateadas() {
-  // limpiar countdowns viejos
   Object.values(countdownIntervals).forEach(clearInterval);
   countdownIntervals = {};
-
   const container = document.getElementById('homeContent');
   container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
-
   try {
     const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
     const data = await response.json();
     mateadasActuales = (data.success && data.mateadas) ? data.mateadas : [];
-
     if (mateadasActuales.length === 0) {
       container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
       return;
     }
-
     container.innerHTML = '';
     mateadasActuales.forEach((m, i) => {
-      const libres    = parseInt(m.lugares_libres) || 0;
-      const durMins   = parseInt(m.duracion_minutos) || 60;
-      const fillId    = `fill-${m.id}`;
-      const labelId   = `label-${m.id}`;
-
+      const libres  = parseInt(m.lugares_libres) || 0;
+      const durMins = parseInt(m.duracion_minutos) || 60;
+      const fillId  = `fill-${m.id}`;
+      const labelId = `label-${m.id}`;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = `${i * 60}ms`;
@@ -710,7 +856,8 @@ async function cargarMateadas() {
           </span>
           <span class="organizador-chip">🧑 ${m.organizador}</span>
         </div>
-        <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.ubicacion)}" target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">
+        <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.ubicacion)}"
+           target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">
           🗺️ Ver en Google Maps
         </a>
         <div class="countdown-wrap">
@@ -721,22 +868,26 @@ async function cargarMateadas() {
           <div class="countdown-bar-track">
             <div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
           </div>
-        </div>
-      `;
+        </div>`;
       container.appendChild(card);
-
-      // arrancar timer después de que el DOM exista
       setTimeout(() => iniciarCountdown(m, fillId, labelId), 50);
     });
   } catch (error) {
     console.error(error);
-    container.innerHTML = '<div class="empty"><div class="empty-icon">❌</div>Error de conexión<br>Verificá la URL del script</div>';
+    container.innerHTML = navigator.onLine
+      ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión<br>Verificá la URL del script</div>'
+      : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión<br>Conectate para ver mateadas</div>';
   }
 }
 
-// ─────────────────────────────────────────────
-//  CREAR MATEADA
-// ─────────────────────────────────────────────
+function recargar() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  setTimeout(() => btn.classList.remove('spinning'), 600);
+  cargarMateadas();
+}
+
+// ─── CREAR MATEADA ────────────────────────────────────────
 async function crearMateada() {
   const organizador = document.getElementById('nombreOrganizador').value.trim();
   const titulo      = document.getElementById('temaMateada').value;
@@ -745,34 +896,24 @@ async function crearMateada() {
   const mateOption  = document.querySelector('.option-btn.selected');
   const tipoMate    = mateOption ? mateOption.innerText : 'Dulce';
   const hora        = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-
   if (!organizador) { alert('Ingresá tu nombre'); return; }
   if (!ubicacion)   { alert('Ingresá la ubicación'); return; }
-
   const btn = document.getElementById('btnPublicar');
   btn.classList.add('loading');
   btn.innerText = 'Publicando...';
-
   try {
     const params = new URLSearchParams({
-      accion: 'crearMateada',
-      titulo,
-      ubicacion,
-      latitud: -34.5842,
-      longitud: -58.4073,
-      lugares_totales: cupo,
-      organizador,
+      accion: 'crearMateada', titulo, ubicacion,
+      latitud: -34.5842, longitud: -58.4073,
+      lugares_totales: cupo, organizador,
       organizador_avatar: organizador.charAt(0).toUpperCase(),
       descripcion: `Mateada de ${titulo} · ${tipoMate}`,
       duracion_minutos: duracionSeleccionada,
       duracion: duracionTexto(duracionSeleccionada),
-      hora,
-      tags: titulo.split(' ')[0]
+      hora, tags: titulo.split(' ')[0]
     });
-
     const response  = await fetch(`${SCRIPT_URL}?${params}`);
     const resultado = await response.json();
-
     if (resultado.success) {
       alert(`✅ ¡Mateada publicada!\n📌 ${titulo}\n📍 ${ubicacion}\n👥 Cupo: ${cupo} · ⏳ ${duracionTexto(duracionSeleccionada)}`);
       irInicio();
@@ -788,16 +929,13 @@ async function crearMateada() {
   }
 }
 
-// ─────────────────────────────────────────────
-//  ENVIAR SOLICITUD
-// ─────────────────────────────────────────────
+// ─── ENVIAR SOLICITUD ─────────────────────────────────────
 async function enviarSolicitud() {
   if (!mateadaSeleccionada) return;
   const minutos = document.getElementById('tiempoLlegada').value;
   const btn = document.getElementById('btnUnirse');
   btn.classList.add('loading');
   btn.innerText = 'Enviando...';
-
   try {
     const params = new URLSearchParams({
       accion: 'enviarSolicitud',
@@ -805,10 +943,8 @@ async function enviarSolicitud() {
       usuario_nombre: 'Visitante',
       tiempo_llegada: minutos + ' min'
     });
-
     const response  = await fetch(`${SCRIPT_URL}?${params}`);
     const resultado = await response.json();
-
     if (resultado.success) {
       document.getElementById('tiempoEnviado').innerText = minutos;
       mostrarScreen('screen-sent');
@@ -824,9 +960,7 @@ async function enviarSolicitud() {
   }
 }
 
-// ─────────────────────────────────────────────
-//  DETALLE
-// ─────────────────────────────────────────────
+// ─── DETALLE ──────────────────────────────────────────────
 function verDetalle(mateada) {
   mateadaSeleccionada = mateada;
   const container = document.getElementById('detailContent');
@@ -835,7 +969,6 @@ function verDetalle(mateada) {
   const durMins   = parseInt(mateada.duracion_minutos) || 60;
   const fillId    = `detail-fill-${mateada.id}`;
   const labelId   = `detail-label-${mateada.id}`;
-
   container.innerHTML = `
     <div class="detail-header">
       <div class="detail-title">${mateada.titulo}</div>
@@ -843,7 +976,6 @@ function verDetalle(mateada) {
         ${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}
       </span>
     </div>
-
     <div class="detail-countdown">
       <div class="detail-countdown-label">
         <span>⏳ Duración: ${duracionTexto(durMins)}</span>
@@ -853,29 +985,25 @@ function verDetalle(mateada) {
         <div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
       </div>
     </div>
-
     <div class="map" id="detailMap"></div>
-
     <div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;">
       <div class="detail-row">
         📍 <strong>${mateada.ubicacion}</strong>
-        <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}" target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;">🗺️ Maps</a>
+        <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}"
+           target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;">🗺️ Maps</a>
       </div>
       <div class="detail-row">📋 ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div>
       <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
       <div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div>
       <div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div>
     </div>
-
     ${libres > 0
       ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`
       : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`
     }
-  `;
-
+    <div style="height: calc(80px + var(--safe-bottom));"></div>`;
   setNavTitle(mateada.titulo);
   mostrarScreen('screen-detail');
-
   setTimeout(() => {
     iniciarCountdown(mateada, fillId, labelId);
     const mapEl = document.getElementById('detailMap');
@@ -893,27 +1021,22 @@ function mostrarUnirse() {
     <div class="join-card">
       <div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div>
       <div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
-    </div>
-  `;
+    </div>`;
   setNavTitle('Sumarme');
   mostrarScreen('screen-join');
 }
 
-// ─────────────────────────────────────────────
-//  NAVEGACIÓN
-// ─────────────────────────────────────────────
+// ─── NAVEGACIÓN ───────────────────────────────────────────
 function irInicio() {
   mostrarScreen('screen-home');
   document.getElementById('navBar').classList.remove('visible');
   cargarMateadas();
 }
-
 function irACrear() {
   setNavTitle('Nueva mateada');
   mostrarScreen('screen-create');
   document.getElementById('navBar').classList.add('visible');
 }
-
 function goBack() {
   if (document.getElementById('screen-join').classList.contains('active')) {
     verDetalle(mateadaSeleccionada);
@@ -921,44 +1044,36 @@ function goBack() {
     irInicio();
   }
 }
-
 function setNavTitle(title) {
   document.getElementById('navTitle').innerText = title;
 }
-
 function mostrarScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-
-  const isHome   = id === 'screen-home';
-  const isCreate = id === 'screen-create';
-
+  const isHome = id === 'screen-home';
   document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
   document.getElementById('navBar').classList.toggle('visible', !isHome);
+  // Scroll al inicio de la pantalla
+  document.querySelector(`#${id} .content`)?.scrollTo(0, 0);
 }
 
-// ─────────────────────────────────────────────
-//  SELECCIÓN OPCIONES
-// ─────────────────────────────────────────────
+// ─── SELECCIÓN OPCIONES ───────────────────────────────────
 function seleccionarMate(btn) {
   btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
-
 function seleccionarDuracion(btn, mins) {
   document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   duracionSeleccionada = mins;
 }
 
-// ─────────────────────────────────────────────
-//  SLIDER
-// ─────────────────────────────────────────────
+// ─── SLIDER ───────────────────────────────────────────────
 document.getElementById('tiempoLlegada').oninput = function() {
   document.getElementById('tiempoMostrar').innerText = this.value + ' minutos';
 };
 
-// Init
+// ─── INIT ─────────────────────────────────────────────────
 cargarMateadas();
 </script>
 </body>
