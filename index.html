@@ -29,6 +29,8 @@
       --texto: #2A241A;
       --subtexto: #6B5A4B;
       --rojo: #DC2626;
+      --gris: #6B7280;
+      --gris-claro: #E5E7EB;
       --header-bg: #F2F2F7;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -154,6 +156,8 @@
     .btn { background: var(--verde); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; -webkit-user-select: none; user-select: none; }
     .btn:active { transform: scale(0.98); }
     .btn-secondary { background: white; border: 1px solid var(--borde); color: var(--texto); }
+    .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
+    .btn-back:active { transform: scale(0.98); background: #D1D5DB; }
     .btn.loading { opacity: 0.7; pointer-events: none; }
 
     .fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--verde); color: white; border: none; height: 52px; padding: 0 22px; border-radius: 26px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 300; }
@@ -321,6 +325,7 @@
       <div id="joinInfo"></div>
       <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás?</label><input type="range" id="tiempoLlegada" min="3" max="40" value="10"><span id="tiempoMostrar" style="font-weight:700; font-size:22px; color:var(--verde);">10 minutos</span></div>
       <button class="btn" id="btnUnirse" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
+      <button class="btn-back" id="btnVolverDetalle" onclick="volverADetalle()">← Volver</button>
     </div>
   </div>
 
@@ -620,7 +625,12 @@ function verDetalle(mateada) {
     if (mapEl && mateada.latitud && mateada.longitud) { if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; } mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle); L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle); }
   }, 150);
 }
-function mostrarUnirse() { document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; setNavTitle('Sumarme'); mostrarScreen('screen-join'); }
+function mostrarUnirse() { 
+  document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; 
+  setNavTitle('Sumarme'); 
+  mostrarScreen('screen-join'); 
+}
+function volverADetalle() { verDetalle(mateadaSeleccionada); }
 function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(() => { if (mapaNearby) { mapaNearby.invalidateSize(); actualizarMapaCercano(); } }, 500); }
 function irACrear() { setNavTitle('Nueva mateada'); mostrarScreen('screen-create'); }
 function goBack() { if (document.getElementById('screen-join').classList.contains('active')) { verDetalle(mateadaSeleccionada); } else { irInicio(); } }
