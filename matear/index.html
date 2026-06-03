@@ -1,938 +1,961 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <title>Matear — Encuentros con mate en el parque</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    :root {
-      --verde: #0F7B5E;
-      --verde-light: #DEF5EC;
-      --crema: #FEF9F0;
-      --crema-dark: #E8DDD0;
-      --borde: #EFE3D4;
-      --texto: #2A241A;
-      --subtexto: #6B5A4B;
-      --rojo: #DC2626;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Matear — Encuentros con mate en el parque</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --verde: #0F7B5E;
+      --verde-light: #DEF5EC;
+      --crema: #FEF9F0;
+      --crema-dark: #E8DDD0;
+      --borde: #EFE3D4;
+      --texto: #2A241A;
+      --subtexto: #6B5A4B;
+      --rojo: #DC2626;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      background: var(--crema-dark);
-      font-family: 'DM Sans', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 16px;
-    }
+    body {
+      background: var(--crema-dark);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 16px;
+    }
 
-    /* ── APP SHELL ── */
-    .app {
-      max-width: 480px;
-      width: 100%;
-      background: var(--crema);
-      border-radius: 32px;
-      min-height: 600px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      display: flex;
-      flex-direction: column;
-      /* header fijo dentro del app */
-      position: relative;
-    }
+    /* ── APP SHELL ── */
+    .app {
+      max-width: 480px;
+      width: 100%;
+      background: var(--crema);
+      border-radius: 32px;
+      min-height: 600px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      /* header fijo dentro del app */
+      position: relative;
+    }
 
-    /* ── HEADER FIXED ── */
-    .sticky-top {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--crema);
-    }
-    .header {
-      padding: 20px 20px 14px;
-      border-bottom: 1px solid var(--borde);
-      text-align: center;
-    }
-    .logo {
-      font-family: 'Fraunces', serif;
-      font-size: 30px;
-      font-weight: 900;
-      color: var(--verde);
-      letter-spacing: -0.5px;
-    }
-    .sub {
-      font-size: 11px;
-      color: var(--subtexto);
-      margin-top: 3px;
-      letter-spacing: 0.3px;
-    }
+    /* ── HEADER FIXED ── */
+    .sticky-top {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--crema);
+    }
+    .header {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--borde);
+      text-align: center;
+    }
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--verde);
+      letter-spacing: -0.5px;
+    }
+    .sub {
+      font-size: 11px;
+      color: var(--subtexto);
+      margin-top: 3px;
+      letter-spacing: 0.3px;
+    }
 
-    /* ── NAV ── */
-    .nav-bar {
-      display: none;
-      align-items: center;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--borde);
-    }
-    .nav-bar.visible { display: flex; }
-    .back-btn {
-      background: white;
-      border: 1px solid var(--borde);
-      width: 36px; height: 36px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-size: 18px;
-      line-height: 1;
-      transition: background 0.15s;
-    }
-    .back-btn:active { background: var(--crema-dark); }
-    .nav-title {
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 16px;
-      margin-left: 12px;
-      color: var(--texto);
-    }
+    /* ── NAV ── */
+    .nav-bar {
+      display: none;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--borde);
+    }
+    .nav-bar.visible { display: flex; }
+    .back-btn {
+      background: white;
+      border: 1px solid var(--borde);
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .back-btn:active { background: var(--crema-dark); }
+    .nav-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 16px;
+      margin-left: 12px;
+      color: var(--texto);
+    }
 
-    /* ── CONTENT ── */
-    .content {
-      padding: 20px;
-      overflow-y: auto;
-      flex: 1;
-    }
+    /* ── CONTENT ── */
+    .content {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
 
-    /* ── SCREENS ── */
-    .screen { display: none; flex: 1; flex-direction: column; }
-    .screen.active { display: flex; }
+    /* ── SCREENS ── */
+    .screen { display: none; flex: 1; flex-direction: column; }
+    .screen.active { display: flex; }
 
-    /* ── CARDS ── */
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      border: 1px solid var(--borde);
-      transition: transform 0.15s, box-shadow 0.15s;
-      animation: fadeUp 0.3s ease both;
-    }
-    .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    .card:active { transform: scale(0.98); }
-    .card-title {
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 17px;
-      color: var(--texto);
-      margin-bottom: 8px;
-    }
-    .card-info {
-      display: flex;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--subtexto);
-      margin: 6px 0;
-    }
-    .card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
+    /* ── CARDS ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      border: 1px solid var(--borde);
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: fadeUp 0.3s ease both;
+    }
+    .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .card:active { transform: scale(0.98); }
+    .card-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--texto);
+      margin-bottom: 8px;
+    }
+    .card-info {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--subtexto);
+      margin: 6px 0;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
 
-    /* ── BADGE ── */
-    .badge {
-      background: var(--verde-light);
-      color: var(--verde);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-block;
-    }
-    .badge.lleno { background: #FEE2E2; color: var(--rojo); }
-    .organizador-chip {
-      font-size: 12px;
-      color: var(--subtexto);
-      background: var(--crema-dark);
-      padding: 3px 10px;
-      border-radius: 20px;
-    }
+    /* ── BADGE ── */
+    .badge {
+      background: var(--verde-light);
+      color: var(--verde);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .badge.lleno { background: #FEE2E2; color: var(--rojo); }
+    .organizador-chip {
+      font-size: 12px;
+      color: var(--subtexto);
+      background: var(--crema-dark);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
 
-    /* ── COUNTDOWN BAR ── */
-    .countdown-wrap {
-      margin-top: 10px;
-    }
-    .countdown-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--subtexto);
-      margin-bottom: 5px;
-    }
-    .countdown-bar-track {
-      height: 6px;
-      background: var(--crema-dark);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .countdown-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 1s linear, background-color 1s ease;
-    }
+    /* ── COUNTDOWN BAR ── */
+    .countdown-wrap {
+      margin-top: 10px;
+    }
+    .countdown-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--subtexto);
+      margin-bottom: 5px;
+    }
+    .countdown-bar-track {
+      height: 6px;
+      background: var(--crema-dark);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .countdown-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s linear, background-color 1s ease;
+    }
 
-    /* ── BOTONES ── */
-    .btn {
-      background: var(--verde);
-      color: white;
-      border: none;
-      padding: 14px 20px;
-      border-radius: 60px;
-      font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      width: 100%;
-      cursor: pointer;
-      font-size: 15px;
-      margin-top: 12px;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn:hover { background: #0a6650; }
-    .btn:active { transform: scale(0.98); }
-    .btn-secondary {
-      background: white;
-      border: 1px solid var(--borde);
-      color: var(--texto);
-    }
-    .btn-secondary:hover { background: var(--crema-dark); }
-    .btn.loading { opacity: 0.7; pointer-events: none; }
+    /* ── BOTONES ── */
+    .btn {
+      background: var(--verde);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 12px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: #0a6650; }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--borde);
+      color: var(--texto);
+    }
+    .btn-secondary:hover { background: var(--crema-dark); }
+    .btn.loading { opacity: 0.7; pointer-events: none; }
 
-    /* ── FAB ── */
-    .fab {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--verde);
-      color: white;
-      border: none;
-      height: 48px;
-      padding: 0 20px;
-      border-radius: 24px;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(15,123,94,0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-    .fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(15,123,94,0.5); }
-    .fab:active { transform: scale(0.96); }
+    /* ── FAB ── */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--verde);
+      color: white;
+      border: none;
+      height: 48px;
+      padding: 0 20px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(15,123,94,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(15,123,94,0.5); }
+    .fab:active { transform: scale(0.96); }
 
-    /* ── FORMULARIO ── */
-    .form-group { margin-bottom: 16px; }
-    .form-input, .form-select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid var(--borde);
-      border-radius: 16px;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      background: white;
-      color: var(--texto);
-      transition: border-color 0.2s;
-    }
-    .form-input:focus, .form-select:focus {
-      outline: none;
-      border-color: var(--verde);
-    }
-    .form-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--subtexto);
-      margin-bottom: 7px;
-      display: block;
-    }
-    .option-grid { display: flex; gap: 8px; }
-    .option-btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 40px;
-      border: 1.5px solid var(--borde);
-      background: white;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      transition: all 0.15s;
-    }
-    .option-btn.selected {
-      background: var(--verde-light);
-      border-color: var(--verde);
-      color: var(--verde);
-      font-weight: 600;
-    }
+    /* ── FORMULARIO ── */
+    .form-group { margin-bottom: 16px; }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--borde);
+      border-radius: 16px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      background: white;
+      color: var(--texto);
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--verde);
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtexto);
+      margin-bottom: 7px;
+      display: block;
+    }
+    .option-grid { display: flex; gap: 8px; }
+    .option-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 40px;
+      border: 1.5px solid var(--borde);
+      background: white;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+    .option-btn.selected {
+      background: var(--verde-light);
+      border-color: var(--verde);
+      color: var(--verde);
+      font-weight: 600;
+    }
 
-    /* Duracion pills */
-    .duracion-grid { display: flex; gap: 8px; }
-    .duracion-btn {
-      flex: 1;
-      padding: 10px 6px;
-      border-radius: 40px;
-      border: 1.5px solid var(--borde);
-      background: white;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-      transition: all 0.15s;
-    }
-    .duracion-btn.selected {
-      background: var(--verde-light);
-      border-color: var(--verde);
-      color: var(--verde);
-    }
+    /* Duracion pills */
+    .duracion-grid { display: flex; gap: 8px; }
+    .duracion-btn {
+      flex: 1;
+      padding: 10px 6px;
+      border-radius: 40px;
+      border: 1.5px solid var(--borde);
+      background: white;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .duracion-btn.selected {
+      background: var(--verde-light);
+      border-color: var(--verde);
+      color: var(--verde);
+    }
 
-    /* ── MAPA ── */
-    .map {
-      height: 180px;
-      border-radius: 16px;
-      margin: 12px 0;
-      overflow: hidden;
-      border: 1px solid var(--borde);
-    }
+    /* ── MAPA ── */
+    .map {
+      height: 180px;
+      border-radius: 16px;
+      margin: 12px 0;
+      overflow: hidden;
+      border: 1px solid var(--borde);
+    }
 
-    /* ── EMPTY STATE ── */
-    .empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--subtexto);
-      line-height: 1.7;
-    }
-    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--subtexto);
+      line-height: 1.7;
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
 
-    /* ── SLIDER ── */
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: var(--borde);
-      outline: none;
-      margin: 12px 0;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 22px; height: 22px;
-      border-radius: 11px;
-      background: var(--verde);
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(15,123,94,0.3);
-    }
+    /* ── SLIDER ── */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--borde);
+      outline: none;
+      margin: 12px 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 11px;
+      background: var(--verde);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(15,123,94,0.3);
+    }
 
-    /* ── DETALLE ── */
-    .detail-header {
-      background: white;
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 12px;
-      border: 1px solid var(--borde);
-    }
-    .detail-title {
-      font-family: 'Fraunces', serif;
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--texto);
-      margin-bottom: 10px;
-    }
-    .detail-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: var(--subtexto);
-      margin: 6px 0;
-    }
-    .detail-row strong { color: var(--texto); }
+    /* ── DETALLE ── */
+    .detail-header {
+      background: white;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 12px;
+      border: 1px solid var(--borde);
+    }
+    .detail-title {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--texto);
+      margin-bottom: 10px;
+    }
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--subtexto);
+      margin: 6px 0;
+    }
+    .detail-row strong { color: var(--texto); }
 
-    /* countdown detalle */
-    .detail-countdown {
-      background: white;
-      border-radius: 16px;
-      padding: 14px 16px;
-      border: 1px solid var(--borde);
-      margin-bottom: 12px;
-    }
-    .detail-countdown-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-    .detail-countdown-label span:first-child { color: var(--subtexto); }
-    .detail-countdown-label .tiempo-restante {
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .bar-track {
-      height: 8px;
-      background: var(--crema-dark);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 1s linear, background-color 2s ease;
-    }
+    /* countdown detalle */
+    .detail-countdown {
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--borde);
+      margin-bottom: 12px;
+    }
+    .detail-countdown-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .detail-countdown-label span:first-child { color: var(--subtexto); }
+    .detail-countdown-label .tiempo-restante {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .bar-track {
+      height: 8px;
+      background: var(--crema-dark);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s linear, background-color 2s ease;
+    }
 
-    /* ── JOIN ── */
-    .join-card {
-      background: #FFF8EC;
-      border: 1px solid #F5D9A8;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .join-card-title {
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--texto);
-      margin-bottom: 4px;
-    }
+    /* ── JOIN ── */
+    .join-card {
+      background: #FFF8EC;
+      border: 1px solid #F5D9A8;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .join-card-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--texto);
+      margin-bottom: 4px;
+    }
 
-    /* ── SENT ── */
-    .sent-screen {
-      text-align: center;
-      padding: 60px 20px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .sent-icon { font-size: 72px; margin-bottom: 16px; animation: pop 0.4s ease; }
-    @keyframes pop {
-      0% { transform: scale(0.5); opacity: 0; }
-      80% { transform: scale(1.1); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .sent-title {
-      font-family: 'Fraunces', serif;
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--texto);
-      margin-bottom: 10px;
-    }
-    .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
+    /* ── SENT ── */
+    .sent-screen {
+      text-align: center;
+      padding: 60px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .sent-icon { font-size: 72px; margin-bottom: 16px; animation: pop 0.4s ease; }
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      80% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .sent-title {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--texto);
+      margin-bottom: 10px;
+    }
+    .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-    /* ── MOBILE ── */
-    @media (max-width: 500px) {
-      body { padding: 0; align-items: flex-start; }
-      .app { border-radius: 0; max-width: 100%; min-height: 100vh; }
-      .fab { bottom: 20px; right: 16px; }
-    }
-  </style>
+    /* ── MOBILE ── */
+    @media (max-width: 500px) {
+      body { padding: 0; align-items: flex-start; }
+      .app { border-radius: 0; max-width: 100%; min-height: 100vh; }
+      .fab { bottom: 20px; right: 16px; }
+    }
+
+    /* ── MAPS LINK ── */
+    .maps-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--verde);
+      text-decoration: none;
+      background: var(--verde-light);
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+    .maps-link:hover { background: #c6edd9; }
+  </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- STICKY TOP: header + navbar -->
-  <div class="sticky-top">
-    <div class="header">
-      <div class="logo">🧉 matear</div>
-      <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
-    </div>
-    <div class="nav-bar" id="navBar">
-      <button class="back-btn" onclick="goBack()">←</button>
-      <span class="nav-title" id="navTitle"></span>
-    </div>
-  </div>
+  <!-- STICKY TOP: header + navbar -->
+  <div class="sticky-top">
+    <div class="header">
+      <div class="logo"> matear</div>
+      <div class="sub">by Taragüi · Encuentros con mate en el parque</div>
+    </div>
+    <div class="nav-bar" id="navBar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <span class="nav-title" id="navTitle"></span>
+    </div>
+  </div>
 
-  <!-- PANTALLA: INICIO -->
-  <div id="screen-home" class="screen active">
-    <div class="content" id="homeContent">
-      <div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>
-    </div>
-  </div>
+  <!-- PANTALLA: INICIO -->
+  <div id="screen-home" class="screen active">
+    <div class="content" id="homeContent">
+      <div class="empty"><div class="empty-icon"> </div>Cargando mateadas...</div>
+    </div>
+  </div>
 
-  <!-- PANTALLA: DETALLE -->
-  <div id="screen-detail" class="screen">
-    <div class="content" id="detailContent"></div>
-  </div>
+  <!-- PANTALLA: DETALLE -->
+  <div id="screen-detail" class="screen">
+    <div class="content" id="detailContent"></div>
+  </div>
 
-  <!-- PANTALLA: CREAR -->
-  <div id="screen-create" class="screen">
-    <div class="content">
-      <div class="form-group">
-        <label class="form-label">👤 Tu nombre</label>
-        <input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila">
-      </div>
-      <div class="form-group">
-        <label class="form-label">🎯 Tema</label>
-        <select id="temaMateada" class="form-select">
-          <option>🤝 Emprendedurismo</option>
-          <option selected>📖 Filosofía y vida cotidiana</option>
-          <option>💻 Tecnología e IA</option>
-          <option>🎨 Arte y creatividad</option>
-          <option>📚 Literatura</option>
-          <option>🎬 Cine y series</option>
-          <option>🌱 Sustentabilidad</option>
-          <option>🧘 Bienestar y meditación</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">📍 Ubicación</label>
-        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras">
-      </div>
-      <div class="form-group">
-        <label class="form-label">⏳ Duración de la mateada</label>
-        <div class="duracion-grid" id="duracionGrid">
-          <button class="duracion-btn" onclick="seleccionarDuracion(this, 30)">30 min</button>
-          <button class="duracion-btn selected" onclick="seleccionarDuracion(this, 60)">1 hora</button>
-          <button class="duracion-btn" onclick="seleccionarDuracion(this, 120)">2 horas</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🧉 ¿Cómo tomás el mate?</label>
-        <div class="option-grid">
-          <button class="option-btn" onclick="seleccionarMate(this)">Amargo</button>
-          <button class="option-btn selected" onclick="seleccionarMate(this)">Dulce</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">👥 Cupo máximo</label>
-        <select id="cupoMateada" class="form-select">
-          <option>4</option><option>6</option><option selected>8</option>
-          <option>10</option><option>12</option><option>15</option><option>20</option>
-        </select>
-      </div>
-      <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
-    </div>
-  </div>
+  <!-- PANTALLA: CREAR -->
+  <div id="screen-create" class="screen">
+    <div class="content">
+      <div class="form-group">
+        <label class="form-label"> Tu nombre</label>
+        <input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila">
+      </div>
+      <div class="form-group">
+        <label class="form-label"> Tema</label>
+        <select id="temaMateada" class="form-select">
+          <option> Emprendedurismo</option>
+          <option selected> Filosofía y vida cotidiana</option>
+          <option> Tecnología e IA</option>
+          <option> Arte y creatividad</option>
+          <option> Literatura</option>
+          <option> Cine y series</option>
+          <option> Sustentabilidad</option>
+          <option> Bienestar y meditación</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label"> Ubicación</label>
+        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras">
+      </div>
+      <div class="form-group">
+        <label class="form-label"> Duración de la mateada</label>
+        <div class="duracion-grid" id="duracionGrid">
+          <button class="duracion-btn" onclick="seleccionarDuracion(this, 30)">30 min</button>
+          <button class="duracion-btn selected" onclick="seleccionarDuracion(this, 60)">1 hora</button>
+          <button class="duracion-btn" onclick="seleccionarDuracion(this, 120)">2 horas</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label"> ¿Cómo tomás el mate?</label>
+        <div class="option-grid">
+          <button class="option-btn" onclick="seleccionarMate(this)">Amargo</button>
+          <button class="option-btn selected" onclick="seleccionarMate(this)">Dulce</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label"> Cupo máximo</label>
+        <select id="cupoMateada" class="form-select">
+          <option>4</option><option>6</option><option selected>8</option>
+          <option>10</option><option>12</option><option>15</option><option>20</option>
+        </select>
+      </div>
+      <button class="btn" id="btnPublicar" onclick="crearMateada()"> Publicar mateada</button>
+    </div>
+  </div>
 
-  <!-- PANTALLA: UNIRSE -->
-  <div id="screen-join" class="screen">
-    <div class="content">
-      <div id="joinInfo"></div>
-      <div class="form-group">
-        <label class="form-label">⏱️ ¿En cuántos minutos llegás?</label>
-        <input type="range" id="tiempoLlegada" min="3" max="40" value="10">
-        <span id="tiempoMostrar" style="font-weight:700; font-size:18px; color:var(--verde);">10 minutos</span>
-      </div>
-      <button class="btn" id="btnUnirse" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
-    </div>
-  </div>
+  <!-- PANTALLA: UNIRSE -->
+  <div id="screen-join" class="screen">
+    <div class="content">
+      <div id="joinInfo"></div>
+      <div class="form-group">
+        <label class="form-label"> ¿En cuántos minutos llegás?</label>
+        <input type="range" id="tiempoLlegada" min="3" max="40" value="10">
+        <span id="tiempoMostrar" style="font-weight:700; font-size:18px; color:var(--verde);">10 minutos</span>
+      </div>
+      <button class="btn" id="btnUnirse" onclick="enviarSolicitud()"> Quiero sumarme</button>
+    </div>
+  </div>
 
-  <!-- PANTALLA: ENVIADO -->
-  <div id="screen-sent" class="screen">
-    <div class="sent-screen">
-      <div class="sent-icon">🧉✨</div>
-      <div class="sent-title">¡Listo!</div>
-      <p class="sent-text">Le avisamos al organizador<br>que llegás en <strong id="tiempoEnviado"></strong> minutos.</p>
-      <button class="btn btn-secondary" onclick="irInicio()" style="margin-top:28px; max-width:240px;">← Volver al inicio</button>
-    </div>
-  </div>
+  <!-- PANTALLA: ENVIADO -->
+  <div id="screen-sent" class="screen">
+    <div class="sent-screen">
+      <div class="sent-icon"> </div>
+      <div class="sent-title">¡Listo!</div>
+      <p class="sent-text">Le avisamos al organizador<br>que llegás en <strong id="tiempoEnviado"></strong> minutos.</p>
+      <button class="btn btn-secondary" onclick="irInicio()" style="margin-top:28px; max-width:240px;">← Volver al inicio</button>
+    </div>
+  </div>
 
-  <button class="fab" id="fabBtn" onclick="irACrear()">
-    <span style="font-size:18px;">+</span> Agregar mateada
-  </button>
+  <button class="fab" id="fabBtn" onclick="irACrear()">
+    <span style="font-size:18px;">+</span> Agregar mateada
+  </button>
 </div>
 
 <script>
-// 🔴 Reemplazá con tu URL de Google Apps Script
+// Reemplazá con tu URL de Google Apps Script
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAofWb7nAkresEU6OSSLSa_BwIoHUyVdQ8q2_lM85UDF3QwWiHjgLo1pWg2-r3Ul8F/exec';
 
-let mateadasActuales  = [];
+let mateadasActuales  = [];
 let mateadaSeleccionada = null;
-let mapaDetalle       = null;
+let mapaDetalle       = null;
 let duracionSeleccionada = 60; // minutos, default 1 hora
 let countdownIntervals = {}; // timers por mateada id
 
 // ─────────────────────────────────────────────
-//  HELPERS TIEMPO
+//  HELPERS TIEMPO
 // ─────────────────────────────────────────────
 function parseHoraToMs(horaStr) {
-  // horaStr = "14:35"
-  if (!horaStr) return null;
-  const [h, m] = horaStr.split(':').map(Number);
-  if (isNaN(h) || isNaN(m)) return null;
-  const now = new Date();
-  const inicio = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-  return inicio.getTime();
+  // horaStr = "14:35"
+  if (!horaStr) return null;
+  const [h, m] = horaStr.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return null;
+  const now = new Date();
+  const inicio = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  return inicio.getTime();
 }
 
 function duracionTexto(mins) {
-  if (mins === 30) return '30 min';
-  if (mins === 60) return '1 hora';
-  if (mins === 120) return '2 horas';
-  return mins + ' min';
+  if (mins === 30) return '30 min';
+  if (mins === 60) return '1 hora';
+  if (mins === 120) return '2 horas';
+  return mins + ' min';
 }
 
 function formatTiempoRestante(msRestante) {
-  if (msRestante <= 0) return 'Terminada';
-  const totalSec = Math.floor(msRestante / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
-  if (m > 0) return `${m}m ${s.toString().padStart(2,'0')}s`;
-  return `${s}s`;
+  if (msRestante <= 0) return 'Terminada';
+  const totalSec = Math.floor(msRestante / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
+  if (m > 0) return `${m}m ${s.toString().padStart(2,'0')}s`;
+  return `${s}s`;
 }
 
 // pct 0-1 → color verde→amarillo→rojo
 function colorBarra(pct) {
-  if (pct > 0.5) return '#0F7B5E';
-  if (pct > 0.25) return '#D97706';
-  return '#DC2626';
+  if (pct > 0.5) return '#0F7B5E';
+  if (pct > 0.25) return '#D97706';
+  return '#DC2626';
 }
 
 // ─────────────────────────────────────────────
-//  COUNTDOWN — arranca un intervalo para un elemento
-//  fillId: id del .bar-fill
-//  labelId: id del span de texto
+//  COUNTDOWN — arranca un intervalo para un elemento
+//  fillId: id del .bar-fill
+//  labelId: id del span de texto
 // ─────────────────────────────────────────────
 function iniciarCountdown(mateada, fillId, labelId) {
-  const inicioMs = parseHoraToMs(mateada.hora);
-  const durMs    = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
+  const inicioMs = parseHoraToMs(mateada.hora);
+  const durMs    = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
 
-  function tick() {
-    const fill  = document.getElementById(fillId);
-    const label = document.getElementById(labelId);
-    if (!fill || !label) {
-      clearInterval(countdownIntervals[mateada.id]);
-      return;
-    }
+  function tick() {
+    const fill  = document.getElementById(fillId);
+    const label = document.getElementById(labelId);
+    if (!fill || !label) {
+      clearInterval(countdownIntervals[mateada.id]);
+      return;
+    }
 
-    const now        = Date.now();
-    const fin        = inicioMs ? inicioMs + durMs : null;
-    const msRestante = fin ? fin - now : null;
+    const now        = Date.now();
+    const fin        = inicioMs ? inicioMs + durMs : null;
+    const msRestante = fin ? fin - now : null;
 
-    if (!fin || msRestante === null) {
-      fill.style.width = '100%';
-      fill.style.background = colorBarra(1);
-      label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60);
-      return;
-    }
+    if (!fin || msRestante === null) {
+      fill.style.width = '100%';
+      fill.style.background = colorBarra(1);
+      label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60);
+      return;
+    }
 
-    const pct = Math.max(0, Math.min(1, msRestante / durMs));
-    fill.style.width = (pct * 100) + '%';
-    fill.style.background = colorBarra(pct);
+    const pct = Math.max(0, Math.min(1, msRestante / durMs));
+    fill.style.width = (pct * 100) + '%';
+    fill.style.background = colorBarra(pct);
 
-    if (msRestante <= 0) {
-      label.textContent = 'Terminada';
-      label.style.color = '#DC2626';
-      clearInterval(countdownIntervals[mateada.id]);
-    } else {
-      label.textContent = formatTiempoRestante(msRestante);
-      label.style.color = colorBarra(pct);
-    }
-  }
+    if (msRestante <= 0) {
+      label.textContent = 'Terminada';
+      label.style.color = '#DC2626';
+      clearInterval(countdownIntervals[mateada.id]);
+    } else {
+      label.textContent = formatTiempoRestante(msRestante);
+      label.style.color = colorBarra(pct);
+    }
+  }
 
-  clearInterval(countdownIntervals[mateada.id]);
-  tick();
-  countdownIntervals[mateada.id] = setInterval(tick, 1000);
+  clearInterval(countdownIntervals[mateada.id]);
+  tick();
+  countdownIntervals[mateada.id] = setInterval(tick, 1000);
 }
 
 // ─────────────────────────────────────────────
-//  CARGAR MATEADAS
+//  CARGAR MATEADAS
 // ─────────────────────────────────────────────
 async function cargarMateadas() {
-  // limpiar countdowns viejos
-  Object.values(countdownIntervals).forEach(clearInterval);
-  countdownIntervals = {};
+  // limpiar countdowns viejos
+  Object.values(countdownIntervals).forEach(clearInterval);
+  countdownIntervals = {};
 
-  const container = document.getElementById('homeContent');
-  container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+  const container = document.getElementById('homeContent');
+  container.innerHTML = '<div class="empty"><div class="empty-icon"> </div>Cargando mateadas...</div>';
 
-  try {
-    const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
-    const data = await response.json();
-    mateadasActuales = (data.success && data.mateadas) ? data.mateadas : [];
+  try {
+    const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+    const data = await response.json();
+    mateadasActuales = (data.success && data.mateadas) ? data.mateadas : [];
 
-    if (mateadasActuales.length === 0) {
-      container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
-      return;
-    }
+    if (mateadasActuales.length === 0) {
+      container.innerHTML = '<div class="empty"><div class="empty-icon"> </div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+      return;
+    }
 
-    container.innerHTML = '';
-    mateadasActuales.forEach((m, i) => {
-      const libres    = parseInt(m.lugares_libres) || 0;
-      const durMins   = parseInt(m.duracion_minutos) || 60;
-      const fillId    = `fill-${m.id}`;
-      const labelId   = `label-${m.id}`;
+    container.innerHTML = '';
+    mateadasActuales.forEach((m, i) => {
+      const libres    = parseInt(m.lugares_libres) || 0;
+      const durMins   = parseInt(m.duracion_minutos) || 60;
+      const fillId    = `fill-${m.id}`;
+      const labelId   = `label-${m.id}`;
 
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.style.animationDelay = `${i * 60}ms`;
-      card.onclick = () => verDetalle(m);
-      card.innerHTML = `
-        <div class="card-title">${m.titulo}</div>
-        <div class="card-info">
-          <span>📍 ${m.ubicacion}</span>
-          <span>⏰ ${m.hora || 'Ahora'}</span>
-        </div>
-        <div class="card-footer">
-          <span class="badge ${libres === 0 ? 'lleno' : ''}">
-            ${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}
-          </span>
-          <span class="organizador-chip">🧑 ${m.organizador}</span>
-        </div>
-        <div class="countdown-wrap">
-          <div class="countdown-label">
-            <span>⏳ ${duracionTexto(durMins)}</span>
-            <span id="${labelId}" style="font-weight:600;">—</span>
-          </div>
-          <div class="countdown-bar-track">
-            <div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
-          </div>
-        </div>
-      `;
-      container.appendChild(card);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = `${i * 60}ms`;
+      card.onclick = () => verDetalle(m);
+      card.innerHTML = `
+        <div class="card-title">${m.titulo}</div>
+        <div class="card-info">
+          <span> ${m.ubicacion}</span>
+          <span> ${m.hora || 'Ahora'}</span>
+        </div>
+        <div class="card-footer">
+          <span class="badge ${libres === 0 ? 'lleno' : ''}">
+            ${libres === 0 ? ' Sin lugares' : ` ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}
+          </span>
+          <span class="organizador-chip"> ${m.organizador}</span>
+        </div>
+        <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.ubicacion)}" target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">
+          Ver en Google Maps
+        </a>
+        <div class="countdown-wrap">
+          <div class="countdown-label">
+            <span> ${duracionTexto(durMins)}</span>
+            <span id="${labelId}" style="font-weight:600;">—</span>
+          </div>
+          <div class="countdown-bar-track">
+            <div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
 
-      // arrancar timer después de que el DOM exista
-      setTimeout(() => iniciarCountdown(m, fillId, labelId), 50);
-    });
-  } catch (error) {
-    console.error(error);
-    container.innerHTML = '<div class="empty"><div class="empty-icon">❌</div>Error de conexión<br>Verificá la URL del script</div>';
-  }
+      // arrancar timer después de que el DOM exista
+      setTimeout(() => iniciarCountdown(m, fillId, labelId), 50);
+    });
+  } catch (error) {
+    console.error(error);
+    container.innerHTML = '<div class="empty"><div class="empty-icon"> </div>Error de conexión<br>Verificá la URL del script</div>';
+  }
 }
 
 // ─────────────────────────────────────────────
-//  CREAR MATEADA
+//  CREAR MATEADA
 // ─────────────────────────────────────────────
 async function crearMateada() {
-  const organizador = document.getElementById('nombreOrganizador').value.trim();
-  const titulo      = document.getElementById('temaMateada').value;
-  const ubicacion   = document.getElementById('ubicacionMateada').value.trim();
-  const cupo        = parseInt(document.getElementById('cupoMateada').value);
-  const mateOption  = document.querySelector('.option-btn.selected');
-  const tipoMate    = mateOption ? mateOption.innerText : 'Dulce';
-  const hora        = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  const organizador = document.getElementById('nombreOrganizador').value.trim();
+  const titulo      = document.getElementById('temaMateada').value;
+  const ubicacion   = document.getElementById('ubicacionMateada').value.trim();
+  const cupo        = parseInt(document.getElementById('cupoMateada').value);
+  const mateOption  = document.querySelector('.option-btn.selected');
+  const tipoMate    = mateOption ? mateOption.innerText : 'Dulce';
+  const hora        = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-  if (!organizador) { alert('Ingresá tu nombre'); return; }
-  if (!ubicacion)   { alert('Ingresá la ubicación'); return; }
+  if (!organizador) { alert('Ingresá tu nombre'); return; }
+  if (!ubicacion)   { alert('Ingresá la ubicación'); return; }
 
-  const btn = document.getElementById('btnPublicar');
-  btn.classList.add('loading');
-  btn.innerText = 'Publicando...';
+  const btn = document.getElementById('btnPublicar');
+  btn.classList.add('loading');
+  btn.innerText = 'Publicando...';
 
-  try {
-    const params = new URLSearchParams({
-      accion: 'crearMateada',
-      titulo,
-      ubicacion,
-      latitud: -34.5842,
-      longitud: -58.4073,
-      lugares_totales: cupo,
-      organizador,
-      organizador_avatar: organizador.charAt(0).toUpperCase(),
-      descripcion: `Mateada de ${titulo} · ${tipoMate}`,
-      duracion_minutos: duracionSeleccionada,
-      duracion: duracionTexto(duracionSeleccionada),
-      hora,
-      tags: titulo.split(' ')[0]
-    });
+  try {
+    const params = new URLSearchParams({
+      accion: 'crearMateada',
+      titulo,
+      ubicacion,
+      latitud: -34.5842,
+      longitud: -58.4073,
+      lugares_totales: cupo,
+      organizador,
+      organizador_avatar: organizador.charAt(0).toUpperCase(),
+      descripcion: `Mateada de ${titulo} · ${tipoMate}`,
+      duracion_minutos: duracionSeleccionada,
+      duracion: duracionTexto(duracionSeleccionada),
+      hora,
+      tags: titulo.split(' ')[0]
+    });
 
-    const response  = await fetch(`${SCRIPT_URL}?${params}`);
-    const resultado = await response.json();
+    const response  = await fetch(`${SCRIPT_URL}?${params}`);
+    const resultado = await response.json();
 
-    if (resultado.success) {
-      alert(`✅ ¡Mateada publicada!\n📌 ${titulo}\n📍 ${ubicacion}\n👥 Cupo: ${cupo} · ⏳ ${duracionTexto(duracionSeleccionada)}`);
-      irInicio();
-    } else {
-      alert('❌ Error: ' + (resultado.error || 'No se pudo publicar'));
-    }
-  } catch (error) {
-    console.error(error);
-    alert('❌ Error de conexión. Verificá la URL del script.');
-  } finally {
-    btn.classList.remove('loading');
-    btn.innerText = '🌿 Publicar mateada';
-  }
+    if (resultado.success) {
+      alert(` ¡Mateada publicada!\n ${titulo}\n ${ubicacion}\n Cupo: ${cupo} · ${duracionTexto(duracionSeleccionada)}`);
+      irInicio();
+    } else {
+      alert(' Error: ' + (resultado.error || 'No se pudo publicar'));
+    }
+  } catch (error) {
+    console.error(error);
+    alert(' Error de conexión. Verificá la URL del script.');
+  } finally {
+    btn.classList.remove('loading');
+    btn.innerText = ' Publicar mateada';
+  }
 }
 
 // ─────────────────────────────────────────────
-//  ENVIAR SOLICITUD
+//  ENVIAR SOLICITUD
 // ─────────────────────────────────────────────
 async function enviarSolicitud() {
-  if (!mateadaSeleccionada) return;
-  const minutos = document.getElementById('tiempoLlegada').value;
-  const btn = document.getElementById('btnUnirse');
-  btn.classList.add('loading');
-  btn.innerText = 'Enviando...';
+  if (!mateadaSeleccionada) return;
+  const minutos = document.getElementById('tiempoLlegada').value;
+  const btn = document.getElementById('btnUnirse');
+  btn.classList.add('loading');
+  btn.innerText = 'Enviando...';
 
-  try {
-    const params = new URLSearchParams({
-      accion: 'enviarSolicitud',
-      mateada_id: mateadaSeleccionada.id,
-      usuario_nombre: 'Visitante',
-      tiempo_llegada: minutos + ' min'
-    });
+  try {
+    const params = new URLSearchParams({
+      accion: 'enviarSolicitud',
+      mateada_id: mateadaSeleccionada.id,
+      usuario_nombre: 'Visitante',
+      tiempo_llegada: minutos + ' min'
+    });
 
-    const response  = await fetch(`${SCRIPT_URL}?${params}`);
-    const resultado = await response.json();
+    const response  = await fetch(`${SCRIPT_URL}?${params}`);
+    const resultado = await response.json();
 
-    if (resultado.success) {
-      document.getElementById('tiempoEnviado').innerText = minutos;
-      mostrarScreen('screen-sent');
-    } else {
-      alert('❌ ' + (resultado.error || 'No se pudo enviar la solicitud'));
-    }
-  } catch (error) {
-    console.error(error);
-    alert('❌ Error de conexión');
-  } finally {
-    btn.classList.remove('loading');
-    btn.innerText = '🧉 Quiero sumarme';
-  }
+    if (resultado.success) {
+      document.getElementById('tiempoEnviado').innerText = minutos;
+      mostrarScreen('screen-sent');
+    } else {
+      alert(' ' + (resultado.error || 'No se pudo enviar la solicitud'));
+    }
+  } catch (error) {
+    console.error(error);
+    alert(' Error de conexión');
+  } finally {
+    btn.classList.remove('loading');
+    btn.innerText = ' Quiero sumarme';
+  }
 }
 
 // ─────────────────────────────────────────────
-//  DETALLE
+//  DETALLE
 // ─────────────────────────────────────────────
 function verDetalle(mateada) {
-  mateadaSeleccionada = mateada;
-  const container = document.getElementById('detailContent');
-  const libres    = parseInt(mateada.lugares_libres) || 0;
-  const ocupados  = (parseInt(mateada.lugares_totales) || 0) - libres;
-  const durMins   = parseInt(mateada.duracion_minutos) || 60;
-  const fillId    = `detail-fill-${mateada.id}`;
-  const labelId   = `detail-label-${mateada.id}`;
+  mateadaSeleccionada = mateada;
+  const container = document.getElementById('detailContent');
+  const libres    = parseInt(mateada.lugares_libres) || 0;
+  const ocupados  = (parseInt(mateada.lugares_totales) || 0) - libres;
+  const durMins   = parseInt(mateada.duracion_minutos) || 60;
+  const fillId    = `detail-fill-${mateada.id}`;
+  const labelId   = `detail-label-${mateada.id}`;
 
-  container.innerHTML = `
-    <div class="detail-header">
-      <div class="detail-title">${mateada.titulo}</div>
-      <span class="badge ${libres === 0 ? 'lleno' : ''}">
-        ${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}
-      </span>
-    </div>
+  container.innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title">${mateada.titulo}</div>
+      <span class="badge ${libres === 0 ? 'lleno' : ''}">
+        ${libres === 0 ? ' Sin lugares' : ` ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}
+      </span>
+    </div>
 
-    <div class="detail-countdown">
-      <div class="detail-countdown-label">
-        <span>⏳ Duración: ${duracionTexto(durMins)}</span>
-        <span class="tiempo-restante" id="${labelId}">—</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
-      </div>
-    </div>
+    <div class="detail-countdown">
+      <div class="detail-countdown-label">
+        <span> Duración: ${duracionTexto(durMins)}</span>
+        <span class="tiempo-restante" id="${labelId}">—</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div>
+      </div>
+    </div>
 
-    <div class="map" id="detailMap"></div>
+    <div class="map" id="detailMap"></div>
 
-    <div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;">
-      <div class="detail-row">📍 <strong>${mateada.ubicacion}</strong></div>
-      <div class="detail-row">📋 ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div>
-      <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
-      <div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div>
-      <div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div>
-    </div>
+    <div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;">
+      <div class="detail-row">
+        <strong>${mateada.ubicacion}</strong>
+        <a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}" target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;"> Maps</a>
+      </div>
+      <div class="detail-row"> ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div>
+      <div class="detail-row"> <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
+      <div class="detail-row"> Anfitrión: <strong>${mateada.organizador}</strong></div>
+      <div class="detail-row"> Empezó: ${mateada.hora || 'Ahora'}</div>
+    </div>
 
-    ${libres > 0
-      ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`
-      : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`
-    }
-  `;
+    ${libres > 0
+      ? `<button class="btn" onclick="mostrarUnirse()"> Quiero sumarme</button>`
+      : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`
+    }
+  `;
 
-  setNavTitle(mateada.titulo);
-  mostrarScreen('screen-detail');
+  setNavTitle(mateada.titulo);
+  mostrarScreen('screen-detail');
 
-  setTimeout(() => {
-    iniciarCountdown(mateada, fillId, labelId);
-    const mapEl = document.getElementById('detailMap');
-    if (mapEl && mateada.latitud && mateada.longitud) {
-      if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
-      mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
-      L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
-    }
-  }, 150);
+  setTimeout(() => {
+    iniciarCountdown(mateada, fillId, labelId);
+    const mapEl = document.getElementById('detailMap');
+    if (mapEl && mateada.latitud && mateada.longitud) {
+      if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
+      mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
+      L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
+    }
+  }, 150);
 }
 
 function mostrarUnirse() {
-  document.getElementById('joinInfo').innerHTML = `
-    <div class="join-card">
-      <div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div>
-      <div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
-    </div>
-  `;
-  setNavTitle('Sumarme');
-  mostrarScreen('screen-join');
+  document.getElementById('joinInfo').innerHTML = `
+    <div class="join-card">
+      <div class="join-card-title"> ${mateadaSeleccionada.ubicacion}</div>
+      <div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
+    </div>
+  `;
+  setNavTitle('Sumarme');
+  mostrarScreen('screen-join');
 }
 
 // ─────────────────────────────────────────────
-//  NAVEGACIÓN
+//  NAVEGACIÓN
 // ─────────────────────────────────────────────
 function irInicio() {
-  mostrarScreen('screen-home');
-  document.getElementById('navBar').classList.remove('visible');
-  cargarMateadas();
+  mostrarScreen('screen-home');
+  document.getElementById('navBar').classList.remove('visible');
+  cargarMateadas();
 }
 
 function irACrear() {
-  setNavTitle('Nueva mateada');
-  mostrarScreen('screen-create');
-  document.getElementById('navBar').classList.add('visible');
+  setNavTitle('Nueva mateada');
+  mostrarScreen('screen-create');
+  document.getElementById('navBar').classList.add('visible');
 }
 
 function goBack() {
-  if (document.getElementById('screen-join').classList.contains('active')) {
-    verDetalle(mateadaSeleccionada);
-  } else {
-    irInicio();
-  }
+  if (document.getElementById('screen-join').classList.contains('active')) {
+    verDetalle(mateadaSeleccionada);
+  } else {
+    irInicio();
+  }
 }
 
 function setNavTitle(title) {
-  document.getElementById('navTitle').innerText = title;
+  document.getElementById('navTitle').innerText = title;
 }
 
 function mostrarScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 
-  const isHome   = id === 'screen-home';
-  const isCreate = id === 'screen-create';
+  const isHome   = id === 'screen-home';
+  const isCreate = id === 'screen-create';
 
-  document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
-  document.getElementById('navBar').classList.toggle('visible', !isHome);
+  document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
+  document.getElementById('navBar').classList.toggle('visible', !isHome);
 }
 
 // ─────────────────────────────────────────────
-//  SELECCIÓN OPCIONES
+//  SELECCIÓN OPCIONES
 // ─────────────────────────────────────────────
 function seleccionarMate(btn) {
-  btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+  btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
 }
 
 function seleccionarDuracion(btn, mins) {
-  document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  duracionSeleccionada = mins;
+  document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  duracionSeleccionada = mins;
 }
 
 // ─────────────────────────────────────────────
-//  SLIDER
+//  SLIDER
 // ─────────────────────────────────────────────
 document.getElementById('tiempoLlegada').oninput = function() {
-  document.getElementById('tiempoMostrar').innerText = this.value + ' minutos';
+  document.getElementById('tiempoMostrar').innerText = this.value + ' minutos';
 };
 
 // Init
