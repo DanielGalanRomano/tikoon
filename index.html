@@ -6,7 +6,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Matear">
+  <meta name="apple-mobile-web-app-title" content="Cebate Uno">
   <meta name="theme-color" content="#0F7B5E">
   <title>Cebate Uno — Encuentros con mate en el parque</title>
 
@@ -18,6 +18,9 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     :root {
@@ -44,37 +47,22 @@
     body {
       background: var(--crema-dark);
       font-family: 'DM Sans', system-ui, sans-serif;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 16px;
-      overscroll-behavior: none;
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 16px; overscroll-behavior: none;
     }
 
     .app {
-      max-width: 480px;
-      width: 100%;
-      background: var(--crema);
-      border-radius: 32px;
-      min-height: 600px;
-      overflow: visible;
+      max-width: 480px; width: 100%; background: var(--crema);
+      border-radius: 32px; min-height: 600px; overflow: visible;
       box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      display: flex;
-      flex-direction: column;
-      position: relative;
+      display: flex; flex-direction: column; position: relative;
     }
 
     .sticky-top {
-      position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(480px, 100vw);
-      z-index: 500;
-      background: var(--header-bg);
-      border-radius: 32px 32px 0 0;
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+      width: min(480px, 100vw); z-index: 500;
+      background: var(--header-bg); border-radius: 32px 32px 0 0;
       box-shadow: 0 1px 0 rgba(0,0,0,0.10), 0 2px 12px rgba(0,0,0,0.06);
     }
 
@@ -85,45 +73,98 @@
       .fab { bottom: calc(20px + var(--safe-bottom)); right: 16px; }
     }
 
-    .header-spacer { flex-shrink: 0; }
-    .header { padding: calc(14px + var(--safe-top)) 20px 12px; display: flex; align-items: center; justify-content: space-between; }
+    .header { padding: calc(14px + var(--safe-top)) 16px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .logo-wrap { text-align: center; flex: 1; }
-    .logo { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--verde); letter-spacing: -0.5px; }
+    .logo { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: var(--verde); letter-spacing: -0.5px; }
     .sub { font-size: 10px; color: var(--subtexto); margin-top: 2px; letter-spacing: 0.3px; }
 
+    /* ── HEADER ACTIONS ── */
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* Bell */
+    .bell-btn { position: relative; background: white; border: 1px solid var(--borde); width: 38px; height: 38px; border-radius: 19px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .bell-btn:active { background: var(--crema-dark); }
+    .bell-badge { position: absolute; top: -4px; right: -4px; background: var(--rojo); color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--header-bg); padding: 0 3px; animation: badgePop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
+
+    /* Google avatar / login btn */
+    .google-login-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--borde); padding: 7px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); transition: background 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .google-login-btn:active { background: var(--crema-dark); }
+    .google-login-btn img { width: 16px; height: 16px; }
+    .user-avatar { width: 34px; height: 34px; border-radius: 17px; border: 2px solid var(--verde); object-fit: cover; cursor: pointer; flex-shrink: 0; }
+    .user-avatar-placeholder { width: 34px; height: 34px; border-radius: 17px; background: var(--verde); color: white; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; border: 2px solid var(--verde-light); }
+
+    /* Refresh */
+    .refresh-btn { background: none; border: 1px solid var(--borde); width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; flex-shrink: 0; }
+    .refresh-btn.spinning { animation: spin 0.6s linear; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Nav bar */
     .nav-bar { display: none; align-items: center; padding: 10px 16px 12px; }
     .nav-bar.visible { display: flex; }
     .back-btn { background: white; border: 1px solid var(--borde); width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
     .back-btn:active { background: var(--crema-dark); }
-    .nav-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; margin-left: 12px; color: var(--texto); }
+    .nav-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; margin-left: 12px; color: var(--texto); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .install-banner { display: none; align-items: center; gap: 10px; background: linear-gradient(135deg, #0F7B5E, #0a6650); color: white; padding: 12px 16px; font-size: 13px; animation: slideDown 0.4s ease; }
-    .install-banner.visible { display: flex; }
-    .install-banner-text { flex: 1; line-height: 1.4; }
-    .install-banner-text strong { display: block; font-size: 14px; }
-    .install-btn-banner { background: white; color: var(--verde); border: none; padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
-    .install-dismiss { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
-    @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    /* Offline */
+    .offline-banner { display: none; background: #FEF3C7; color: #92400E; padding: 8px 16px; font-size: 13px; text-align: center; border-bottom: 1px solid #FCD34D; }
+    .offline-banner.visible { display: block; }
 
-    .ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9000; align-items: flex-end; justify-content: center; padding-bottom: var(--safe-bottom); }
-    .ios-sheet-overlay.visible { display: flex; animation: overlayIn 0.25s ease; }
+    /* ── NOTIF PANEL ── */
+    .notif-panel-overlay { display: none; position: fixed; inset: 0; z-index: 800; }
+    .notif-panel-overlay.visible { display: block; }
+    .notif-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(340px, 100vw); background: var(--crema); box-shadow: -8px 0 32px rgba(0,0,0,0.18); z-index: 900; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
+    .notif-panel.open { transform: translateX(0); }
+    .notif-panel-header { background: var(--verde); color: white; padding: calc(16px + var(--safe-top)) 16px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .notif-panel-header h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; }
+    .notif-close-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 16px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .notif-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .notif-item { background: white; border-radius: 16px; padding: 14px; border: 1px solid var(--borde); cursor: pointer; transition: transform 0.15s; animation: fadeUp 0.25s ease both; }
+    .notif-item:active { transform: scale(0.98); }
+    .notif-item.unread { border-left: 4px solid var(--verde); }
+    .notif-item.unread-question { border-left: 4px solid var(--azul); }
+    .notif-item.unread-answer { border-left: 4px solid #D97706; }
+    .notif-item-title { font-weight: 700; font-size: 14px; color: var(--texto); margin-bottom: 4px; }
+    .notif-item-body { font-size: 13px; color: var(--subtexto); line-height: 1.4; }
+    .notif-item-time { font-size: 11px; color: var(--gris); margin-top: 6px; }
+    .notif-empty { text-align: center; padding: 40px 20px; color: var(--subtexto); }
+    .notif-empty-icon { font-size: 40px; margin-bottom: 10px; }
+    .notif-clear-btn { margin: 0 12px 12px; padding: 10px; background: var(--gris-claro); border: none; border-radius: 12px; font-size: 13px; color: var(--gris); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; }
+
+    /* ── USER MENU SHEET ── */
+    .sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9000; align-items: flex-end; justify-content: center; }
+    .sheet-overlay.visible { display: flex; animation: overlayIn 0.2s ease; }
     @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-    .ios-sheet { background: #F2F2F7; border-radius: 24px 24px 0 0; padding: 20px 24px calc(28px + var(--safe-bottom)); width: 100%; max-width: 480px; animation: sheetUp 0.35s cubic-bezier(0.32,0.72,0,1); }
+    .bottom-sheet { background: var(--crema); border-radius: 24px 24px 0 0; padding: 20px 20px calc(24px + var(--safe-bottom)); width: 100%; max-width: 480px; animation: sheetUp 0.3s cubic-bezier(0.32,0.72,0,1); }
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .sheet-handle { width: 36px; height: 4px; background: #C7C7CC; border-radius: 2px; margin: 0 auto 18px; }
+    .user-sheet-profile { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .user-sheet-avatar { width: 52px; height: 52px; border-radius: 26px; object-fit: cover; border: 3px solid var(--verde-light); }
+    .user-sheet-avatar-placeholder { width: 52px; height: 52px; border-radius: 26px; background: var(--verde); color: white; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .user-sheet-name { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--texto); }
+    .user-sheet-email { font-size: 13px; color: var(--subtexto); }
+    .sheet-divider { height: 1px; background: var(--borde); margin: 16px 0; }
+    .sheet-menu-item { display: flex; align-items: center; gap: 12px; padding: 13px 0; cursor: pointer; font-size: 15px; color: var(--texto); border-radius: 12px; transition: background 0.15s; }
+    .sheet-menu-item:active { background: var(--crema-dark); }
+    .sheet-menu-icon { font-size: 20px; width: 28px; text-align: center; }
+    .sheet-logout { color: var(--rojo); }
+
+    /* ── IOS INSTALL SHEET ── */
+    .ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9100; align-items: flex-end; justify-content: center; padding-bottom: var(--safe-bottom); }
+    .ios-sheet-overlay.visible { display: flex; }
+    .ios-sheet { background: #F2F2F7; border-radius: 24px 24px 0 0; padding: 20px 24px calc(28px + var(--safe-bottom)); width: 100%; max-width: 480px; animation: sheetUp 0.35s cubic-bezier(0.32,0.72,0,1); }
     .ios-sheet-handle { width: 36px; height: 4px; background: #C7C7CC; border-radius: 2px; margin: 0 auto 20px; }
     .ios-sheet h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; color: var(--texto); margin-bottom: 6px; text-align: center; }
     .ios-sheet p { font-size: 14px; color: var(--subtexto); text-align: center; margin-bottom: 22px; line-height: 1.5; }
     .ios-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
     .ios-step { display: flex; align-items: center; gap: 14px; background: white; border-radius: 16px; padding: 14px 16px; }
     .ios-step-num { background: var(--verde); color: white; width: 28px; height: 28px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
-    .ios-step-text { font-size: 14px; color: var(--texto); line-height: 1.4; }
+    .ios-step-text { font-size: 14px; color: var(--texto); line-height: 1.4; flex: 1; }
     .ios-step-text strong { display: block; font-size: 15px; }
     .ios-step-icon { font-size: 22px; flex-shrink: 0; }
     .ios-sheet-close { width: 100%; padding: 14px; background: white; border: 1px solid var(--borde); border-radius: 60px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); cursor: pointer; }
 
-    .offline-banner { display: none; background: #FEF3C7; color: #92400E; padding: 8px 16px; font-size: 13px; text-align: center; border-bottom: 1px solid #FCD34D; }
-    .offline-banner.visible { display: block; }
-
+    /* ── CONTENT & SCREENS ── */
     .content { padding: 16px 20px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
     .screen { display: none; flex-direction: column; flex: 1; }
     .screen.active { display: flex; }
@@ -149,6 +190,7 @@
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; gap: 8px; }
     .badge { background: var(--verde-light); color: var(--verde); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
     .badge.lleno { background: #FEE2E2; color: var(--rojo); }
+    .badge.tuya { background: #FEF3C7; color: #92400E; }
     .organizador-chip { font-size: 12px; color: var(--subtexto); background: var(--crema-dark); padding: 3px 10px; border-radius: 20px; }
     .countdown-wrap { margin-top: 10px; }
     .countdown-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtexto); margin-bottom: 5px; }
@@ -157,11 +199,9 @@
 
     .btn { background: var(--verde); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; -webkit-user-select: none; user-select: none; }
     .btn:active { transform: scale(0.98); }
-    .btn-secondary { background: white; border: 1px solid var(--borde); color: var(--texto); }
+    .btn-secondary { background: white; border: 1.5px solid var(--borde); color: var(--texto); }
     .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
     .btn-back:active { transform: scale(0.98); background: #D1D5DB; }
-    .btn-small { background: var(--azul); color: white; border: none; padding: 10px 16px; border-radius: 40px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; font-size: 13px; transition: background 0.2s; }
-    .btn-small:active { transform: scale(0.97); }
     .btn.loading { opacity: 0.7; pointer-events: none; }
 
     .fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--verde); color: white; border: none; height: 52px; padding: 0 22px; border-radius: 26px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 300; }
@@ -185,6 +225,7 @@
     .empty { text-align: center; padding: 40px 20px; color: var(--subtexto); line-height: 1.7; margin: 0 20px; }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
 
+    /* Detail */
     .detail-header { background: white; border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--borde); }
     .detail-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
     .detail-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
@@ -195,17 +236,32 @@
     .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background-color 2s ease; }
 
-    /* Chat styles */
+    /* ── Q&A CHAT ── */
     .chat-section { background: white; border-radius: 20px; padding: 16px; border: 1px solid var(--borde); margin-bottom: 12px; }
-    .chat-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px; color: var(--texto); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .chat-bubble { background: var(--azul-claro); border-radius: 16px; padding: 12px; margin-bottom: 12px; }
-    .chat-bubble-question { background: var(--verde-light); border-radius: 16px 16px 16px 4px; padding: 12px; margin-bottom: 10px; }
-    .chat-bubble-answer { background: #F3F4F6; border-radius: 16px 16px 4px 16px; padding: 12px; margin-bottom: 10px; border-left: 3px solid var(--verde); }
-    .chat-meta { font-size: 11px; color: var(--subtexto); margin-top: 6px; display: flex; justify-content: space-between; }
-    .chat-input-group { display: flex; gap: 8px; margin-top: 12px; }
-    .chat-input { flex: 1; padding: 10px 14px; border: 1.5px solid var(--borde); border-radius: 40px; font-size: 14px; font-family: 'DM Sans', sans-serif; }
-    .chat-input:focus { outline: none; border-color: var(--verde); }
-    .chat-disabled { background: #F9F9F9; padding: 12px; border-radius: 12px; text-align: center; color: var(--subtexto); font-size: 13px; }
+    .chat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .chat-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px; color: var(--texto); display: flex; align-items: center; gap: 8px; }
+    .chat-badge-new { background: var(--azul); color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; animation: badgePop 0.3s ease; }
+    .chat-login-prompt { background: var(--crema-dark); border-radius: 16px; padding: 16px; text-align: center; }
+    .chat-login-prompt p { font-size: 14px; color: var(--subtexto); margin-bottom: 12px; line-height: 1.5; }
+
+    .qa-bubble { border-radius: 16px; padding: 13px 15px; margin-bottom: 10px; }
+    .qa-bubble-question { background: var(--azul-claro); border-radius: 16px 16px 16px 4px; border-left: 3px solid var(--azul); }
+    .qa-bubble-answer { background: var(--verde-light); border-radius: 16px 16px 4px 16px; border-left: 3px solid var(--verde); }
+    .qa-bubble-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .qa-bubble-label.q { color: var(--azul); }
+    .qa-bubble-label.a { color: var(--verde); }
+    .qa-bubble-text { font-size: 14px; color: var(--texto); line-height: 1.5; }
+    .qa-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; color: var(--subtexto); }
+    .qa-meta-avatar { width: 18px; height: 18px; border-radius: 9px; object-fit: cover; }
+    .qa-meta-avatar-ph { width: 18px; height: 18px; border-radius: 9px; background: var(--verde); color: white; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    .chat-input-area { background: var(--crema-dark); border-radius: 14px; padding: 12px; margin-top: 8px; }
+    .chat-input-area textarea { width: 100%; border: 1.5px solid var(--borde); border-radius: 12px; padding: 10px 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: none; background: white; color: var(--texto); }
+    .chat-input-area textarea:focus { outline: none; border-color: var(--verde); }
+    .chat-send-btn { width: 100%; margin-top: 8px; padding: 10px; background: var(--verde); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s; }
+    .chat-send-btn:active { background: #0a6650; }
+    .chat-waiting { background: #FEF3C7; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #92400E; display: flex; align-items: center; gap: 8px; }
+    .chat-disabled-msg { background: var(--crema-dark); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--subtexto); text-align: center; }
 
     .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
     .join-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 4px; }
@@ -217,49 +273,81 @@
     .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
 
     .maps-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--verde); text-decoration: none; background: var(--verde-light); padding: 5px 12px; border-radius: 20px; transition: background 0.15s; }
-    .refresh-btn { background: none; border: 1px solid var(--borde); width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; }
-    .refresh-btn.spinning { animation: spin 0.6s linear; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Login required notice inline */
+    .login-required-note { display: flex; align-items: center; gap: 10px; background: var(--azul-claro); border: 1px solid #BFDBFE; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #1D4ED8; margin-bottom: 12px; }
 
     #homeListContainer { overflow-y: auto; flex: 1; padding-bottom: calc(80px + var(--safe-bottom)); }
 
-    .notif-banner { display: none; margin: 0 20px 12px; background: linear-gradient(135deg, #1e3a5f, #2563EB); border-radius: 16px; padding: 14px 16px; gap: 12px; align-items: center; animation: fadeUp 0.4s ease both; }
-    .notif-banner.visible { display: flex; }
-    .notif-banner-text { flex: 1; color: white; line-height: 1.4; }
-    .notif-banner-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
-    .notif-banner-text span { font-size: 12px; opacity: 0.85; }
-    .notif-btn-si { background: white; color: #2563EB; border: none; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
-    .notif-btn-no { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
-
-    /* Modal del mapa selector */
+    /* Map modal */
     .map-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; }
     .map-modal-header { background: var(--verde); padding: 16px; color: white; display: flex; justify-content: space-between; align-items: center; }
     .map-modal-header button { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
     .map-modal-content { flex: 1; }
     .map-modal-footer { padding: 16px; background: white; }
+
+    /* Install banner */
+    .install-banner { display: none; align-items: center; gap: 10px; background: linear-gradient(135deg, #0F7B5E, #0a6650); color: white; padding: 12px 16px; font-size: 13px; }
+    .install-banner.visible { display: flex; }
+    .install-banner-text { flex: 1; line-height: 1.4; }
+    .install-banner-text strong { display: block; font-size: 14px; }
+    .install-btn-banner { background: white; color: var(--verde); border: none; padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+    .install-dismiss { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: calc(90px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: #1C1C1E; color: white; padding: 12px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; max-width: calc(100vw - 40px); pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
-<div class="app">
 
-  <div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
-    <div class="ios-sheet">
-      <div class="ios-sheet-handle"></div>
-      <h3>Instalá Cebate Uno 🧉</h3>
-      <p>Guardala en tu pantalla de inicio<br>para usarla como una app nativa.</p>
-      <div class="ios-steps">
-        <div class="ios-step"><span class="ios-step-num">1</span><div class="ios-step-text"><strong>Tocá el botón Compartir</strong>El ícono de la caja con flecha ↑ en la barra de Safari</div><span class="ios-step-icon">⬆️</span></div>
-        <div class="ios-step"><span class="ios-step-num">2</span><div class="ios-step-text"><strong>«Agregar a inicio»</strong>Deslizá la lista y tocá "Agregar a pantalla de inicio"</div><span class="ios-step-icon">➕</span></div>
-        <div class="ios-step"><span class="ios-step-num">3</span><div class="ios-step-text"><strong>Confirmá</strong>Tocá "Agregar" arriba a la derecha — ¡listo!</div><span class="ios-step-icon">✅</span></div>
-      </div>
-      <button class="ios-sheet-close" onclick="cerrarIosSheet()">Entendido</button>
+<div id="toast" class="toast"></div>
+
+<!-- iOS Install Sheet -->
+<div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
+  <div class="ios-sheet">
+    <div class="ios-sheet-handle"></div>
+    <h3>Instalá Cebate Uno 🧉</h3>
+    <p>Guardala en tu pantalla de inicio<br>para usarla como una app nativa.</p>
+    <div class="ios-steps">
+      <div class="ios-step"><span class="ios-step-num">1</span><div class="ios-step-text"><strong>Tocá el botón Compartir</strong>El ícono de la caja con flecha ↑ en Safari</div><span class="ios-step-icon">⬆️</span></div>
+      <div class="ios-step"><span class="ios-step-num">2</span><div class="ios-step-text"><strong>«Agregar a inicio»</strong>Deslizá y tocá "Agregar a pantalla de inicio"</div><span class="ios-step-icon">➕</span></div>
+      <div class="ios-step"><span class="ios-step-num">3</span><div class="ios-step-text"><strong>Confirmá</strong>Tocá "Agregar" arriba a la derecha</div><span class="ios-step-icon">✅</span></div>
     </div>
+    <button class="ios-sheet-close" onclick="cerrarIosSheet()">Entendido</button>
   </div>
+</div>
 
+<!-- User Menu Sheet -->
+<div class="sheet-overlay" id="userSheetOverlay" onclick="cerrarUserSheet(event)">
+  <div class="bottom-sheet" id="userSheet">
+    <div class="sheet-handle"></div>
+    <div class="user-sheet-profile" id="userSheetProfile"></div>
+    <div class="sheet-divider"></div>
+    <div class="sheet-menu-item" onclick="abrirMisMateadas()"><span class="sheet-menu-icon">🧉</span><span>Mis mateadas</span></div>
+    <div class="sheet-menu-item" onclick="abrirMisPreguntas()"><span class="sheet-menu-icon">💬</span><span>Mis preguntas</span></div>
+    <div class="sheet-divider"></div>
+    <div class="sheet-menu-item sheet-logout" onclick="cerrarSesion()"><span class="sheet-menu-icon">🚪</span><span>Cerrar sesión</span></div>
+  </div>
+</div>
+
+<!-- Notification Panel -->
+<div class="notif-panel-overlay" id="notifOverlay" onclick="cerrarNotifPanel(event)"></div>
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-panel-header">
+    <h3>🔔 Notificaciones</h3>
+    <button class="notif-close-btn" onclick="cerrarNotifPanel()">✕</button>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+  <button class="notif-clear-btn" onclick="limpiarNotificaciones()">Marcar todo como leído</button>
+</div>
+
+<div class="app">
   <div class="sticky-top" id="stickyTop">
+
     <div class="install-banner" id="installBanner">
-      <span style="font-size:28px;">🧉</span>
-      <div class="install-banner-text"><strong>Instalá Cebate Uno</strong>Usala sin internet, como una app nativa</div>
+      <span style="font-size:26px;">🧉</span>
+      <div class="install-banner-text"><strong>Instalá Cebate Uno</strong>Usala sin internet, como app nativa</div>
       <button class="install-btn-banner" id="installBtnBanner">Instalar</button>
       <button class="install-dismiss" id="installDismiss">✕</button>
     </div>
@@ -267,10 +355,24 @@
     <div class="offline-banner" id="offlineBanner">📵 Sin conexión — mostrando datos en caché</div>
 
     <div class="header" id="mainHeader">
-      <button id="iosInstallBtn" onclick="abrirIosSheet()" style="background:var(--verde-light);border:none;color:var(--verde);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:none;white-space:nowrap;">+ App</button>
-      <div style="width:36px;" id="headerSpacer1"></div>
-      <div class="logo-wrap"><div class="logo">🧉 cebate uno</div><div class="sub">by Sponsor se busca · Encuentros con mate en el parque</div></div>
-      <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
+      <!-- Left: iOS install or spacer -->
+      <div id="headerLeft" style="flex-shrink:0; min-width:38px;"></div>
+
+      <div class="logo-wrap">
+        <div class="logo">🧉 cebate uno</div>
+        <div class="sub">Encuentros con mate en el parque</div>
+      </div>
+
+      <div class="header-actions">
+        <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
+        <!-- Bell -->
+        <button class="bell-btn" id="bellBtn" onclick="abrirNotifPanel()">
+          🔔
+          <span class="bell-badge" id="bellBadge" style="display:none;">0</span>
+        </button>
+        <!-- Auth area -->
+        <div id="authArea"></div>
+      </div>
     </div>
 
     <div class="nav-bar" id="navBar">
@@ -281,6 +383,7 @@
 
   <div id="headerSpacer" style="flex-shrink:0;"></div>
 
+  <!-- ── HOME ── -->
   <div id="screen-home" class="screen active">
     <div class="home-map-section" id="homeMapSection">
       <div id="nearbyMap"></div>
@@ -289,53 +392,55 @@
       <div class="map-placeholder" id="mapPlaceholder"><span>🗺️</span><span>Activá el GPS para ver la mateada más cercana</span></div>
     </div>
     <div id="homeListContainer">
-      <div class="notif-banner" id="notifBanner">
-        <span style="font-size:28px;">🔔</span>
-        <div class="notif-banner-text"><strong>Activá las notificaciones</strong><span>Te avisamos cuando hay mateadas nuevas cerca o la tuya está por terminar</span></div>
-        <button class="notif-btn-si" onclick="pedirPermisoNotif()">Activar</button>
-        <button class="notif-btn-no" onclick="descartarNotifBanner()">✕</button>
-      </div>
       <div class="section-label"><span>Mateadas activas</span><span id="contadorMateadas" style="font-size:13px;font-weight:500;color:var(--subtexto);font-family:'DM Sans',sans-serif;"></span></div>
       <div id="homeContent"><div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div></div>
     </div>
   </div>
 
+  <!-- ── DETAIL ── -->
   <div id="screen-detail" class="screen"><div class="content" id="detailContent"></div></div>
 
+  <!-- ── CREATE ── -->
   <div id="screen-create" class="screen">
     <div class="content">
-      <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name"></div>
-      <div class="form-group"><label class="form-label">🎯 Tema</label>
-        <select id="temaMateada" class="form-select">
-          <option>🤝 Emprendedurismo</option><option selected>📖 Filosofía y vida cotidiana</option>
-          <option>💻 Tecnología e IA</option><option>🎨 Arte y creatividad</option>
-          <option>📚 Literatura</option><option>🎬 Cine y series</option>
-          <option>🌱 Sustentabilidad</option><option>🧘 Bienestar y meditación</option>
-        </select>
+      <div id="createLoginGate" style="display:none;">
+        <div class="login-required-note">ℹ️ <span>Para publicar una mateada necesitás iniciar sesión con Google.</span></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">📍 Ubicación</label>
-        <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras, Córdoba" autocomplete="off">
-        <button type="button" onclick="abrirSelectorUbicacion()" style="margin-top:8px; background:var(--verde-light); border:none; padding:10px; border-radius:12px; width:100%; color:var(--verde); font-weight:600; cursor:pointer;">🗺️ Seleccionar en el mapa</button>
-      </div>
-      <div class="form-group"><label class="form-label">⏳ Duración de la mateada</label>
-        <div class="duracion-grid" id="duracionGrid">
-          <button class="duracion-btn" onclick="seleccionarDuracion(this, 30)">30 min</button>
-          <button class="duracion-btn selected" onclick="seleccionarDuracion(this, 60)">1 hora</button>
-          <button class="duracion-btn" onclick="seleccionarDuracion(this, 120)">2 horas</button>
+      <div id="createForm">
+        <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name"></div>
+        <div class="form-group"><label class="form-label">🎯 Tema</label>
+          <select id="temaMateada" class="form-select">
+            <option>🤝 Emprendedurismo</option><option selected>📖 Filosofía y vida cotidiana</option>
+            <option>💻 Tecnología e IA</option><option>🎨 Arte y creatividad</option>
+            <option>📚 Literatura</option><option>🎬 Cine y series</option>
+            <option>🌱 Sustentabilidad</option><option>🧘 Bienestar y meditación</option>
+          </select>
         </div>
+        <div class="form-group">
+          <label class="form-label">📍 Ubicación</label>
+          <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras, Córdoba" autocomplete="off">
+          <button type="button" onclick="abrirSelectorUbicacion()" style="margin-top:8px; background:var(--verde-light); border:none; padding:10px; border-radius:12px; width:100%; color:var(--verde); font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">🗺️ Seleccionar en el mapa</button>
+        </div>
+        <div class="form-group"><label class="form-label">⏳ Duración de la mateada</label>
+          <div class="duracion-grid" id="duracionGrid">
+            <button class="duracion-btn" onclick="seleccionarDuracion(this, 30)">30 min</button>
+            <button class="duracion-btn selected" onclick="seleccionarDuracion(this, 60)">1 hora</button>
+            <button class="duracion-btn" onclick="seleccionarDuracion(this, 120)">2 horas</button>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">🧉 ¿Cómo tomás el mate?</label>
+          <div class="option-grid"><button class="option-btn" onclick="seleccionarMate(this)">Amargo</button><button class="option-btn selected" onclick="seleccionarMate(this)">Dulce</button></div>
+        </div>
+        <div class="form-group"><label class="form-label">👥 Cupo máximo</label>
+          <select id="cupoMateada" class="form-select"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>15</option><option>20</option></select>
+        </div>
+        <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
+        <div style="height: calc(80px + var(--safe-bottom));"></div>
       </div>
-      <div class="form-group"><label class="form-label">🧉 ¿Cómo tomás el mate?</label>
-        <div class="option-grid"><button class="option-btn" onclick="seleccionarMate(this)">Amargo</button><button class="option-btn selected" onclick="seleccionarMate(this)">Dulce</button></div>
-      </div>
-      <div class="form-group"><label class="form-label">👥 Cupo máximo</label>
-        <select id="cupoMateada" class="form-select"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>15</option><option>20</option></select>
-      </div>
-      <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
-      <div style="height: calc(80px + var(--safe-bottom));"></div>
     </div>
   </div>
 
+  <!-- ── JOIN ── -->
   <div id="screen-join" class="screen">
     <div class="content">
       <div id="joinInfo"></div>
@@ -345,6 +450,7 @@
     </div>
   </div>
 
+  <!-- ── SENT ── -->
   <div id="screen-sent" class="screen">
     <div class="sent-screen"><div class="sent-icon">🧉✨</div><div class="sent-title">¡Listo!</div><p class="sent-text">Le avisamos al organizador<br>que llegás en <strong id="tiempoEnviado"></strong> minutos.</p><button class="btn btn-secondary" onclick="irInicio()" style="margin-top:28px; max-width:240px;">← Volver al inicio</button></div>
   </div>
@@ -353,8 +459,16 @@
 </div>
 
 <script>
+// ══════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl6tO3UJSIPKNdmUfoqtEU8agY20fUjUarjU4CmYdSPomz-XLJQYAJrdKUOhiLayjN/exec';
+const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // ← reemplazá con tu Client ID real
+const VAPID_PUBLIC_KEY = 'TU_VAPID_PUBLIC_KEY'; // ← reemplazá para Web Push
 
+// ══════════════════════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ══════════════════════════════════════════════════════════════
 let mateadasActuales = [];
 let mateadaSeleccionada = null;
 let mapaDetalle = null;
@@ -367,193 +481,596 @@ let ubicacionSeleccionadaMapa = null;
 let mapaSelector = null;
 let markerSelector = null;
 
-// Datos del usuario capturados automáticamente
-let usuarioActual = {
-    nombre: '',
-    dispositivo: '',
-    navegador: '',
-    sistema: '',
-    idioma: '',
-    zonaHoraria: '',
-    resolucion: '',
-    conexion: '',
-    memoria: ''
-};
+// Usuario autenticado con Google
+let usuarioActual = null;
+// { sub, nombre, email, avatar, idToken }
 
-// Chat storage (simulado localmente, idealmente iría a backend)
-let chatsPorMateada = {};
+// Notificaciones locales
+let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
+let unreadCount = notificaciones.filter(n => !n.leida).length;
 
-// ─── CAPTURA DE DATOS DEL USUARIO ─────────────────────────
-function capturarDatosUsuario() {
-    // Detectar navegador
-    const userAgent = navigator.userAgent;
-    let navegador = 'Desconocido';
-    if (userAgent.indexOf('Chrome') > -1) navegador = 'Chrome';
-    else if (userAgent.indexOf('Safari') > -1) navegador = 'Safari';
-    else if (userAgent.indexOf('Firefox') > -1) navegador = 'Firefox';
-    else if (userAgent.indexOf('Edge') > -1) navegador = 'Edge';
-    else if (userAgent.indexOf('Opera') > -1) navegador = 'Opera';
-    
-    // Detectar sistema operativo
-    let sistema = 'Desconocido';
-    if (userAgent.indexOf('Windows') > -1) sistema = 'Windows';
-    else if (userAgent.indexOf('Mac') > -1) sistema = 'macOS';
-    else if (userAgent.indexOf('Linux') > -1) sistema = 'Linux';
-    else if (userAgent.indexOf('Android') > -1) sistema = 'Android';
-    else if (userAgent.indexOf('iOS') > -1 || userAgent.indexOf('iPhone') > -1 || userAgent.indexOf('iPad') > -1) sistema = 'iOS';
-    
-    // Detectar dispositivo
-    let dispositivo = 'Desktop';
-    if (/Mobi|Android|iPhone|iPad|iPod/i.test(userAgent)) dispositivo = 'Móvil/Tablet';
-    
-    usuarioActual = {
-        nombre: localStorage.getItem('usuarioNombre') || '',
-        dispositivo: dispositivo,
-        navegador: navegador,
-        sistema: sistema,
-        idioma: navigator.language || navigator.userLanguage || 'es',
-        zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        resolucion: `${window.screen.width}x${window.screen.height}`,
-        conexion: navigator.connection ? navigator.connection.effectiveType : 'desconocida',
-        memoria: navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'desconocida',
-        fechaVisita: new Date().toISOString()
-    };
-    
-    console.log('📱 Datos capturados:', usuarioActual);
-    
-    // Intentar guardar en localStorage
-    localStorage.setItem('usuarioDatos', JSON.stringify(usuarioActual));
-}
-
-// ─── GUARDAR NOMBRE DEL USUARIO ───────────────────────────
-function guardarNombreUsuario(nombre) {
-    if (nombre && nombre.trim()) {
-        usuarioActual.nombre = nombre.trim();
-        localStorage.setItem('usuarioNombre', nombre.trim());
-        localStorage.setItem('usuarioDatos', JSON.stringify(usuarioActual));
-    }
-}
-
-// ─── FUNCIONES DEL CHAT ───────────────────────────────────
-function inicializarChat(mateadaId) {
-    if (!chatsPorMateada[mateadaId]) {
-        // Verificar si ya hay datos guardados localmente
-        const saved = localStorage.getItem(`chat_${mateadaId}`);
-        if (saved) {
-            chatsPorMateada[mateadaId] = JSON.parse(saved);
-        } else {
-            chatsPorMateada[mateadaId] = {
-                pregunta: null,
-                respuesta: null,
-                preguntaHecha: false,
-                respondido: false,
-                preguntaAutor: null,
-                preguntaFecha: null,
-                respuestaAutor: null,
-                respuestaFecha: null
-            };
-        }
-    }
-    return chatsPorMateada[mateadaId];
-}
-
-function hacerPregunta(mateadaId, pregunta) {
-    const chat = inicializarChat(mateadaId);
-    if (chat.preguntaHecha) {
-        alert('❌ Ya hiciste una pregunta para esta mateada. Solo se permite una por persona.');
-        return false;
-    }
-    
-    chat.pregunta = pregunta;
-    chat.preguntaHecha = true;
-    chat.preguntaAutor = usuarioActual.nombre || 'Anónimo';
-    chat.preguntaFecha = new Date().toISOString();
-    chat.respondido = false;
-    
-    // Guardar en localStorage
-    localStorage.setItem(`chat_${mateadaId}`, JSON.stringify(chat));
-    
-    // Aquí se podría enviar al backend
-    console.log(`📝 Pregunta guardada para mateada ${mateadaId}:`, pregunta);
-    
-    return true;
-}
-
-function responderPregunta(mateadaId, respuesta, esOrganizador) {
-    const chat = inicializarChat(mateadaId);
-    if (!chat.preguntaHecha) {
-        alert('❌ No hay pregunta para responder aún.');
-        return false;
-    }
-    
-    if (chat.respondido) {
-        alert('❌ Esta pregunta ya fue respondida.');
-        return false;
-    }
-    
-    chat.respuesta = respuesta;
-    chat.respondido = true;
-    chat.respuestaAutor = esOrganizador ? mateadaSeleccionada?.organizador || 'Organizador' : usuarioActual.nombre || 'Anónimo';
-    chat.respuestaFecha = new Date().toISOString();
-    
-    // Guardar en localStorage
-    localStorage.setItem(`chat_${mateadaId}`, JSON.stringify(chat));
-    
-    console.log(`💬 Respuesta guardada para mateada ${mateadaId}:`, respuesta);
-    
-    return true;
-}
-
-// ─── SERVICE WORKER ───────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  SERVICE WORKER
+// ══════════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    // Escuchar mensajes del SW (notificaciones push recibidas mientras la app está abierta)
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data && event.data.tipo === 'nueva-notificacion') {
+        recibirNotificacionSW(event.data);
+      }
+    });
+  });
 }
 
-// ─── DETECTAR iOS ─────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  GOOGLE AUTH
+// ══════════════════════════════════════════════════════════════
+function inicializarGoogleAuth() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    setTimeout(inicializarGoogleAuth, 300);
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: onGoogleCredential,
+    auto_select: true,
+    cancel_on_tap_outside: false
+  });
+  // Intentar login silencioso con sesión guardada
+  const savedUser = localStorage.getItem('google_user');
+  if (savedUser) {
+    try {
+      usuarioActual = JSON.parse(savedUser);
+      renderAuthArea();
+      return;
+    } catch(e) { localStorage.removeItem('google_user'); }
+  }
+  renderAuthArea();
+}
+
+function onGoogleCredential(response) {
+  // Decodificar JWT (payload) sin verificar firma — la verificación real va en el backend
+  const payload = parseJwt(response.credential);
+  if (!payload) { mostrarToast('❌ Error al autenticar con Google'); return; }
+
+  usuarioActual = {
+    sub: payload.sub,
+    nombre: payload.name,
+    email: payload.email,
+    avatar: payload.picture,
+    idToken: response.credential
+  };
+
+  localStorage.setItem('google_user', JSON.stringify({
+    sub: payload.sub,
+    nombre: payload.name,
+    email: payload.email,
+    avatar: payload.picture
+    // No guardamos idToken en localStorage (expira en 1h)
+  }));
+
+  renderAuthArea();
+  mostrarToast(`✅ Bienvenido/a, ${payload.name.split(' ')[0]}!`);
+
+  // Pre-llenar nombre en formulario de crear
+  const campo = document.getElementById('nombreOrganizador');
+  if (campo && !campo.value) campo.value = payload.name.split(' ')[0];
+
+  // Suscribir a Web Push
+  suscribirWebPush();
+
+  // Guardar usuario en backend para poder enviarle notificaciones push
+  registrarUsuarioBackend();
+}
+
+function parseJwt(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(atob(base64));
+  } catch(e) { return null; }
+}
+
+function abrirLoginGoogle() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    mostrarToast('⏳ Cargando Google Sign-In...');
+    return;
+  }
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      // Fallback: renderizar botón en un div temporal
+      const tmp = document.createElement('div');
+      tmp.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:white;padding:24px;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.2);';
+      tmp.innerHTML = '<p style="font-family:\'DM Sans\',sans-serif;margin-bottom:16px;font-weight:600;color:#2A241A;">Iniciá sesión con Google</p><div id="g_btn_tmp"></div><button onclick="this.parentElement.remove()" style="margin-top:12px;width:100%;padding:10px;border:1px solid #E8DDD0;border-radius:12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">Cancelar</button>';
+      document.body.appendChild(tmp);
+      google.accounts.id.renderButton(document.getElementById('g_btn_tmp'), { theme: 'outline', size: 'large', width: 280 });
+    }
+  });
+}
+
+function cerrarSesion() {
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.disableAutoSelect();
+  }
+  usuarioActual = null;
+  localStorage.removeItem('google_user');
+  cerrarUserSheet();
+  renderAuthArea();
+  mostrarToast('👋 Sesión cerrada');
+}
+
+function renderAuthArea() {
+  const area = document.getElementById('authArea');
+  if (!area) return;
+  if (!usuarioActual) {
+    area.innerHTML = `<button class="google-login-btn" onclick="abrirLoginGoogle()"><img src="https://www.google.com/favicon.ico" alt="G">Entrar</button>`;
+  } else {
+    if (usuarioActual.avatar) {
+      area.innerHTML = `<img src="${usuarioActual.avatar}" class="user-avatar" onclick="abrirUserSheet()" alt="avatar">`;
+    } else {
+      const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
+      area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${letra}</div>`;
+    }
+  }
+}
+
+function abrirUserSheet() {
+  if (!usuarioActual) return;
+  const profile = document.getElementById('userSheetProfile');
+  const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
+  profile.innerHTML = `
+    ${usuarioActual.avatar
+      ? `<img src="${usuarioActual.avatar}" class="user-sheet-avatar" alt="avatar">`
+      : `<div class="user-sheet-avatar-placeholder">${letra}</div>`}
+    <div>
+      <div class="user-sheet-name">${usuarioActual.nombre}</div>
+      <div class="user-sheet-email">${usuarioActual.email}</div>
+    </div>`;
+  document.getElementById('userSheetOverlay').classList.add('visible');
+}
+
+function cerrarUserSheet(e) {
+  if (!e || e.target === document.getElementById('userSheetOverlay')) {
+    document.getElementById('userSheetOverlay').classList.remove('visible');
+  }
+}
+
+function abrirMisMateadas() {
+  cerrarUserSheet();
+  mostrarToast('🧉 Próximamente: tus mateadas');
+}
+
+function abrirMisPreguntas() {
+  cerrarUserSheet();
+  mostrarToast('💬 Próximamente: tus preguntas');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  WEB PUSH NOTIFICATIONS
+// ══════════════════════════════════════════════════════════════
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
+  const raw = window.atob(base64);
+  return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
+}
+
+async function suscribirWebPush() {
+  if (!('PushManager' in window) || !('serviceWorker' in navigator)) return;
+  if (VAPID_PUBLIC_KEY === 'TU_VAPID_PUBLIC_KEY') return; // no configurado aún
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) { await guardarSuscripcionBackend(existing); return; }
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    await guardarSuscripcionBackend(sub);
+    mostrarToast('🔔 Notificaciones push activadas');
+  } catch(e) { console.warn('Web Push error:', e); }
+}
+
+async function guardarSuscripcionBackend(subscription) {
+  if (!usuarioActual) return;
+  try {
+    await fetch(`${SCRIPT_URL}?accion=guardarPushSub&usuario_sub=${encodeURIComponent(usuarioActual.sub)}&push_endpoint=${encodeURIComponent(JSON.stringify(subscription))}`);
+  } catch(e) { console.warn('No se pudo guardar suscripción push:', e); }
+}
+
+async function registrarUsuarioBackend() {
+  if (!usuarioActual) return;
+  try {
+    await fetch(`${SCRIPT_URL}?accion=registrarUsuario&sub=${encodeURIComponent(usuarioActual.sub)}&nombre=${encodeURIComponent(usuarioActual.nombre)}&email=${encodeURIComponent(usuarioActual.email)}`);
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+//  NOTIFICACIONES LOCALES (IN-APP)
+// ══════════════════════════════════════════════════════════════
+function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
+  const notif = {
+    id: Date.now(),
+    tipo, // 'pregunta' | 'respuesta' | 'sistema'
+    titulo,
+    cuerpo,
+    mateadaId,
+    leida: false,
+    fecha: new Date().toISOString()
+  };
+  notificaciones.unshift(notif);
+  if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
+  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+  actualizarBellBadge();
+  renderNotifPanel();
+
+  // Web Push nativa del navegador (si la app está en background o minimizada)
+  if (Notification.permission === 'granted') {
+    try {
+      new Notification(titulo, { body: cuerpo, icon: 'icons/icon-152.png', tag: `cebate-${notif.id}` });
+    } catch(e) {}
+  }
+}
+
+function recibirNotificacionSW(data) {
+  // El SW recibió una push del servidor
+  agregarNotificacion(data.tipo || 'sistema', data.titulo, data.cuerpo, data.mateadaId);
+}
+
+function actualizarBellBadge() {
+  unreadCount = notificaciones.filter(n => !n.leida).length;
+  const badge = document.getElementById('bellBadge');
+  if (!badge) return;
+  if (unreadCount > 0) { badge.style.display = 'flex'; badge.textContent = unreadCount > 9 ? '9+' : unreadCount; }
+  else { badge.style.display = 'none'; }
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById('notifList');
+  if (!list) return;
+  if (notificaciones.length === 0) {
+    list.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🔕</div>Sin notificaciones todavía</div>';
+    return;
+  }
+  list.innerHTML = notificaciones.map(n => {
+    const claseExtra = !n.leida ? (n.tipo === 'pregunta' ? 'unread-question' : n.tipo === 'respuesta' ? 'unread-answer' : 'unread') : '';
+    const icono = n.tipo === 'pregunta' ? '❓' : n.tipo === 'respuesta' ? '💬' : '🔔';
+    const fecha = new Date(n.fecha);
+    const timeStr = fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' · ' + fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+    return `<div class="notif-item ${claseExtra}" onclick="clickNotif(${n.id})">
+      <div class="notif-item-title">${icono} ${n.titulo}</div>
+      <div class="notif-item-body">${n.cuerpo}</div>
+      <div class="notif-item-time">${timeStr}</div>
+    </div>`;
+  }).join('');
+}
+
+function clickNotif(id) {
+  const n = notificaciones.find(x => x.id === id);
+  if (!n) return;
+  n.leida = true;
+  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+  actualizarBellBadge();
+  renderNotifPanel();
+  if (n.mateadaId) {
+    const m = mateadasActuales.find(x => x.id == n.mateadaId);
+    if (m) { cerrarNotifPanel(); verDetalle(m); return; }
+  }
+  cerrarNotifPanel();
+}
+
+function abrirNotifPanel() {
+  renderNotifPanel();
+  document.getElementById('notifOverlay').classList.add('visible');
+  document.getElementById('notifPanel').classList.add('open');
+}
+
+function cerrarNotifPanel(e) {
+  if (!e || e.target === document.getElementById('notifOverlay')) {
+    document.getElementById('notifOverlay').classList.remove('visible');
+    document.getElementById('notifPanel').classList.remove('open');
+    // Marcar todo como leído al cerrar
+    notificaciones.forEach(n => n.leida = true);
+    localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+    actualizarBellBadge();
+  }
+}
+
+function limpiarNotificaciones() {
+  notificaciones = [];
+  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+  actualizarBellBadge();
+  renderNotifPanel();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════════
+let _toastTimer = null;
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Q&A CHAT BACKEND (via Apps Script)
+// ══════════════════════════════════════════════════════════════
+
+async function cargarChat(mateadaId) {
+  // Lee preguntas y respuestas del backend
+  try {
+    const r = await fetch(`${SCRIPT_URL}?accion=obtenerChat&mateada_id=${encodeURIComponent(mateadaId)}`);
+    const d = await r.json();
+    return d.success ? (d.chats || []) : [];
+  } catch(e) { return []; }
+}
+
+async function enviarPreguntaBackend(mateadaId, pregunta) {
+  if (!usuarioActual) return { success: false, error: 'No autenticado' };
+  const params = new URLSearchParams({
+    accion: 'enviarPregunta',
+    mateada_id: mateadaId,
+    pregunta: pregunta,
+    usuario_sub: usuarioActual.sub,
+    usuario_nombre: usuarioActual.nombre,
+    usuario_email: usuarioActual.email,
+    usuario_avatar: usuarioActual.avatar || ''
+  });
+  const r = await fetch(`${SCRIPT_URL}?${params}`);
+  return await r.json();
+}
+
+async function enviarRespuestaBackend(chatId, respuesta, mateadaId) {
+  if (!usuarioActual) return { success: false, error: 'No autenticado' };
+  const params = new URLSearchParams({
+    accion: 'responderPregunta',
+    chat_id: chatId,
+    respuesta: respuesta,
+    organizador_sub: usuarioActual.sub,
+    organizador_nombre: usuarioActual.nombre
+  });
+  const r = await fetch(`${SCRIPT_URL}?${params}`);
+  const result = await r.json();
+
+  // Si respondió bien, notificar al que preguntó (localmente; el push al otro usuario va por backend)
+  if (result.success) {
+    // El organizador sabe que respondió → notif local de confirmación
+    agregarNotificacion('respuesta', '✅ Respondiste una pregunta', `Respondiste en: ${mateadaSeleccionada?.titulo || ''}`, mateadaId);
+  }
+  return result;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER CHAT SECTION
+// ══════════════════════════════════════════════════════════════
+async function renderChatSection(mateada, container) {
+  const esOrganizador = usuarioActual && (usuarioActual.sub === mateada.organizador_sub || usuarioActual.nombre === mateada.organizador);
+
+  if (!usuarioActual) {
+    // No logueado
+    container.innerHTML = `
+      <div class="chat-section">
+        <div class="chat-title">💬 Preguntale al organizador</div>
+        <div class="chat-login-prompt">
+          <p>Iniciá sesión con Google para hacer una pregunta al organizador.</p>
+          <button class="btn" onclick="abrirLoginGoogle()" style="margin-top:0; max-width:240px; margin:0 auto; display:block;">🔑 Iniciar sesión</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Cargar chats del backend
+  container.innerHTML = `<div class="chat-section"><div class="chat-title">💬 ${esOrganizador ? 'Preguntas recibidas' : 'Preguntale al organizador'}</div><div style="text-align:center;padding:16px;color:var(--subtexto);font-size:13px;">⏳ Cargando conversación...</div></div>`;
+
+  const chats = await cargarChat(mateada.id);
+
+  // ¿Ya preguntó este usuario?
+  const miPregunta = !esOrganizador ? chats.find(c => c.usuario_sub === usuarioActual.sub) : null;
+
+  let html = `<div class="chat-section">`;
+  html += `<div class="chat-header"><div class="chat-title">💬 ${esOrganizador ? 'Preguntas recibidas' : 'Preguntale al organizador'}</div>`;
+  if (esOrganizador && chats.filter(c => !c.respuesta).length > 0) {
+    html += `<span class="chat-badge-new">${chats.filter(c => !c.respuesta).length} nueva${chats.filter(c => !c.respuesta).length > 1 ? 's' : ''}</span>`;
+  }
+  html += `</div>`;
+
+  if (esOrganizador) {
+    // Vista del organizador: ve todas las preguntas
+    if (chats.length === 0) {
+      html += `<div class="chat-disabled-msg">📭 Aún no hay preguntas para esta mateada.</div>`;
+    } else {
+      chats.forEach(chat => {
+        const letraQ = (chat.usuario_nombre || 'U')[0].toUpperCase();
+        html += `
+          <div class="qa-bubble qa-bubble-question">
+            <div class="qa-bubble-label q">❓ Pregunta</div>
+            <div class="qa-bubble-text">${escHtml(chat.pregunta)}</div>
+            <div class="qa-meta">
+              <div class="qa-meta-avatar-ph">${letraQ}</div>
+              <span>${escHtml(chat.usuario_nombre || 'Alguien')}</span>
+              <span>·</span>
+              <span>${formatFecha(chat.fecha)}</span>
+            </div>
+          </div>`;
+        if (chat.respuesta) {
+          html += `
+            <div class="qa-bubble qa-bubble-answer">
+              <div class="qa-bubble-label a">✅ Tu respuesta</div>
+              <div class="qa-bubble-text">${escHtml(chat.respuesta)}</div>
+              <div class="qa-meta"><span>${formatFecha(chat.fecha_respuesta)}</span></div>
+            </div>`;
+        } else {
+          html += `
+            <div class="chat-input-area">
+              <textarea id="resp-${chat.id}" rows="2" placeholder="Escribí tu respuesta..."></textarea>
+              <button class="chat-send-btn" onclick="submitRespuesta('${chat.id}', '${mateada.id}', this)">✏️ Responder</button>
+            </div>`;
+        }
+      });
+    }
+  } else {
+    // Vista de quien quiere sumarse
+    if (miPregunta) {
+      const letraQ = (miPregunta.usuario_nombre || 'U')[0].toUpperCase();
+      html += `
+        <div class="qa-bubble qa-bubble-question">
+          <div class="qa-bubble-label q">❓ Tu pregunta</div>
+          <div class="qa-bubble-text">${escHtml(miPregunta.pregunta)}</div>
+          <div class="qa-meta">
+            <div class="qa-meta-avatar-ph">${letraQ}</div>
+            <span>${escHtml(miPregunta.usuario_nombre)}</span>
+            <span>·</span><span>${formatFecha(miPregunta.fecha)}</span>
+          </div>
+        </div>`;
+      if (miPregunta.respuesta) {
+        const letraA = (mateada.organizador || 'O')[0].toUpperCase();
+        html += `
+          <div class="qa-bubble qa-bubble-answer">
+            <div class="qa-bubble-label a">💬 Respuesta del organizador</div>
+            <div class="qa-bubble-text">${escHtml(miPregunta.respuesta)}</div>
+            <div class="qa-meta">
+              <div class="qa-meta-avatar-ph" style="background:var(--verde);">${letraA}</div>
+              <span>${escHtml(mateada.organizador)}</span>
+              <span>·</span><span>${formatFecha(miPregunta.fecha_respuesta)}</span>
+            </div>
+          </div>`;
+      } else {
+        html += `<div class="chat-waiting">⏳ Tu pregunta fue enviada. Esperando respuesta del organizador...</div>`;
+      }
+    } else {
+      // Puede hacer una pregunta
+      html += `
+        <div class="chat-input-area">
+          <textarea id="pregunta-input" rows="2" placeholder="Ej: ¿Cuántos mates traen? ¿Hay silla?"></textarea>
+          <button class="chat-send-btn" onclick="submitPregunta('${mateada.id}', this)">📨 Enviar pregunta</button>
+        </div>
+        <div style="font-size:11px;color:var(--subtexto);margin-top:8px;text-align:center;">Una sola pregunta por persona · El organizador verá tu nombre</div>`;
+    }
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatFecha(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' · ' + d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+  } catch(e) { return iso; }
+}
+
+async function submitPregunta(mateadaId, btn) {
+  const textarea = document.getElementById('pregunta-input');
+  if (!textarea) return;
+  const pregunta = textarea.value.trim();
+  if (!pregunta) { mostrarToast('📝 Escribí una pregunta'); return; }
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  try {
+    const result = await enviarPreguntaBackend(mateadaId, pregunta);
+    if (result.success) {
+      mostrarToast('✅ Pregunta enviada al organizador');
+      agregarNotificacion('pregunta', '📨 Pregunta enviada', `Tu pregunta para "${mateadaSeleccionada?.titulo}" fue enviada.`, mateadaId);
+      verDetalle(mateadaSeleccionada);
+    } else {
+      mostrarToast('❌ ' + (result.error || 'Error al enviar'));
+      btn.disabled = false; btn.textContent = '📨 Enviar pregunta';
+    }
+  } catch(e) {
+    mostrarToast('❌ Error de conexión');
+    btn.disabled = false; btn.textContent = '📨 Enviar pregunta';
+  }
+}
+
+async function submitRespuesta(chatId, mateadaId, btn) {
+  const textarea = document.getElementById(`resp-${chatId}`);
+  if (!textarea) return;
+  const respuesta = textarea.value.trim();
+  if (!respuesta) { mostrarToast('✏️ Escribí una respuesta'); return; }
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  try {
+    const result = await enviarRespuestaBackend(chatId, respuesta, mateadaId);
+    if (result.success) {
+      mostrarToast('✅ Respuesta enviada');
+      verDetalle(mateadaSeleccionada);
+    } else {
+      mostrarToast('❌ ' + (result.error || 'Error al responder'));
+      btn.disabled = false; btn.textContent = '✏️ Responder';
+    }
+  } catch(e) {
+    mostrarToast('❌ Error de conexión');
+    btn.disabled = false; btn.textContent = '✏️ Responder';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  POLLING — chequear respuestas nuevas para el usuario logueado
+// ══════════════════════════════════════════════════════════════
+let pollingInterval = null;
+
+function iniciarPolling() {
+  if (pollingInterval) clearInterval(pollingInterval);
+  pollingInterval = setInterval(chequearNotificacionesPendientes, 30000); // cada 30s
+}
+
+async function chequearNotificacionesPendientes() {
+  if (!usuarioActual) return;
+  try {
+    const r = await fetch(`${SCRIPT_URL}?accion=notificacionesPendientes&usuario_sub=${encodeURIComponent(usuarioActual.sub)}`);
+    const d = await r.json();
+    if (!d.success || !d.notificaciones) return;
+    d.notificaciones.forEach(n => {
+      // Evitar duplicados
+      const yaExiste = notificaciones.some(existing => existing.backendId === n.id);
+      if (!yaExiste) {
+        const tipo = n.tipo; // 'pregunta' o 'respuesta'
+        const titulo = tipo === 'respuesta'
+          ? '💬 El organizador respondió tu pregunta'
+          : '❓ Nueva pregunta en tu mateada';
+        const cuerpo = tipo === 'respuesta'
+          ? `Respuesta: "${n.texto}"`
+          : `Pregunta de ${n.autor}: "${n.texto}"`;
+
+        const notif = {
+          id: Date.now() + Math.random(),
+          backendId: n.id,
+          tipo,
+          titulo,
+          cuerpo,
+          mateadaId: n.mateada_id,
+          leida: false,
+          fecha: n.fecha || new Date().toISOString()
+        };
+        notificaciones.unshift(notif);
+        agregarNotificacion(tipo, titulo, cuerpo, n.mateada_id);
+      }
+    });
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════════
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    if (!sessionStorage.getItem('installDismissed')) { setTimeout(() => document.getElementById('installBanner').classList.add('visible'), 2000); }
-});
-document.getElementById('installBtnBanner')?.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    document.getElementById('installBanner').classList.remove('visible');
-});
-document.getElementById('installDismiss')?.addEventListener('click', () => {
-    document.getElementById('installBanner').classList.remove('visible');
-    sessionStorage.setItem('installDismissed', '1');
-});
-window.addEventListener('appinstalled', () => {
-    document.getElementById('installBanner').classList.remove('visible');
-    document.getElementById('iosInstallBtn').style.display = 'none';
-});
-
-if (isIOS && !isInStandaloneMode) {
-    document.getElementById('iosInstallBtn').style.display = 'block';
-    document.getElementById('headerSpacer1').style.display = 'none';
-    if (!sessionStorage.getItem('iosSheetShown')) {
-        setTimeout(() => { document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown', '1'); }, 2500);
-    }
-}
-
-function abrirIosSheet() { document.getElementById('iosSheetOverlay').classList.add('visible'); }
-function cerrarIosSheet(e) { if (!e || e.target === document.getElementById('iosSheetOverlay') || !e.target) { document.getElementById('iosSheetOverlay').classList.remove('visible'); } }
-
 function ajustarSpacer() {
-    const h = document.getElementById('stickyTop').getBoundingClientRect().height;
-    document.getElementById('headerSpacer').style.height = h + 'px';
-    document.documentElement.style.setProperty('--header-h', h + 'px');
+  const h = document.getElementById('stickyTop').getBoundingClientRect().height;
+  document.getElementById('headerSpacer').style.height = h + 'px';
 }
-if (window.ResizeObserver) { new ResizeObserver(ajustarSpacer).observe(document.getElementById('stickyTop')); } else { window.addEventListener('resize', ajustarSpacer); }
-document.addEventListener('DOMContentLoaded', ajustarSpacer);
-window.addEventListener('load', ajustarSpacer);
+if (window.ResizeObserver) { new ResizeObserver(ajustarSpacer).observe(document.getElementById('stickyTop')); }
+else { window.addEventListener('resize', ajustarSpacer); }
 
 function actualizarEstadoRed() { document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine); }
 window.addEventListener('online', actualizarEstadoRed);
@@ -561,330 +1078,312 @@ window.addEventListener('offline', actualizarEstadoRed);
 actualizarEstadoRed();
 
 function duracionTexto(mins) { if (mins == 30) return '30 min'; if (mins == 60) return '1 hora'; if (mins == 120) return '2 horas'; return mins + ' min'; }
-function formatTiempoRestante(msRestante) { if (msRestante <= 0) return 'Terminada'; const s = Math.floor(msRestante / 1000); const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60; if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`; if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`; return `${sec}s`; }
-function haversineKm(lat1, lng1, lat2, lng2) { const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLng = (lng2 - lng1) * Math.PI / 180; const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
+function formatTiempoRestante(ms) { if (ms <= 0) return 'Terminada'; const s = Math.floor(ms/1000), h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60; if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`; if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`; return `${sec}s`; }
+function haversineKm(a,b,c,d) { const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2; return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)); }
 
 function getInicioMs(m) {
-    if (m.timestamp_unix) return parseInt(m.timestamp_unix) * 1000;
-    if (m.timestamp_ms) return parseInt(m.timestamp_ms);
-    if (m.fecha_hora) { const d = new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
-    if (m.fecha && m.hora) { const d = new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
-    if (m.hora) { const [h, min] = m.hora.split(':').map(Number); if (!isNaN(h) && !isNaN(min)) { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, min, 0).getTime(); } }
-    return null;
+  if (m.timestamp_unix) return parseInt(m.timestamp_unix)*1000;
+  if (m.timestamp_ms) return parseInt(m.timestamp_ms);
+  if (m.fecha_hora) { const d=new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
+  if (m.fecha&&m.hora) { const d=new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
+  if (m.hora) { const [h,min]=m.hora.split(':').map(Number); if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); } }
+  return null;
 }
-function estaTerminada(m) { const inicioMs = getInicioMs(m); if (!inicioMs) return false; const durMs = (parseInt(m.duracion_minutos) || 60) * 60 * 1000; return Date.now() > (inicioMs + durMs); }
-function getMsRestante(m) { const inicioMs = getInicioMs(m); if (!inicioMs) return null; const durMs = (parseInt(m.duracion_minutos) || 60) * 60 * 1000; return (inicioMs + durMs) - Date.now(); }
+function estaTerminada(m) { const i=getInicioMs(m); if (!i) return false; return Date.now() > (i + (parseInt(m.duracion_minutos)||60)*60000); }
+function getMsRestante(m) { const i=getInicioMs(m); if (!i) return null; return (i + (parseInt(m.duracion_minutos)||60)*60000) - Date.now(); }
 
-// ─── GEOCODIFICACIÓN ──────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  GEOCODIFICACIÓN Y MAPA SELECTOR
+// ══════════════════════════════════════════════════════════════
 async function geocodificarUbicacion(direccion) {
-    try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}, Argentina&limit=1`;
-        const response = await fetch(url, { headers: { 'Accept-Language': 'es-AR', 'User-Agent': 'MatearApp/1.0' } });
-        const data = await response.json();
-        if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), nombre: data[0].display_name };
-        const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`;
-        const response2 = await fetch(url2, { headers: { 'User-Agent': 'MatearApp/1.0' } });
-        const data2 = await response2.json();
-        if (data2 && data2.length > 0) return { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon), nombre: data2[0].display_name };
-        return null;
-    } catch (error) { console.error('Error geocodificando:', error); return null; }
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}, Argentina&limit=1`, { headers: {'User-Agent':'MatearApp/1.0'} });
+    const d = await r.json();
+    if (d&&d.length>0) return {lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)};
+    const r2 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`, { headers: {'User-Agent':'MatearApp/1.0'} });
+    const d2 = await r2.json();
+    if (d2&&d2.length>0) return {lat:parseFloat(d2[0].lat),lng:parseFloat(d2[0].lon)};
+    return null;
+  } catch(e) { return null; }
 }
 
-// ─── SELECTOR DE UBICACIÓN EN MAPA ────────────────────────
 function abrirSelectorUbicacion() {
-    const modal = document.createElement('div');
-    modal.className = 'map-modal';
-    modal.innerHTML = `
-        <div class="map-modal-header"><span>📍 Seleccioná la ubicación en el mapa</span><button onclick="this.closest('.map-modal').remove()">✕</button></div>
-        <div id="mapaSelectorContainer" class="map-modal-content"></div>
-        <div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>
-    `;
-    document.body.appendChild(modal);
-    setTimeout(() => {
-        const container = document.getElementById('mapaSelectorContainer');
-        if (!container) return;
-        mapaSelector = L.map(container).setView([userLat || -34.5842, userLng || -58.4073], 13);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
-        if (userLat && userLng) { L.marker([userLat, userLng]).addTo(mapaSelector).bindPopup('📍 Tu ubicación actual'); }
-        mapaSelector.on('click', (e) => {
-            if (markerSelector) mapaSelector.removeLayer(markerSelector);
-            markerSelector = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapaSelector);
-            ubicacionSeleccionadaMapa = { lat: e.latlng.lat, lng: e.latlng.lng };
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18&addressdetails=1`)
-                .then(res => res.json()).then(data => {
-                    const direccion = data.display_name?.split(',')[0] || 'Ubicación seleccionada';
-                    document.getElementById('ubicacionMateada').value = direccion;
-                }).catch(() => { document.getElementById('ubicacionMateada').value = `Ubicación en mapa`; });
-        });
-        document.getElementById('confirmarUbicacionBtn').onclick = () => {
-            if (ubicacionSeleccionadaMapa) { modal.remove(); mapaSelector = null; markerSelector = null; alert('✅ Ubicación seleccionada correctamente'); }
-            else { alert('📍 Hacé clic en el mapa para seleccionar la ubicación'); }
-        };
-    }, 100);
-}
-
-// ─── GPS ──────────────────────────────────────────────────
-function pedirUbicacion() {
-    const btn = document.getElementById('gpsBtn');
-    btn.classList.add('locating');
-    if (!navigator.geolocation) { btn.classList.remove('locating'); alert('Tu navegador no soporta geolocalización'); return; }
-    navigator.geolocation.getCurrentPosition(
-        (pos) => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; btn.classList.remove('locating'); btn.textContent = '✅'; actualizarMapaCercano(); },
-        (err) => { btn.classList.remove('locating'); console.warn('GPS error:', err); userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
-        { timeout: 8000, enableHighAccuracy: false }
-    );
-}
-
-// ─── MAPA CERCANO ─────────────────────────────────────────
-function actualizarMapaCercano() {
-    const placeholder = document.getElementById('mapPlaceholder');
-    const pill = document.getElementById('nearbyPill');
-    const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
-    if (vigentes.length === 0) {
-        placeholder.style.display = 'flex'; placeholder.innerHTML = '<span>🧉</span><span>No hay mateadas activas cerca</span>'; pill.style.display = 'none';
-        if (mapaNearby) { nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk)); nearbyMarkers = []; }
-        return;
-    }
-    placeholder.style.display = 'none';
-    let ordenadas = vigentes;
-    if (userLat && userLng) { ordenadas = [...vigentes].sort((a,b) => haversineKm(userLat, userLng, a.latitud, a.longitud) - haversineKm(userLat, userLng, b.latitud, b.longitud)); }
-    const cercana = ordenadas[0];
-    if (!mapaNearby) {
-        mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false, dragging: true, scrollWheelZoom: false }).setView([-34.6, -64.0], 4);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
-    } else { nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk)); nearbyMarkers = []; }
-    const bounds = [];
-    ordenadas.forEach((m, idx) => {
-        const esCercana = (idx === 0);
-        const icon = L.divIcon({ className: '', html: `<div style="background: ${esCercana ? '#0F7B5E' : 'rgba(15,123,94,0.55)'}; color: white; width: ${esCercana ? '38px' : '26px'}; height: ${esCercana ? '38px' : '26px'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: ${esCercana ? '18px' : '13px'}; box-shadow: 0 3px 10px rgba(15,123,94,0.45); border: ${esCercana ? '3px' : '2px'} solid white;">🧉</div>`, iconSize: esCercana ? [38,38] : [26,26], iconAnchor: esCercana ? [19,19] : [13,13] });
-        const msR = getMsRestante(m);
-        const tiempoInfo = msR !== null && msR > 0 ? `⏳ ${formatTiempoRestante(msR)}` : (msR === null ? '' : '✓ Terminada');
-        const popup = L.popup({ closeButton: false }).setContent(`<div style="font-family:'DM Sans',sans-serif;padding:2px 0"><strong style="font-size:13px;color:#2A241A">${m.titulo}</strong><br><span style="font-size:11px;color:#6B5A4B">📍 ${m.ubicacion}</span><br><span style="font-size:11px;color:#0F7B5E">${tiempoInfo}</span></div>`);
-        const mk = L.marker([m.latitud, m.longitud], { icon }).bindPopup(popup).addTo(mapaNearby);
-        mk.on('click', () => verDetalle(m));
-        nearbyMarkers.push(mk);
-        bounds.push([m.latitud, m.longitud]);
+  const modal = document.createElement('div');
+  modal.className = 'map-modal';
+  modal.innerHTML = `<div class="map-modal-header"><span>📍 Seleccioná la ubicación</span><button onclick="this.closest('.map-modal').remove()">✕</button></div><div id="mapaSelectorContainer" class="map-modal-content"></div><div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>`;
+  document.body.appendChild(modal);
+  setTimeout(() => {
+    const c = document.getElementById('mapaSelectorContainer');
+    if (!c) return;
+    mapaSelector = L.map(c).setView([userLat||-34.5842, userLng||-58.4073], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
+    mapaSelector.on('click', (e) => {
+      if (markerSelector) mapaSelector.removeLayer(markerSelector);
+      markerSelector = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapaSelector);
+      ubicacionSeleccionadaMapa = {lat:e.latlng.lat, lng:e.latlng.lng};
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18`)
+        .then(r=>r.json()).then(d=>{document.getElementById('ubicacionMateada').value=d.display_name?.split(',')[0]||'Ubicación seleccionada';}).catch(()=>{});
     });
-    if (userLat && userLng) {
-        const iconUser = L.divIcon({ className: '', html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`, iconSize: [14,14], iconAnchor: [7,7] });
-        const mkUser = L.marker([userLat, userLng], { icon: iconUser }).bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:12px">📍 Vos estás acá</div>').addTo(mapaNearby);
-        nearbyMarkers.push(mkUser);
-        bounds.push([userLat, userLng]);
-    }
-    if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
-    else if (bounds.length > 1) mapaNearby.fitBounds(bounds, { padding: [24,24], maxZoom: 14 });
-    const dist = (userLat && userLng) ? ` · ${haversineKm(userLat, userLng, cercana.latitud, cercana.longitud).toFixed(1)} km` : '';
-    pill.style.display = 'block'; pill.textContent = `📍 ${cercana.titulo}${dist}`;
-    setTimeout(() => mapaNearby?.invalidateSize(), 220);
+    document.getElementById('confirmarUbicacionBtn').onclick = () => {
+      if (ubicacionSeleccionadaMapa) { modal.remove(); mapaSelector=null; markerSelector=null; mostrarToast('✅ Ubicación seleccionada'); }
+      else { mostrarToast('📍 Tocá el mapa para seleccionar'); }
+    };
+  }, 100);
 }
 
-function iniciarCountdown(mateada, fillId, labelId, onTerminada) {
-    const durMs = (parseInt(mateada.duracion_minutos) || 60) * 60 * 1000;
-    function tick() {
-        const fill = document.getElementById(fillId), label = document.getElementById(labelId);
-        if (!fill || !label) { clearInterval(countdownIntervals[mateada.id]); return; }
-        const msRestante = getMsRestante(mateada);
-        if (msRestante === null) { fill.style.width = '100%'; fill.style.background = '#0F7B5E'; label.textContent = duracionTexto(parseInt(mateada.duracion_minutos) || 60); label.style.color = '#0F7B5E'; return; }
-        const pct = Math.max(0, Math.min(1, msRestante / durMs));
-        let color; if (pct > 0.5) color = '#0F7B5E'; else if (pct > 0.25) color = '#D97706'; else color = '#DC2626';
-        fill.style.width = (pct * 100) + '%'; fill.style.background = color;
-        if (msRestante <= 0) { fill.style.width = '0%'; label.textContent = 'Terminada ✓'; label.style.color = '#DC2626'; clearInterval(countdownIntervals[mateada.id]); if (onTerminada) onTerminada(mateada.id); }
-        else { label.textContent = formatTiempoRestante(msRestante); label.style.color = color; }
-    }
-    clearInterval(countdownIntervals[mateada.id]); tick(); countdownIntervals[mateada.id] = setInterval(tick, 1000);
+// ══════════════════════════════════════════════════════════════
+//  GPS
+// ══════════════════════════════════════════════════════════════
+function pedirUbicacion() {
+  const btn = document.getElementById('gpsBtn');
+  btn.classList.add('locating');
+  if (!navigator.geolocation) { btn.classList.remove('locating'); return; }
+  navigator.geolocation.getCurrentPosition(
+    (p) => { userLat=p.coords.latitude; userLng=p.coords.longitude; btn.classList.remove('locating'); btn.textContent='✅'; actualizarMapaCercano(); },
+    () => { btn.classList.remove('locating'); userLat=-34.5842; userLng=-58.4073; actualizarMapaCercano(); },
+    {timeout:8000}
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MAPA CERCANO
+// ══════════════════════════════════════════════════════════════
+function actualizarMapaCercano() {
+  const ph = document.getElementById('mapPlaceholder'), pill = document.getElementById('nearbyPill');
+  const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
+  if (vigentes.length === 0) { ph.style.display='flex'; ph.innerHTML='<span>🧉</span><span>No hay mateadas activas cerca</span>'; pill.style.display='none'; if (mapaNearby){nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk));nearbyMarkers=[];} return; }
+  ph.style.display='none';
+  let ordenadas = userLat&&userLng ? [...vigentes].sort((a,b)=>haversineKm(userLat,userLng,a.latitud,a.longitud)-haversineKm(userLat,userLng,b.latitud,b.longitud)) : vigentes;
+  const cercana = ordenadas[0];
+  if (!mapaNearby) { mapaNearby=L.map('nearbyMap',{zoomControl:false,attributionControl:false,dragging:true,scrollWheelZoom:false}).setView([-34.6,-64.0],4); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby); }
+  else { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; }
+  const bounds=[];
+  ordenadas.forEach((m,i)=>{
+    const esCercana=(i===0);
+    const icon=L.divIcon({className:'',html:`<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.55)'};color:white;width:${esCercana?'38px':'26px'};height:${esCercana?'38px':'26px'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${esCercana?'18px':'13px'};box-shadow:0 3px 10px rgba(15,123,94,0.45);border:${esCercana?'3px':'2px'} solid white;">🧉</div>`,iconSize:esCercana?[38,38]:[26,26],iconAnchor:esCercana?[19,19]:[13,13]});
+    const msR=getMsRestante(m);
+    const mk=L.marker([m.latitud,m.longitud],{icon}).bindPopup(L.popup({closeButton:false}).setContent(`<div style="font-family:'DM Sans',sans-serif;"><strong style="font-size:13px;">${m.titulo}</strong><br><span style="font-size:11px;color:#6B5A4B">📍 ${m.ubicacion}</span></div>`)).addTo(mapaNearby);
+    mk.on('click',()=>verDetalle(m)); nearbyMarkers.push(mk); bounds.push([m.latitud,m.longitud]);
+  });
+  if (userLat&&userLng) { const icoUser=L.divIcon({className:'',html:`<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`,iconSize:[14,14],iconAnchor:[7,7]}); const mkU=L.marker([userLat,userLng],{icon:icoUser}).addTo(mapaNearby); nearbyMarkers.push(mkU); bounds.push([userLat,userLng]); }
+  if (bounds.length===1) mapaNearby.setView(bounds[0],15);
+  else if (bounds.length>1) mapaNearby.fitBounds(bounds,{padding:[24,24],maxZoom:14});
+  const dist=(userLat&&userLng)?` · ${haversineKm(userLat,userLng,cercana.latitud,cercana.longitud).toFixed(1)} km`:'';
+  pill.style.display='block'; pill.textContent=`📍 ${cercana.titulo}${dist}`;
+  setTimeout(()=>mapaNearby?.invalidateSize(),220);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  COUNTDOWN
+// ══════════════════════════════════════════════════════════════
+function iniciarCountdown(m, fillId, labelId, onTerminada) {
+  const durMs=(parseInt(m.duracion_minutos)||60)*60000;
+  function tick() {
+    const fill=document.getElementById(fillId),label=document.getElementById(labelId);
+    if (!fill||!label){clearInterval(countdownIntervals[m.id]);return;}
+    const ms=getMsRestante(m);
+    if (ms===null){fill.style.width='100%';fill.style.background='#0F7B5E';label.textContent=duracionTexto(parseInt(m.duracion_minutos)||60);label.style.color='#0F7B5E';return;}
+    const pct=Math.max(0,Math.min(1,ms/durMs));
+    const color=pct>0.5?'#0F7B5E':pct>0.25?'#D97706':'#DC2626';
+    fill.style.width=(pct*100)+'%';fill.style.background=color;
+    if (ms<=0){fill.style.width='0%';label.textContent='Terminada ✓';label.style.color='#DC2626';clearInterval(countdownIntervals[m.id]);if(onTerminada)onTerminada(m.id);}
+    else{label.textContent=formatTiempoRestante(ms);label.style.color=color;}
+  }
+  clearInterval(countdownIntervals[m.id]);tick();countdownIntervals[m.id]=setInterval(tick,1000);
 }
 
 function mateadaTerminada(id) {
-    const card = document.getElementById(`card-${id}`);
-    if (card) {
-        card.classList.add('expiring');
-        setTimeout(() => { card.remove(); mateadasActuales = mateadasActuales.filter(m => m.id != id); actualizarContador(); if (mateadasActuales.filter(m => !estaTerminada(m)).length === 0) document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); }, 700);
-    }
+  const card=document.getElementById(`card-${id}`);
+  if (card){card.classList.add('expiring');setTimeout(()=>{card.remove();mateadasActuales=mateadasActuales.filter(m=>m.id!=id);actualizarContador();if(mateadasActuales.filter(m=>!estaTerminada(m)).length===0)document.getElementById('homeContent').innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';actualizarMapaCercano();},700);}
 }
-function actualizarContador() { const vigentes = mateadasActuales.filter(m => !estaTerminada(m)).length; document.getElementById('contadorMateadas').textContent = vigentes > 0 ? `${vigentes} activa${vigentes !== 1 ? 's' : ''}` : ''; }
+function actualizarContador(){const v=mateadasActuales.filter(m=>!estaTerminada(m)).length;document.getElementById('contadorMateadas').textContent=v>0?`${v} activa${v!==1?'s':''}`:''}
 
+// ══════════════════════════════════════════════════════════════
+//  CARGAR MATEADAS
+// ══════════════════════════════════════════════════════════════
 async function cargarMateadas() {
-    Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals = {};
-    const container = document.getElementById('homeContent'); container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
-    try {
-        const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
-        const data = await response.json();
-        let todasMateadas = (data.success && data.mateadas) ? data.mateadas : [];
-        mateadasActuales = todasMateadas.filter(m => !estaTerminada(m));
-        actualizarContador();
-        if (mateadasActuales.length === 0) { container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); return; }
-        container.innerHTML = '';
-        mateadasActuales.forEach((m, i) => {
-            const libres = parseInt(m.lugares_libres) || 0, durMins = parseInt(m.duracion_minutos) || 60, fillId = `fill-${m.id}`, labelId = `label-${m.id}`;
-            const card = document.createElement('div'); card.className = 'card'; card.id = `card-${m.id}`; card.style.animationDelay = `${i * 60}ms`; card.onclick = () => verDetalle(m);
-            const tieneCoordenadas = m.latitud && m.latitud !== -34.5842;
-            card.innerHTML = `<div class="card-title">${m.titulo} ${tieneCoordenadas ? '📍' : '⚠️'}</div><div class="card-info"><span>📍 ${m.ubicacion}</span><span>⏰ ${m.hora || 'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres === 0 ? 'lleno' : ''}">${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}</span><span class="organizador-chip">🧑 ${m.organizador}</span></div><a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.ubicacion)}" target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">🗺️ Ver en Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}" style="font-weight:600;">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div></div></div>`;
-            container.appendChild(card);
-            setTimeout(() => { iniciarCountdown(m, fillId, labelId, mateadaTerminada); }, 50);
-        });
-        actualizarMapaCercano();
-    } catch (error) { console.error(error); container.innerHTML = navigator.onLine ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>' : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>'; }
+  Object.values(countdownIntervals).forEach(clearInterval);countdownIntervals={};
+  const container=document.getElementById('homeContent');
+  container.innerHTML='<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+  try {
+    const r=await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+    const data=await r.json();
+    let todas=(data.success&&data.mateadas)?data.mateadas:[];
+    mateadasActuales=todas.filter(m=>!estaTerminada(m));
+    actualizarContador();
+    if (mateadasActuales.length===0){container.innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';actualizarMapaCercano();return;}
+    container.innerHTML='';
+    mateadasActuales.forEach((m,i)=>{
+      const libres=parseInt(m.lugares_libres)||0,durMins=parseInt(m.duracion_minutos)||60,fillId=`fill-${m.id}`,labelId=`label-${m.id}`;
+      const esMia = usuarioActual && (usuarioActual.sub===m.organizador_sub||usuarioActual.nombre===m.organizador);
+      const card=document.createElement('div');card.className='card';card.id=`card-${m.id}`;card.style.animationDelay=`${i*60}ms`;card.onclick=()=>verDetalle(m);
+      card.innerHTML=`<div class="card-title">${m.titulo} ${m.latitud&&m.latitud!=-34.5842?'📍':'⚠️'}</div><div class="card-info"><span>📍 ${m.ubicacion}</span><span>⏰ ${m.hora||'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres===0?'lleno':esMia?'tuya':''}">${libres===0?'🔴 Sin lugares':esMia?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre${libres!==1?'s':''}`}</span><span class="organizador-chip">🧑 ${m.organizador}</span></div><a href="${'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(m.ubicacion)}" target="_blank" rel="noopener" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}" style="font-weight:600;">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}" style="width:100%;background:var(--verde);"></div></div></div>`;
+      container.appendChild(card);
+      setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada),50);
+    });
+    actualizarMapaCercano();
+  } catch(e){container.innerHTML=navigator.onLine?'<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>':'<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>';}
 }
-function recargar() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(() => btn.classList.remove('spinning'), 600); cargarMateadas(); }
 
+function recargar(){const btn=document.getElementById('refreshBtn');btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),600);cargarMateadas();}
+
+// ══════════════════════════════════════════════════════════════
+//  CREAR MATEADA
+// ══════════════════════════════════════════════════════════════
 async function crearMateada() {
-    const organizador = document.getElementById('nombreOrganizador').value.trim();
-    const titulo = document.getElementById('temaMateada').value;
-    const ubicacion = document.getElementById('ubicacionMateada').value.trim();
-    const cupo = parseInt(document.getElementById('cupoMateada').value);
-    const mateOption = document.querySelector('.option-btn.selected');
-    const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
-    const hora = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-    if (!organizador) { alert('Ingresá tu nombre'); return; }
-    if (!ubicacion) { alert('Ingresá la ubicación'); return; }
-    
-    // Guardar nombre del organizador
-    guardarNombreUsuario(organizador);
-    
-    const btn = document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText = 'Buscando ubicación...';
-    let latitud = userLat || -34.5842, longitud = userLng || -58.4073;
-    const coordenadas = await geocodificarUbicacion(ubicacion);
-    if (coordenadas) { latitud = coordenadas.lat; longitud = coordenadas.lng; console.log(`📍 Ubicación encontrada: ${coordenadas.nombre}`); }
-    else { console.warn(`⚠️ No se encontró "${ubicacion}"`); if (!userLat && !userLng) alert(`⚠️ No pudimos ubicar "${ubicacion}". Se usará una ubicación aproximada.`); }
-    btn.innerText = 'Publicando...';
-    try {
-        const params = new URLSearchParams({ accion:'crearMateada', titulo, ubicacion, latitud, longitud, lugares_totales:cupo, organizador, organizador_avatar:organizador.charAt(0).toUpperCase(), descripcion:`Mateada de ${titulo} · ${tipoMate}`, duracion_minutos:duracionSeleccionada, duracion:duracionTexto(duracionSeleccionada), hora, tags:titulo.split(' ')[0] });
-        const response = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await response.json();
-        if (resultado.success) { alert(`✅ ¡Mateada publicada!\n📍 ${ubicacion}\n👥 Cupo: ${cupo} · ⏳ ${duracionTexto(duracionSeleccionada)}`); irInicio(); }
-        else { alert('❌ Error: ' + (resultado.error || 'No se pudo publicar')); }
-    } catch (error) { alert('❌ Error de conexión'); }
-    finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
+  if (!usuarioActual) { abrirLoginGoogle(); mostrarToast('🔑 Iniciá sesión para publicar'); return; }
+  const organizador=document.getElementById('nombreOrganizador').value.trim();
+  const titulo=document.getElementById('temaMateada').value;
+  const ubicacion=document.getElementById('ubicacionMateada').value.trim();
+  const cupo=parseInt(document.getElementById('cupoMateada').value);
+  const mateOption=document.querySelector('.option-btn.selected');
+  const tipoMate=mateOption?mateOption.innerText:'Dulce';
+  const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  if (!organizador){mostrarToast('Ingresá tu nombre');return;}
+  if (!ubicacion){mostrarToast('Ingresá la ubicación');return;}
+
+  const btn=document.getElementById('btnPublicar');btn.classList.add('loading');btn.innerText='Buscando ubicación...';
+  let latitud=userLat||-34.5842, longitud=userLng||-58.4073;
+  const coord=await geocodificarUbicacion(ubicacion);
+  if (coord){latitud=coord.lat;longitud=coord.lng;}
+  btn.innerText='Publicando...';
+  try {
+    const params=new URLSearchParams({accion:'crearMateada',titulo,ubicacion,latitud,longitud,lugares_totales:cupo,organizador,organizador_sub:usuarioActual.sub,organizador_email:usuarioActual.email,organizador_avatar:usuarioActual.avatar||organizador.charAt(0).toUpperCase(),descripcion:`Mateada de ${titulo} · ${tipoMate}`,duracion_minutos:duracionSeleccionada,duracion:duracionTexto(duracionSeleccionada),hora,tags:titulo.split(' ')[0]});
+    const r=await fetch(`${SCRIPT_URL}?${params}`);const resultado=await r.json();
+    if (resultado.success){mostrarToast('✅ ¡Mateada publicada!');irInicio();}
+    else{mostrarToast('❌ '+(resultado.error||'No se pudo publicar'));}
+  } catch(e){mostrarToast('❌ Error de conexión');}
+  finally{btn.classList.remove('loading');btn.innerText='🌿 Publicar mateada';}
 }
 
+// ══════════════════════════════════════════════════════════════
+//  VER DETALLE
+// ══════════════════════════════════════════════════════════════
+async function verDetalle(mateada) {
+  mateadaSeleccionada = mateada;
+  const container = document.getElementById('detailContent');
+  const libres=parseInt(mateada.lugares_libres)||0, ocupados=(parseInt(mateada.lugares_totales)||0)-libres;
+  const durMins=parseInt(mateada.duracion_minutos)||60;
+  const fillId=`detail-fill-${mateada.id}`, labelId=`detail-label-${mateada.id}`;
+  const esOrganizador = usuarioActual && (usuarioActual.sub===mateada.organizador_sub||usuarioActual.nombre===mateada.organizador);
+
+  container.innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title">${mateada.titulo}</div>
+      <span class="badge ${libres===0?'lleno':esOrganizador?'tuya':''}">${libres===0?'🔴 Sin lugares':esOrganizador?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre${libres!==1?'s':''}`}</span>
+    </div>
+    <div class="detail-countdown">
+      <div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div>
+      <div class="bar-track"><div class="bar-fill" id="${fillId}" style="width:100%;background:var(--verde);"></div></div>
+    </div>
+    <div class="map" id="detailMap"></div>
+    <div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;">
+      <div class="detail-row">📍 <strong>${mateada.ubicacion}</strong><a href="${'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(mateada.ubicacion)}" target="_blank" rel="noopener" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div>
+      <div class="detail-row">📋 ${mateada.descripcion||'Compartir mates y buenas charlas'}</div>
+      <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
+      <div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div>
+      <div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div>
+    </div>
+    <div id="chatContainer"></div>
+    ${esOrganizador
+      ? `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Revisá las preguntas arriba y respondelas.</div>`
+      : libres > 0
+        ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`
+        : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`}
+    <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>
+    <div style="height:calc(80px + var(--safe-bottom));"></div>`;
+
+  setNavTitle(mateada.titulo);
+  mostrarScreen('screen-detail');
+
+  setTimeout(() => {
+    iniciarCountdown(mateada, fillId, labelId, (id) => { const l=document.getElementById(labelId); if(l){l.textContent='⏰ Terminada';l.style.color='#DC2626';} });
+    const mapEl=document.getElementById('detailMap');
+    if (mapEl&&mateada.latitud&&mateada.longitud) {
+      if (mapaDetalle){mapaDetalle.remove();mapaDetalle=null;}
+      mapaDetalle=L.map('detailMap').setView([mateada.latitud,mateada.longitud],15);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
+      L.marker([mateada.latitud,mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
+    }
+  }, 150);
+
+  // Cargar chat async
+  const chatDiv = document.getElementById('chatContainer');
+  await renderChatSection(mateada, chatDiv);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  UNIRSE
+// ══════════════════════════════════════════════════════════════
 async function enviarSolicitud() {
-    if (!mateadaSeleccionada) return;
-    const minutos = document.getElementById('tiempoLlegada').value;
-    const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
-    try {
-        const params = new URLSearchParams({ accion:'enviarSolicitud', mateada_id:mateadaSeleccionada.id, usuario_nombre:usuarioActual.nombre || 'Visitante', tiempo_llegada:minutos + ' min' });
-        const response = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await response.json();
-        if (resultado.success) { document.getElementById('tiempoEnviado').innerText = minutos; mostrarScreen('screen-sent'); }
-        else { alert('❌ ' + (resultado.error || 'No se pudo enviar la solicitud')); }
-    } catch (error) { alert('❌ Error de conexión'); }
-    finally { btn.classList.remove('loading'); btn.innerText = '🧉 Quiero sumarme'; }
+  if (!mateadaSeleccionada) return;
+  if (!usuarioActual) { abrirLoginGoogle(); mostrarToast('🔑 Iniciá sesión para sumarte'); return; }
+  const minutos=document.getElementById('tiempoLlegada').value;
+  const btn=document.getElementById('btnUnirse');btn.classList.add('loading');btn.innerText='Enviando...';
+  try {
+    const params=new URLSearchParams({accion:'enviarSolicitud',mateada_id:mateadaSeleccionada.id,usuario_nombre:usuarioActual.nombre,usuario_sub:usuarioActual.sub,usuario_email:usuarioActual.email,tiempo_llegada:minutos+' min'});
+    const r=await fetch(`${SCRIPT_URL}?${params}`);const resultado=await r.json();
+    if (resultado.success){document.getElementById('tiempoEnviado').innerText=minutos;mostrarScreen('screen-sent');}
+    else{mostrarToast('❌ '+(resultado.error||'Error'));}
+  } catch(e){mostrarToast('❌ Error de conexión');}
+  finally{btn.classList.remove('loading');btn.innerText='🧉 Quiero sumarme';}
 }
 
-function verDetalle(mateada) {
-    mateadaSeleccionada = mateada;
-    const container = document.getElementById('detailContent');
-    const libres = parseInt(mateada.lugares_libres) || 0, ocupados = (parseInt(mateada.lugares_totales) || 0) - libres, durMins = parseInt(mateada.duracion_minutos) || 60, fillId = `detail-fill-${mateada.id}`, labelId = `detail-label-${mateada.id}`;
-    
-    // Obtener chat de esta mateada
-    const chat = inicializarChat(mateada.id);
-    const esOrganizador = (usuarioActual.nombre === mateada.organizador);
-    
-    // Construir sección de chat
-    let chatHtml = '';
-    if (!chat.preguntaHecha) {
-        // Mostrar formulario para hacer pregunta (solo si no se ha hecho)
-        if (!esOrganizador) {
-            chatHtml = `
-                <div class="chat-section">
-                    <div class="chat-title">💬 Preguntale algo al organizador</div>
-                    <div class="chat-bubble-question">
-                        <textarea id="preguntaInput" class="chat-input" rows="2" placeholder="Escribí tu pregunta aquí... (máximo 1 pregunta por persona)" style="width:100%; resize:none;"></textarea>
-                        <button class="btn-small" onclick="enviarPregunta('${mateada.id}')" style="margin-top:8px;">📨 Enviar pregunta</button>
-                    </div>
-                </div>
-            `;
-        }
-    } else {
-        // Mostrar pregunta y respuesta si existe
-        chatHtml = `<div class="chat-section"><div class="chat-title">💬 Conversación</div>`;
-        chatHtml += `<div class="chat-bubble-question"><strong>❓ Pregunta:</strong><br>${chat.pregunta}<div class="chat-meta"><span>👤 ${chat.preguntaAutor}</span><span>📅 ${new Date(chat.preguntaFecha).toLocaleString()}</span></div></div>`;
-        if (chat.respondido) {
-            chatHtml += `<div class="chat-bubble-answer"><strong>💬 Respuesta del organizador:</strong><br>${chat.respuesta}<div class="chat-meta"><span>👤 ${chat.respuestaAutor}</span><span>📅 ${new Date(chat.respuestaFecha).toLocaleString()}</span></div></div>`;
-        } else if (esOrganizador && !chat.respondido) {
-            chatHtml += `<div class="chat-bubble"><textarea id="respuestaInput" class="chat-input" rows="2" placeholder="Respondé la pregunta..." style="width:100%; resize:none;"></textarea><button class="btn-small" onclick="enviarRespuesta('${mateada.id}')" style="margin-top:8px;">✏️ Responder pregunta</button></div>`;
-        } else if (!chat.respondido) {
-            chatHtml += `<div class="chat-disabled">⏳ Esperando respuesta del organizador...</div>`;
-        }
-        chatHtml += `</div>`;
-    }
-    
-    container.innerHTML = `<div class="detail-header"><div class="detail-title">${mateada.titulo}</div><span class="badge ${libres === 0 ? 'lleno' : ''}">${libres === 0 ? '🔴 Sin lugares' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre${libres !== 1 ? 's' : ''}`}</span></div><div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ Duración: ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}" style="width:100%; background:var(--verde);"></div></div></div><div class="map" id="detailMap"></div><div style="background:white; border-radius:20px; padding:16px; border:1px solid var(--borde); margin-bottom:12px;"><div class="detail-row">📍 <strong>${mateada.ubicacion}</strong><a href="${'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mateada.ubicacion)}" target="_blank" rel="noopener" class="maps-link" style="margin-top:0; margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${mateada.descripcion || 'Compartir mates y buenas charlas'}</div><div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div><div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div></div>${chatHtml}${libres > 0 ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button><button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>` : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button><button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>`}<div style="height: calc(80px + var(--safe-bottom));"></div>`;
-    setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
-    setTimeout(() => {
-        iniciarCountdown(mateada, fillId, labelId, (id) => { const label = document.getElementById(labelId); if (label) { label.textContent = '⏰ Terminada'; label.style.color = '#DC2626'; } });
-        const mapEl = document.getElementById('detailMap');
-        if (mapEl && mateada.latitud && mateada.longitud) { if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; } mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle); L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle); }
-    }, 150);
+// ══════════════════════════════════════════════════════════════
+//  NAVEGACIÓN
+// ══════════════════════════════════════════════════════════════
+function mostrarUnirse(){document.getElementById('joinInfo').innerHTML=`<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`;setNavTitle('Sumarme');mostrarScreen('screen-join');}
+function volverADetalle(){verDetalle(mateadaSeleccionada);}
+function irInicio(){mostrarScreen('screen-home');document.getElementById('navBar').classList.remove('visible');document.getElementById('mainHeader').style.display='';cargarMateadas();setTimeout(()=>{if(mapaNearby){mapaNearby.invalidateSize();actualizarMapaCercano();}},500);}
+function irACrear(){
+  if (!usuarioActual) {
+    document.getElementById('createLoginGate').style.display='block';
+    document.getElementById('createForm').style.opacity='0.5';
+    document.getElementById('createForm').style.pointerEvents='none';
+  } else {
+    document.getElementById('createLoginGate').style.display='none';
+    document.getElementById('createForm').style.opacity='1';
+    document.getElementById('createForm').style.pointerEvents='';
+    const campo=document.getElementById('nombreOrganizador');
+    if (campo&&!campo.value) campo.value=usuarioActual.nombre.split(' ')[0];
+  }
+  setNavTitle('Nueva mateada');mostrarScreen('screen-create');
 }
+function goBack(){if(document.getElementById('screen-join').classList.contains('active')){verDetalle(mateadaSeleccionada);}else{irInicio();}}
+function setNavTitle(t){document.getElementById('navTitle').innerText=t;}
+function mostrarScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');const isHome=id==='screen-home';document.getElementById('fabBtn').style.display=isHome?'flex':'none';document.getElementById('mainHeader').style.display=isHome?'':'none';document.getElementById('navBar').classList.toggle('visible',!isHome);}
+function seleccionarMate(btn){btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
+function seleccionarDuracion(btn,mins){document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');duracionSeleccionada=mins;}
+document.getElementById('tiempoLlegada').oninput=function(){document.getElementById('tiempoMostrar').innerText=this.value+' minutos';};
 
-function enviarPregunta(mateadaId) {
-    const preguntaInput = document.getElementById('preguntaInput');
-    if (!preguntaInput) return;
-    const pregunta = preguntaInput.value.trim();
-    if (!pregunta) {
-        alert('📝 Escribí una pregunta antes de enviar.');
-        return;
-    }
-    if (!usuarioActual.nombre) {
-        const nombre = prompt('Por favor, ingresá tu nombre para hacer la pregunta:');
-        if (nombre) guardarNombreUsuario(nombre);
-        else return;
-    }
-    if (hacerPregunta(mateadaId, pregunta)) {
-        alert('✅ Pregunta enviada. El organizador te responderá pronto.');
-        verDetalle(mateadaSeleccionada); // Recargar detalle
-    }
-}
+// iOS install
+function abrirIosSheet(){document.getElementById('iosSheetOverlay').classList.add('visible');}
+function cerrarIosSheet(e){if(!e||e.target===document.getElementById('iosSheetOverlay')||!e.target){document.getElementById('iosSheetOverlay').classList.remove('visible');}}
+if (isIOS&&!isInStandaloneMode&&!sessionStorage.getItem('iosSheetShown')){setTimeout(()=>{document.getElementById('iosSheetOverlay').classList.add('visible');sessionStorage.setItem('iosSheetShown','1');},2500);}
 
-function enviarRespuesta(mateadaId) {
-    const respuestaInput = document.getElementById('respuestaInput');
-    if (!respuestaInput) return;
-    const respuesta = respuestaInput.value.trim();
-    if (!respuesta) {
-        alert('✏️ Escribí una respuesta antes de enviar.');
-        return;
-    }
-    if (responderPregunta(mateadaId, respuesta, true)) {
-        alert('✅ Respuesta enviada al usuario.');
-        verDetalle(mateadaSeleccionada); // Recargar detalle
-    }
-}
+// Install banner (Android/Chrome)
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredInstallPrompt=e;if(!sessionStorage.getItem('installDismissed'))setTimeout(()=>document.getElementById('installBanner').classList.add('visible'),2000);});
+document.getElementById('installBtnBanner')?.addEventListener('click',async()=>{if(!deferredInstallPrompt)return;deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;document.getElementById('installBanner').classList.remove('visible');});
+document.getElementById('installDismiss')?.addEventListener('click',()=>{document.getElementById('installBanner').classList.remove('visible');sessionStorage.setItem('installDismissed','1');});
 
-function mostrarUnirse() { 
-    document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; 
-    setNavTitle('Sumarme'); 
-    mostrarScreen('screen-join'); 
-}
-function volverADetalle() { verDetalle(mateadaSeleccionada); }
-function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(() => { if (mapaNearby) { mapaNearby.invalidateSize(); actualizarMapaCercano(); } }, 500); }
-function irACrear() { setNavTitle('Nueva mateada'); mostrarScreen('screen-create'); }
-function goBack() { if (document.getElementById('screen-join').classList.contains('active')) { verDetalle(mateadaSeleccionada); } else { irInicio(); } }
-function setNavTitle(title) { document.getElementById('navTitle').innerText = title; }
-function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); const isHome = id === 'screen-home'; document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none'; document.getElementById('mainHeader').style.display = isHome ? '' : 'none'; document.getElementById('navBar').classList.toggle('visible', !isHome); }
-function seleccionarMate(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
-function seleccionarDuracion(btn, mins) { document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada = mins; }
-document.getElementById('tiempoLlegada').oninput = function() { document.getElementById('tiempoMostrar').innerText = this.value + ' minutos'; };
-window.addEventListener('load', () => { 
-    capturarDatosUsuario();
-    // Cargar nombre guardado
-    const nombreGuardado = localStorage.getItem('usuarioNombre');
-    if (nombreGuardado) {
-        usuarioActual.nombre = nombreGuardado;
-        if (document.getElementById('nombreOrganizador')) {
-            document.getElementById('nombreOrganizador').value = nombreGuardado;
-        }
-    }
-    cargarMateadas(); 
-    if (navigator.geolocation) { 
-        navigator.geolocation.getCurrentPosition( 
-            (pos) => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); }, 
-            () => {}, 
-            { timeout:5000 } 
-        ); 
-    } 
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  inicializarGoogleAuth();
+  actualizarBellBadge();
+  ajustarSpacer();
+  cargarMateadas();
+  iniciarPolling();
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (p)=>{userLat=p.coords.latitude;userLng=p.coords.longitude;document.getElementById('gpsBtn').textContent='✅';actualizarMapaCercano();},
+      ()=>{},
+      {timeout:5000}
+    );
+  }
 });
-function pedirPermisoNotif() { if ('Notification' in window) { Notification.requestPermission(); document.getElementById('notifBanner').classList.remove('visible'); } }
-function descartarNotifBanner() { document.getElementById('notifBanner').classList.remove('visible'); sessionStorage.setItem('notifDismissed', '1'); }
-if (!sessionStorage.getItem('notifDismissed')) { setTimeout(() => document.getElementById('notifBanner')?.classList.add('visible'), 3000); }
 </script>
 </body>
 </html>
