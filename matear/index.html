@@ -24,7 +24,6 @@
       --cta-soft: #EFF6FF;
       --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
       --radius-card: 28px;
-      
       --countdown-green: #10B981;
       --countdown-orange: #F59E0B;
       --countdown-red: #EF4444;
@@ -38,7 +37,6 @@
     @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .content { flex: 1; overflow-y: auto; padding: 20px 20px 80px 20px; scrollbar-width: thin; }
 
-    /* HEADER */
     .header-fixed {
       position: sticky;
       top: 0;
@@ -189,6 +187,7 @@
     .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border-light); }
     .success-anim { text-align: center; padding: 24px; }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+    .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
   </style>
 </head>
 <body>
@@ -216,7 +215,9 @@
   </div>
 
   <div class="screen active" id="screen-home">
-    <div class="content" id="homeContent"></div>
+    <div class="content" id="homeContent">
+      <div class="loading">Cargando mateadas... 🧉</div>
+    </div>
   </div>
 
   <div class="screen" id="screen-detail">
@@ -226,7 +227,7 @@
   <div class="screen" id="screen-join">
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 Estás cerca del parque</div><div class="gps-text">Compartí tu tiempo estimado</div></div></div>
-      <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás caminando?</label><div class="slider-row"><input type="range" id="arrivalRange" min="3" max="40" value="12" step="1"><span id="arrivalValue" style="font-weight:700;color:var(--cta-primary);">12 min</span></div></div>
+      <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás?</label><div class="slider-row"><input type="range" id="arrivalRange" min="3" max="40" value="12" step="1"><span id="arrivalValue" style="font-weight:700;color:var(--cta-primary);">12 min</span></div></div>
       <div style="background:#f7f2ea; border-radius:28px; padding:18px; margin:12px 0 24px;"><div style="font-weight:600;">📋 Tu perfil público</div><div id="perfilPublico">Visitante</div></div>
       <button class="btn-primary" onclick="sendJoinRequest()">🧉 Enviar solicitud</button>
     </div>
@@ -305,104 +306,109 @@
 </div>
 
 <script>
-// ==================== DATOS ====================
-let mateadas = [];
+// ==================== CONFIGURACIÓN ====================
+// 🔴 REEMPLAZÁ ESTA URL CON LA DE TU APPS SCRIPT PUBLICADO 🔴
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec';
+
 let currentMap = null;
 let currentMateada = null;
 
-const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000;
-const UMBRAL_NARANJA_MS = 60 * 60 * 1000;
-const UMBRAL_ROJO_MS = 30 * 60 * 1000;
-
-function isMateadaExpirada(mateada) {
-  if (!mateada.timestamp) return true;
-  return Date.now() > (mateada.timestamp + DURACION_MATEADA_MS);
-}
-
-function getTiempoRestanteMs(mateada) {
-  if (!mateada.timestamp) return 0;
-  return Math.max(0, (mateada.timestamp + DURACION_MATEADA_MS) - Date.now());
-}
-
-function getTiempoRestanteTexto(mateada) {
-  const restanteMs = getTiempoRestanteMs(mateada);
-  if (restanteMs <= 0) return "expiró";
-  const minutos = Math.floor(restanteMs / 60000);
-  if (minutos < 60) return `${minutos} min`;
-  const horas = Math.floor(minutos / 60);
-  const mins = minutos % 60;
-  return `${horas}h ${mins}min`;
-}
-
-function getPorcentajeRestante(mateada) {
-  const restante = getTiempoRestanteMs(mateada);
-  return Math.max(0, Math.min(100, (restante / DURACION_MATEADA_MS) * 100));
-}
-
-function getColorClase(mateada) {
-  const restanteMs = getTiempoRestanteMs(mateada);
-  if (restanteMs <= UMBRAL_ROJO_MS) return 'red';
-  if (restanteMs <= UMBRAL_NARANJA_MS) return 'orange';
-  return 'green';
-}
-
-function limpiarMateadasExpiradas() {
-  const antes = mateadas.length;
-  mateadas = mateadas.filter(m => !isMateadaExpirada(m) && m.estado === 'activa' && m.lugares_libres > 0);
-  if (antes !== mateadas.length) guardarDatosLocales();
-}
-
-function guardarDatosLocales() { 
-  localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas }));
-}
-
-function cargarDatosLocales() {
-  const guardado = localStorage.getItem('matear_datos');
-  if (guardado) {
-    const datos = JSON.parse(guardado);
-    mateadas = datos.mateadas || [];
+// ==================== LLAMADAS A LA API ====================
+async function obtenerMateadas() {
+  try {
+    const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+    const data = await response.json();
+    return data.success ? data.mateadas : [];
+  } catch (error) {
+    console.error('Error al obtener mateadas:', error);
+    return [];
   }
-  if (mateadas.length === 0) {
-    const ahora = Date.now();
-    mateadas = [
-      { id: '1', titulo: '🤝 Emprendedurismo', ubicacion: 'Parque Tres de Febrero', latitud: -34.5735, longitud: -58.4215, lugares_totales: 6, lugares_libres: 2, organizador: 'Luli', organizador_avatar: 'L', descripcion: 'Charlas de negocios', duracion: '1.5 hs', tags: 'networking', estado: 'activa', timestamp: ahora - 1000000 },
-      { id: '2', titulo: '📖 Filosofía', ubicacion: 'Parque Rivadavia', latitud: -34.6170, longitud: -58.4430, lugares_totales: 5, lugares_libres: 1, organizador: 'Matías', organizador_avatar: 'M', descripcion: 'Debate filosófico', duracion: '2 hs', tags: 'filosofía', estado: 'activa', timestamp: ahora - 4000000 }
-    ];
-  }
-  guardarDatosLocales();
 }
 
-// ==================== RENDER HOME ====================
-function renderHome() {
-  limpiarMateadasExpiradas();
+async function crearMateadaEnSheet(mateada) {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mateada)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error al crear mateada:', error);
+    return { success: false };
+  }
+}
+
+async function enviarSolicitudAlSheet(solicitud) {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(solicitud)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error al enviar solicitud:', error);
+    return { success: false };
+  }
+}
+
+// ==================== RENDERIZADO ====================
+async function cargarMateadas() {
   const container = document.getElementById('homeContent');
-  const activas = mateadas.filter(m => m.estado === 'activa' && m.lugares_libres > 0);
-  if (activas.length === 0) {
-    container.innerHTML = '<div class="empty-state">✨ No hay mateadas activas<br>¡Creá la primera!</div>';
+  container.innerHTML = '<div class="loading">Cargando mateadas... 🧉</div>';
+  
+  const mateadas = await obtenerMateadas();
+  
+  if (!mateadas.length) {
+    container.innerHTML = '<div class="empty-state">✨ No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
     return;
   }
-  container.innerHTML = '';
-  activas.forEach(m => {
+  
+  container.innerHTML = `<div class="section-title" style="margin-bottom:12px;">✨ ${mateadas.length} mateadas activas</div>`;
+  
+  mateadas.forEach(m => {
     const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
-    const tiempoRestante = getTiempoRestanteTexto(m);
-    const porcentaje = getPorcentajeRestante(m);
-    const colorClase = getColorClase(m);
+    const badgeText = m.lugares_libres <= 1 ? `${m.lugares_libres} lugar` : `${m.lugares_libres} lugares`;
     
     const card = document.createElement('div');
     card.className = 'mateada-card';
     card.onclick = () => goToDetail(m);
     card.innerHTML = `
-      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">🎟️ ${m.lugares_libres}</span></div>
-      <div class="card-meta">
-        <span class="meta-item">📍 ${m.ubicacion}</span>
-        <span class="meta-item">⏱️ ${tiempoRestante}</span>
-        <span class="meta-item">👥 ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span>
-      </div>
-      <div class="countdown-bar"><div class="countdown-progress ${colorClase}" style="width: ${porcentaje}%;"></div></div>
-      <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate'}</div></div></div>
+      <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">🎟️ ${badgeText}</span></div>
+      <div class="card-meta"><span class="meta-item">📍 ${m.ubicacion}</span><span class="meta-item">⏱️ ${m.hora || 'Ahora'}</span><span class="meta-item">👥 ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
+      <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
     `;
     container.appendChild(card);
   });
+}
+
+function goToDetail(mateada) {
+  currentMateada = mateada;
+  const detailDiv = document.getElementById('detailContent');
+  const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
+  
+  detailDiv.innerHTML = `
+    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">🎟️ ${mateada.lugares_libres} lugares</span><span class="badge badge-gray">${mateada.hora || 'Ahora'} · ${mateada.duracion || '1.5 hs'}</span></div></div>
+    <div id="detailMap" class="map-container-detail"></div>
+    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro en el parque</div></div></div>
+    <div class="detail-section"><div class="section-title">📋 Sobre la mateada</div><div class="detail-row"><span>Descripción</span><strong>${mateada.descripcion || 'Compartir mates y buenas charlas'}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres} de ${mateada.lugares_totales}</strong></div></div>
+    <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">Anfitrión · ${mateada.tags || 'buena onda'}</div></div></div>
+    <button class="btn-primary" onclick="goScreen('screen-join')">🧉 Quiero sumarme</button>
+  `;
+  
+  goScreen('screen-detail');
+  
+  setTimeout(() => {
+    const mapContainer = document.getElementById('detailMap');
+    if (mapContainer && mateada.latitud && mateada.longitud) {
+      if (currentMap) currentMap.remove();
+      currentMap = L.map('detailMap').setView([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], 16);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(currentMap);
+      const icon = L.divIcon({ html: '🧉', iconSize: [28,28], className: 'custom-mate-marker' });
+      L.marker([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], { icon }).addTo(currentMap).bindPopup(mateada.titulo);
+    }
+  }, 80);
 }
 
 // ==================== NAVEGACIÓN ====================
@@ -428,7 +434,6 @@ function actualizarBreadcrumb() {
     if (backBtn) backBtn.style.visibility = 'visible';
   }
   
-  // Mostrar u ocultar botón flotante según la pantalla
   const fabBtn = document.getElementById('fabCreateBtn');
   if (fabBtn) {
     if (currentId === 'screen-create') {
@@ -440,11 +445,10 @@ function actualizarBreadcrumb() {
 }
 
 function irAlInicio() {
-  limpiarMateadasExpiradas();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-home').classList.add('active');
   if (currentMap) { currentMap.remove(); currentMap = null; }
-  renderHome();
+  cargarMateadas();
   actualizarBreadcrumb();
 }
 
@@ -460,48 +464,18 @@ function goToCreate() {
   actualizarBreadcrumb();
 }
 
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  actualizarBreadcrumb();
+}
+
 function irANotificaciones() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-notificaciones').classList.add('active');
-  actualizarBreadcrumb();
+  goScreen('screen-notificaciones');
 }
 
-function goToDetail(mateada) {
-  currentMateada = mateada;
-  const detailDiv = document.getElementById('detailContent');
-  const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
-  const tiempoRestante = getTiempoRestanteTexto(mateada);
-  const colorClase = getColorClase(mateada);
-  const badgeTimeClass = colorClase === 'red' ? 'badge-urgent' : 'badge-time';
-  detailDiv.innerHTML = `
-    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">🎟️ ${mateada.lugares_libres}</span><span class="badge ${badgeTimeClass}">⏳ ${tiempoRestante}</span></div></div>
-    <div id="detailMap" class="map-container-detail"></div>
-    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div></div></div>
-    <div class="detail-section"><div class="detail-row"><span>💬 Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>👥 Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
-    <div class="host-row"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div></div></div>
-    <button class="btn-primary" onclick="irAUnirse()">🧉 Quiero sumarme</button>
-  `;
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-detail').classList.add('active');
-  actualizarBreadcrumb();
-  setTimeout(() => {
-    const mapContainer = document.getElementById('detailMap');
-    if (mapContainer && mateada.latitud && mateada.longitud) {
-      if (currentMap) currentMap.remove();
-      currentMap = L.map('detailMap').setView([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], 16);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(currentMap);
-      L.marker([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], { icon: L.divIcon({ html: '🧉', iconSize: [28,28] }) }).addTo(currentMap).bindPopup(mateada.titulo);
-    }
-  }, 80);
-}
-
-function irAUnirse() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-join').classList.add('active');
-  actualizarBreadcrumb();
-}
-
-function createMateada() {
+// ==================== ACCIONES ====================
+async function createMateada() {
   const organizador = document.getElementById('organizadorNombre')?.value.trim();
   const tema = document.getElementById('eventTopic')?.value;
   const ubicacion = document.getElementById('eventLocation')?.value;
@@ -513,43 +487,53 @@ function createMateada() {
   if (!organizador) { alert('Ingresá tu nombre'); return; }
   if (!tema || !ubicacion) { alert('Completá tema y ubicación'); return; }
   
-  const nueva = {
-    id: Date.now().toString(),
+  const ahora = new Date();
+  const horaFormateada = ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  
+  const nuevaMateada = {
+    accion: 'crearMateada',
     titulo: tema,
     ubicacion: ubicacion,
     latitud: -34.5842,
     longitud: -58.4073,
     lugares_totales: parseInt(maxPersonas),
-    lugares_libres: parseInt(maxPersonas),
     organizador: organizador,
     organizador_avatar: organizador.charAt(0).toUpperCase(),
     descripcion: `Mateada de ${tema} · ${tipoMate}`,
     duracion: duracion,
-    tags: tema.split(' ')[0],
-    estado: 'activa',
-    timestamp: Date.now()
+    hora: horaFormateada,
+    tags: tema.split(' ')[0]
   };
-  mateadas.push(nueva);
-  guardarDatosLocales();
-  alert(`✅ ¡Mateada publicada!\n📌 ${tema}\n👥 Cupo: ${maxPersonas} personas\n⏰ Dura 2 horas`);
-  irAlInicio();
+  
+  const resultado = await crearMateadaEnSheet(nuevaMateada);
+  if (resultado.success) {
+    alert(`✅ ¡Mateada publicada!\n📌 ${tema}\n👥 Cupo: ${maxPersonas} personas`);
+    irAlInicio();
+  } else {
+    alert('❌ Error al publicar. Verificá la conexión con Google Sheets.');
+  }
 }
 
-function sendJoinRequest() {
+async function sendJoinRequest() {
   if (!currentMateada) return;
-  if (currentMateada.lugares_libres <= 0) { alert('No hay lugares disponibles'); return; }
-  if (isMateadaExpirada(currentMateada)) { alert('Esta mateada ya expiró'); irAlInicio(); return; }
+  
   const minutos = document.getElementById('arrivalRange')?.value || 12;
-  const index = mateadas.findIndex(m => m.id === currentMateada.id);
-  if (index !== -1 && mateadas[index].lugares_libres > 0) {
-    mateadas[index].lugares_libres--;
-    guardarDatosLocales();
+  const solicitud = {
+    accion: 'enviarSolicitud',
+    mateada_id: currentMateada.id,
+    usuario_nombre: 'Visitante',
+    usuario_edad: '?',
+    usuario_avatar: '👤',
+    tiempo_llegada: minutos + ' min'
+  };
+  
+  const resultado = await enviarSolicitudAlSheet(solicitud);
+  if (resultado.success) {
+    document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
+    goScreen('screen-sent');
+  } else {
+    alert('No se pudo enviar la solicitud. Tal vez ya no hay lugares.');
   }
-  document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-sent').classList.add('active');
-  actualizarBreadcrumb();
-  renderHome();
 }
 
 function toggleOpt(btn) {
@@ -557,26 +541,21 @@ function toggleOpt(btn) {
   if (parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 }
 
-// Actualización automática cada 5 segundos
-setInterval(() => {
-  limpiarMateadasExpiradas();
-  if (document.querySelector('.screen.active')?.id === 'screen-home') renderHome();
-}, 5000);
-
-cargarDatosLocales();
-renderHome();
-actualizarBreadcrumb();
+// Inicialización
 const arrivalSlider = document.getElementById('arrivalRange');
 if(arrivalSlider) arrivalSlider.addEventListener('input', function() { document.getElementById('arrivalValue').innerText = this.value + ' min'; });
+
+cargarMateadas();
+actualizarBreadcrumb();
 
 window.irAlInicio = irAlInicio;
 window.goBack = goBack;
 window.goToCreate = goToCreate;
+window.goScreen = goScreen;
 window.createMateada = createMateada;
 window.sendJoinRequest = sendJoinRequest;
 window.toggleOpt = toggleOpt;
 window.goToDetail = goToDetail;
-window.irAUnirse = irAUnirse;
 window.irANotificaciones = irANotificaciones;
 </script>
 </body>
