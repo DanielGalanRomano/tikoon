@@ -88,8 +88,7 @@
       font-size: 20px;
       color: var(--text-primary);
     }
-    .user-menu { display: flex; gap: 8px; }
-    .icon-circle {
+    .icon-btn {
       background: #FFFFFF;
       border: 1px solid var(--border-light);
       width: 40px;
@@ -100,21 +99,10 @@
       justify-content: center;
       cursor: pointer;
       color: var(--text-primary);
-      position: relative;
       transition: all 0.2s;
     }
-    .icon-circle:hover { background: #f0f0f0; }
-    .icon-circle i { font-size: 18px; }
-    .badge-dot {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 10px;
-      height: 10px;
-      background: var(--cta-primary);
-      border-radius: 50%;
-      border: 2px solid white;
-    }
+    .icon-btn:hover { background: #f0f0f0; }
+    .icon-btn i { font-size: 18px; }
     
     /* BOTÓN FLOTANTE */
     .fab-create {
@@ -170,11 +158,10 @@
     .badge { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 40px; }
     .badge-green { background: var(--mate-green-soft); color: var(--mate-green); }
     .badge-amber { background: #FBEFE2; color: var(--mate-amber); }
-    .badge-gray { background: #F0EAE2; color: #7F6E5D; }
     .badge-time { background: var(--cta-soft); color: var(--cta-primary); }
     .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
-    .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-secondary); }
-    .meta-item i { font-size: 14px; width: 16px; color: var(--text-secondary); }
+    .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+    .meta-item i { font-size: 13px; width: 16px; color: var(--text-secondary); }
     .host-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; border-top: 1px solid var(--border-light); padding-top: 14px; }
     .avatar { width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; background: #e4f3ed; color: #0F7B5E; flex-shrink: 0; font-size: 16px; }
     .btn-primary { background: var(--cta-primary); color: white; border: none; padding: 15px; border-radius: 60px; font-weight: 600; font-size: 16px; width: 100%; cursor: pointer; transition: 0.2s; }
@@ -196,50 +183,10 @@
     .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border-light); }
     .success-anim { text-align: center; padding: 24px; }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
-    
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 200;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal-sheet {
-      background: white;
-      border-radius: 28px 28px 0 0;
-      width: 100%;
-      max-width: 480px;
-      padding: 24px 20px 32px;
-      animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-    .modal-handle {
-      width: 40px;
-      height: 4px;
-      background: var(--border-light);
-      border-radius: 2px;
-      margin: 0 auto 16px;
-    }
-    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border-light);
-      cursor: pointer;
-    }
-    .menu-item i { font-size: 20px; width: 24px; color: var(--text-secondary); }
-    .menu-item:last-child { border-bottom: none; }
+    .profile-card, .notifications-card { background: white; border-radius: 24px; padding: 20px; margin-bottom: 16px; }
+    .notification-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+    .notification-item:last-child { border-bottom: none; }
+    .notification-icon { width: 40px; height: 40px; background: var(--cta-soft); border-radius: 30px; display: flex; align-items: center; justify-content: center; color: var(--cta-primary); }
   </style>
 </head>
 <body>
@@ -256,14 +203,13 @@
     <div class="nav-bar">
       <button class="back-btn" id="backNavBtn" onclick="goBack()" style="visibility: hidden;">←</button>
       <div></div>
-      <div class="user-menu">
-        <div class="icon-circle" onclick="toggleUserMenu()">
+      <div style="display: flex; gap: 8px;">
+        <button class="icon-btn" onclick="irANotificaciones()">
           <i class="fa-regular fa-bell"></i>
-          <span class="badge-dot" id="notifDot" style="display: none;"></span>
-        </div>
-        <div class="icon-circle" onclick="toggleUserMenu()">
+        </button>
+        <button class="icon-btn" onclick="irAPerfil()">
           <i class="fa-regular fa-user"></i>
-        </div>
+        </button>
       </div>
     </div>
   </div>
@@ -272,14 +218,17 @@
     <span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>
   </div>
 
+  <!-- SCREEN: HOME -->
   <div class="screen active" id="screen-home">
     <div class="content" id="homeContent"></div>
   </div>
 
+  <!-- SCREEN: DETAIL -->
   <div class="screen" id="screen-detail">
     <div class="content" id="detailContent"></div>
   </div>
 
+  <!-- SCREEN: JOIN -->
   <div class="screen" id="screen-join">
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Estás cerca del parque</div><div class="gps-text">Compartí tu tiempo estimado</div></div></div>
@@ -289,10 +238,12 @@
     </div>
   </div>
 
+  <!-- SCREEN: SENT -->
   <div class="screen" id="screen-sent">
     <div class="content"><div class="success-anim"><div style="font-size:68px;">🧉✨</div><div style="font-size:26px; font-weight:700;">¡Listo!</div><div class="success-sub">Le avisamos al organizador que llegás en <strong id="showArrivalMins">12 minutos</strong>.</div></div><button class="btn-secondary" onclick="irAlInicio()">Volver al inicio</button></div>
   </div>
 
+  <!-- SCREEN: CREATE -->
   <div class="screen" id="screen-create">
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
@@ -339,18 +290,61 @@
     </div>
   </div>
 
-  <div id="userMenuModal" class="modal-overlay" onclick="if(event.target===this) toggleUserMenu()">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-title">Menú</div>
-      <div class="menu-item" onclick="verPerfil()"><i class="fa-regular fa-user"></i> Mi perfil</div>
-      <div class="menu-item" onclick="verNotificaciones()"><i class="fa-regular fa-bell"></i> Notificaciones<span id="notifCountBadge" style="background:#2563EB; color:white; border-radius:20px; padding:2px 8px; font-size:11px; margin-left:8px;">0</span></div>
-      <div class="menu-item" onclick="toggleUserMenu()"><i class="fa-solid fa-xmark"></i> Cerrar</div>
+  <!-- SCREEN: PERFIL (página aparte) -->
+  <div class="screen" id="screen-perfil">
+    <div class="content">
+      <div class="profile-card">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+          <div class="avatar" style="width: 70px; height: 70px; font-size: 28px;">CP</div>
+          <div>
+            <div style="font-size: 20px; font-weight: 700;">Camila P.</div>
+            <div style="color: var(--text-secondary);">25 años · Mujer · CABA</div>
+          </div>
+        </div>
+        <div class="detail-row"><span>🍃 Preferencia de mate</span><span>Amargo</span></div>
+        <div class="detail-row"><span>💧 Temperatura del agua</span><span>Muy caliente</span></div>
+        <div class="detail-row"><span>📅 Miembro desde</span><span>Enero 2025</span></div>
+      </div>
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <div style="background:#f3efe9; padding:16px; border-radius:28px; flex:1; text-align:center;">
+          <div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsMateadas">0</div>
+          <div style="font-size:12px; color:var(--text-secondary);">mateadas asistidas</div>
+        </div>
+        <div style="background:#f3efe9; padding:16px; border-radius:28px; flex:1; text-align:center;">
+          <div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsOrganizadas">0</div>
+          <div style="font-size:12px; color:var(--text-secondary);">mateadas organizadas</div>
+        </div>
+      </div>
+      <button class="btn-secondary" onclick="irAlInicio()">← Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: NOTIFICACIONES (página aparte) -->
+  <div class="screen" id="screen-notificaciones">
+    <div class="content">
+      <div class="notifications-card">
+        <div style="font-weight: 700; margin-bottom: 16px; font-size: 16px;">🔔 Notificaciones</div>
+        <div id="notificacionesLista">
+          <div class="notification-item">
+            <div class="notification-icon"><i class="fa-regular fa-user-plus"></i></div>
+            <div><div style="font-weight: 600;">Camila quiere sumarse</div><div style="font-size: 12px; color: var(--text-secondary);">Hace 5 minutos</div></div>
+          </div>
+          <div class="notification-item">
+            <div class="notification-icon"><i class="fa-regular fa-check-circle"></i></div>
+            <div><div style="font-weight: 600;">¡Tu solicitud fue aceptada!</div><div style="font-size: 12px; color: var(--text-secondary);">Mateada de Filosofía</div></div>
+          </div>
+          <div class="notification-item">
+            <div class="notification-icon"><i class="fa-regular fa-clock"></i></div>
+            <div><div style="font-weight: 600;">Mateada cerca de tu zona</div><div style="font-size: 12px; color: var(--text-secondary);">Parque Las Heras - Hoy 17:00</div></div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-secondary" onclick="irAlInicio()">← Volver al inicio</button>
     </div>
   </div>
 
   <button class="fab-create" onclick="goToCreate()">
-    <i class="fa-solid fa-plus" style="font-size: 16px;"></i> Crear mateada
+    <i class="fa-solid fa-plus"></i> Crear mateada
   </button>
 </div>
 
@@ -360,25 +354,19 @@ let mateadas = [];
 let currentMap = null;
 let currentMateada = null;
 
-// Duración de una mateada: 2 horas (en milisegundos)
 const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000;
 
-// Verificar si una mateada ya expiró
 function isMateadaExpirada(mateada) {
   if (!mateada.timestamp) return true;
-  const ahora = Date.now();
-  const expiracion = mateada.timestamp + DURACION_MATEADA_MS;
-  return ahora > expiracion;
+  return Date.now() > (mateada.timestamp + DURACION_MATEADA_MS);
 }
 
-// Limpiar mateadas expiradas
 function limpiarMateadasExpiradas() {
   const antes = mateadas.length;
   mateadas = mateadas.filter(m => !isMateadaExpirada(m) && m.estado === 'activa' && m.lugares_libres > 0);
   if (antes !== mateadas.length) guardarDatosLocales();
 }
 
-// Cargar datos guardados
 function cargarDatosLocales() {
   const guardado = localStorage.getItem('matear_datos');
   if (guardado) {
@@ -395,15 +383,20 @@ function cargarDatosLocales() {
     ];
   }
   guardarDatosLocales();
+  actualizarEstadisticas();
 }
+
+function actualizarEstadisticas() {
+  const misMateadas = mateadas.filter(m => m.organizador === 'Camila P.').length;
+  document.getElementById('statsMateadas').innerText = mateadas.length;
+  document.getElementById('statsOrganizadas').innerText = misMateadas;
+}
+
 function guardarDatosLocales() { localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas })); }
 
-// Calcular tiempo restante
 function getTiempoRestante(mateada) {
   if (!mateada.timestamp) return "expiró";
-  const ahora = Date.now();
-  const expiracion = mateada.timestamp + DURACION_MATEADA_MS;
-  const restante = expiracion - ahora;
+  const restante = (mateada.timestamp + DURACION_MATEADA_MS) - Date.now();
   if (restante <= 0) return "expiró";
   const minutos = Math.floor(restante / 60000);
   if (minutos < 60) return `${minutos} min`;
@@ -416,19 +409,23 @@ function getTiempoRestante(mateada) {
 function actualizarBreadcrumb() {
   const container = document.getElementById('breadcrumbContainer');
   const backBtn = document.getElementById('backNavBtn');
-  const currentScreenId = document.querySelector('.screen.active')?.id;
+  const currentId = document.querySelector('.screen.active')?.id;
   
-  if (currentScreenId === 'screen-home') {
+  const nombres = {
+    'screen-home': 'Inicio',
+    'screen-detail': 'Detalle',
+    'screen-create': 'Crear mateada',
+    'screen-join': 'Sumarse',
+    'screen-sent': 'Solicitud enviada',
+    'screen-perfil': 'Mi perfil',
+    'screen-notificaciones': 'Notificaciones'
+  };
+  
+  if (currentId === 'screen-home') {
     container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span>`;
     if (backBtn) backBtn.style.visibility = 'hidden';
   } else {
-    let nombrePantalla = '';
-    if (currentScreenId === 'screen-detail') nombrePantalla = 'Detalle';
-    else if (currentScreenId === 'screen-create') nombrePantalla = 'Crear mateada';
-    else if (currentScreenId === 'screen-join') nombrePantalla = 'Sumarse';
-    else if (currentScreenId === 'screen-sent') nombrePantalla = 'Solicitud enviada';
-    else nombrePantalla = '...';
-    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span><span class="breadcrumb-separator">›</span><span class="breadcrumb-current">${nombrePantalla}</span>`;
+    container.innerHTML = `<span class="breadcrumb-item" onclick="irAlInicio()">Inicio</span><span class="breadcrumb-separator">›</span><span class="breadcrumb-current">${nombres[currentId] || '...'}</span>`;
     if (backBtn) backBtn.style.visibility = 'visible';
   }
 }
@@ -440,6 +437,7 @@ function irAlInicio() {
   if (currentMap) { currentMap.remove(); currentMap = null; }
   renderHome();
   actualizarBreadcrumb();
+  actualizarEstadisticas();
 }
 
 function goBack() {
@@ -451,7 +449,19 @@ function goBack() {
 function goToCreate() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-create').classList.add('active');
-  if (currentMap) { currentMap.remove(); currentMap = null; }
+  actualizarBreadcrumb();
+}
+
+function irAPerfil() {
+  actualizarEstadisticas();
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-perfil').classList.add('active');
+  actualizarBreadcrumb();
+}
+
+function irANotificaciones() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-notificaciones').classList.add('active');
   actualizarBreadcrumb();
 }
 
@@ -461,12 +471,12 @@ function goToDetail(mateada) {
   const badgeClass = mateada.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
   const tiempoRestante = getTiempoRestante(mateada);
   detailDiv.innerHTML = `
-    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares</span><span class="badge badge-time">⌛ ${tiempoRestante}</span></div></div>
+    <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares</span><span class="badge badge-time"><i class="fa-regular fa-hourglass-half"></i> ${tiempoRestante}</span></div></div>
     <div id="detailMap" class="map-container-detail"></div>
-    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro</div></div></div>
-    <div class="detail-section"><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
+    <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place"><i class="fa-regular fa-location-dot"></i> ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro</div></div></div>
+    <div class="detail-section"><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Participantes</span><strong><i class="fa-regular fa-user-group"></i> ${mateada.lugares_totales - mateada.lugares_libres}/${mateada.lugares_totales}</strong></div></div>
     <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">${mateada.tags || 'Anfitrión'}</div></div></div>
-    <button class="btn-primary" onclick="irAUnirse()">🧉 Quiero sumarme</button>
+    <button class="btn-primary" onclick="irAUnirse()"><i class="fa-regular fa-mug-hot"></i> Quiero sumarme</button>
   `;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-detail').classList.add('active');
@@ -506,7 +516,7 @@ function renderHome() {
     card.onclick = () => goToDetail(m);
     card.innerHTML = `
       <div class="card-header"><div class="card-topic">${m.titulo}</div><span class="badge ${badgeClass}">${m.lugares_libres} lugares</span></div>
-      <div class="card-meta"><span class="meta-item"><i class="fa-regular fa-map-pin"></i> ${m.ubicacion}</span><span class="meta-item"><i class="fa-regular fa-clock"></i> ⌛ ${tiempoRestante}</span><span class="meta-item"><i class="fa-regular fa-user-group"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
+      <div class="card-meta"><span class="meta-item"><i class="fa-regular fa-location-dot"></i> ${m.ubicacion}</span><span class="meta-item"><i class="fa-regular fa-clock"></i> ${tiempoRestante}</span><span class="meta-item"><i class="fa-regular fa-user-group"></i> ${m.lugares_totales - m.lugares_libres}/${m.lugares_totales}</span></div>
       <div class="host-row"><div class="avatar">${m.organizador_avatar || m.organizador.charAt(0)}</div><div><div class="host-name">${m.organizador}</div><div class="host-tags">${m.tags || 'Mate tradicional'}</div></div></div>
     `;
     container.appendChild(card);
@@ -560,6 +570,7 @@ function sendJoinRequest() {
   document.getElementById('screen-sent').classList.add('active');
   actualizarBreadcrumb();
   renderHome();
+  actualizarEstadisticas();
 }
 
 function toggleOpt(btn) {
@@ -567,17 +578,11 @@ function toggleOpt(btn) {
   if (parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 }
 
-function toggleUserMenu() { document.getElementById('userMenuModal').classList.toggle('active'); }
-function verPerfil() { toggleUserMenu(); alert('👤 Perfil: Camila · 25 años · Mate amargo'); }
-function verNotificaciones() { toggleUserMenu(); alert('🔔 No tenés notificaciones nuevas'); }
-
-// Actualización automática cada 30 segundos
 setInterval(() => {
   limpiarMateadasExpiradas();
   if (document.querySelector('.screen.active')?.id === 'screen-home') renderHome();
 }, 30000);
 
-// Inicialización
 cargarDatosLocales();
 renderHome();
 actualizarBreadcrumb();
@@ -592,9 +597,8 @@ window.sendJoinRequest = sendJoinRequest;
 window.toggleOpt = toggleOpt;
 window.goToDetail = goToDetail;
 window.irAUnirse = irAUnirse;
-window.toggleUserMenu = toggleUserMenu;
-window.verPerfil = verPerfil;
-window.verNotificaciones = verNotificaciones;
+window.irAPerfil = irAPerfil;
+window.irANotificaciones = irANotificaciones;
 </script>
 </body>
 </html>
