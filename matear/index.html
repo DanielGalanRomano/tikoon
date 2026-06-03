@@ -76,7 +76,6 @@
     .success-anim { text-align: center; padding: 24px; }
     .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
-    .topic-badge { background: #e4f3ed; color: #0F7B5E; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -92,9 +91,7 @@
       <button class="nav-tab active">Mateadas</button>
       <button class="nav-tab" onclick="goScreen('screen-create')">+ Crear</button>
     </div>
-    <div class="content" id="homeContent">
-      <div class="loading">Cargando mateadas... 🧉</div>
-    </div>
+    <div class="content" id="homeContent"></div>
     <div class="bottomnav">
       <button class="bnav-item active"><i class="ti ti-home"></i><span>Inicio</span></button>
       <button class="bnav-item" onclick="goScreen('screen-profile')"><i class="ti ti-user"></i><span>Perfil</span></button>
@@ -129,13 +126,12 @@
     <div class="content"><div class="notification-item" id="notifRequestItem"><div class="avatar">CP</div><div><div class="notif-title">Camila quiere sumarse</div><div class="notif-sub">A tu mateada</div><div class="accept-reject"><button class="btn-accept" onclick="acceptJoinRequest()">Aceptar</button><button class="btn-secondary" style="padding:8px 16px;">Rechazar</button></div></div></div></div>
   </div>
 
-  <!-- SCREEN: CREATE con DROPDOWNS de temas y participantes -->
+  <!-- SCREEN: CREATE con DROPDOWNS -->
   <div class="screen" id="screen-create">
     <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Nueva mateada</div><div style="width:44px;"></div></div>
     <div class="content">
       <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">Parque Las Heras</div><div>GPS detectó tu ubicación</div></div></div>
       
-      <!-- TEMA: DROPDOWN con 20 opciones predefinidas -->
       <div class="form-group">
         <label class="form-label">🎯 Tema de conversación</label>
         <select id="eventTopic" class="form-select">
@@ -162,13 +158,11 @@
         </select>
       </div>
       
-      <!-- UBICACIÓN -->
       <div class="form-group">
-        <label class="form-label">📍 Ubicación (parque o punto de encuentro)</label>
-        <input class="form-input" id="eventLocation" placeholder="Ej: Parque Las Heras, Palermo" value="Parque Las Heras">
+        <label class="form-label">📍 Ubicación</label>
+        <input class="form-input" id="eventLocation" placeholder="Parque, plaza" value="Parque Las Heras">
       </div>
       
-      <!-- FORMA DE TOMAR MATE -->
       <div class="form-group">
         <label class="form-label">🧉 ¿Cómo tomás el mate?</label>
         <div class="option-grid">
@@ -177,34 +171,21 @@
         </div>
       </div>
       
-      <!-- CANTIDAD DE PARTICIPANTES: DROPDOWN (de 2 a 20 personas) -->
       <div class="form-group">
         <label class="form-label">👥 Cantidad máxima de participantes</label>
         <select id="maxPeopleSelect" class="form-select">
-          <option value="2">2 personas</option>
-          <option value="3">3 personas</option>
-          <option value="4">4 personas</option>
-          <option value="5">5 personas</option>
-          <option value="6" selected>6 personas</option>
-          <option value="7">7 personas</option>
-          <option value="8">8 personas</option>
-          <option value="9">9 personas</option>
-          <option value="10">10 personas</option>
-          <option value="12">12 personas</option>
-          <option value="15">15 personas</option>
-          <option value="20">20 personas</option>
+          <option value="2">2 personas</option><option value="3">3 personas</option><option value="4">4 personas</option>
+          <option value="5">5 personas</option><option value="6" selected>6 personas</option><option value="7">7 personas</option>
+          <option value="8">8 personas</option><option value="9">9 personas</option><option value="10">10 personas</option>
+          <option value="12">12 personas</option><option value="15">15 personas</option><option value="20">20 personas</option>
         </select>
       </div>
       
-      <!-- DURACIÓN (dropdown) -->
       <div class="form-group">
-        <label class="form-label">⏰ Duración del encuentro</label>
+        <label class="form-label">⏰ Duración</label>
         <select id="eventDuration" class="form-select">
-          <option value="30 min">30 minutos</option>
-          <option value="1 hora">1 hora</option>
-          <option value="1.5 hs" selected>1 hora y media</option>
-          <option value="2 hs">2 horas</option>
-          <option value="3 hs">3 horas o más</option>
+          <option value="30 min">30 minutos</option><option value="1 hora">1 hora</option>
+          <option value="1.5 hs" selected>1 hora y media</option><option value="2 hs">2 horas</option><option value="3 hs">3 horas</option>
         </select>
       </div>
       
@@ -212,7 +193,6 @@
     </div>
   </div>
 
-  <!-- SCREEN: Profile -->
   <div class="screen" id="screen-profile">
     <div class="topbar"><button class="back-btn" onclick="goScreen('screen-home')"><i class="ti ti-arrow-left"></i></button><div class="topbar-title">Mi perfil</div><div style="width:44px;"></div></div>
     <div class="content"><div style="display:flex; gap:16px;"><div class="avatar" style="width:70px;height:70px;font-size:28px;">CP</div><div><div style="font-size:20px;font-weight:700;">Camila P.</div><div>25 · Mujer · CABA</div></div></div><div style="margin:20px 0;"><div>🍃 Preferencias: Mate amargo, agua muy caliente</div></div><div style="display:flex; gap:12px;"><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsMateadas">0</div><div>mateadas</div></div><div style="background:#f3efe9; padding:12px; border-radius:28px; flex:1; text-align:center;"><div style="font-size:28px; font-weight:700; color:#0F7B5E;" id="statsOrganizadas">0</div><div>organizadas</div></div></div><button class="btn-secondary">Editar perfil</button></div>
@@ -220,68 +200,120 @@
 </div>
 
 <script>
-// ==================== CONFIGURACIÓN ====================
-// 🔴 REEMPLAZÁ ESTA URL CON LA DE TU APPS SCRIPT PUBLICADO 🔴
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwtJ_d0Kilm1T2_XFTCUeyH2bkJnxkJAspVBDI5GnYLAlWgkxA-uqY5gG8VFWfHiw/exec';
-
+// ==================== DATOS LOCALES (sin Google Sheets) ====================
+let mateadas = [];
 let currentMap = null;
 let currentMateada = null;
+let solicitudesPendientes = [];
 
-// ==================== LLAMADAS A LA API ====================
-async function obtenerMateadas() {
-  try {
-    const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
-    const data = await response.json();
-    return data.success ? data.mateadas : [];
-  } catch (error) {
-    console.error('Error:', error);
-    return [];
+// Cargar datos guardados en localStorage
+function cargarDatosLocales() {
+  const guardado = localStorage.getItem('matear_datos');
+  if (guardado) {
+    const datos = JSON.parse(guardado);
+    mateadas = datos.mateadas || [];
+    solicitudesPendientes = datos.solicitudesPendientes || [];
   }
+  
+  // Si no hay datos, cargar mateadas de ejemplo
+  if (mateadas.length === 0) {
+    mateadas = [
+      {
+        id: '1',
+        titulo: '🤝 Emprendedurismo y freelance',
+        ubicacion: 'Parque Tres de Febrero',
+        latitud: -34.5735,
+        longitud: -58.4215,
+        lugares_totales: 6,
+        lugares_libres: 2,
+        organizador: 'Luli, 28',
+        organizador_avatar: 'LM',
+        descripcion: 'Charlas de negocios y ronda de mates amargos',
+        duracion: '1.5 hs',
+        hora: '17:00',
+        tags: 'networking, emprendedores',
+        estado: 'activa'
+      },
+      {
+        id: '2',
+        titulo: '📖 Filosofía y vida cotidiana',
+        ubicacion: 'Parque Rivadavia',
+        latitud: -34.6170,
+        longitud: -58.4430,
+        lugares_totales: 5,
+        lugares_libres: 1,
+        organizador: 'Matías, 34',
+        organizador_avatar: 'MP',
+        descripcion: 'Debate filosófico + mate dulce',
+        duracion: '2 hs',
+        hora: '18:30',
+        tags: 'filosofía, debate',
+        estado: 'activa'
+      },
+      {
+        id: '3',
+        titulo: '💻 Tecnología e inteligencia artificial',
+        ubicacion: 'Parque Centenario',
+        latitud: -34.6055,
+        longitud: -58.4345,
+        lugares_totales: 6,
+        lugares_libres: 4,
+        organizador: 'Sofía, 26',
+        organizador_avatar: 'SR',
+        descripcion: 'Networking tech, IA y desarrollo',
+        duracion: '1.5 hs',
+        hora: '19:00',
+        tags: 'tecnología, ia',
+        estado: 'activa'
+      },
+      {
+        id: '4',
+        titulo: '🌳 Mates & Cuentos · Parque Las Heras',
+        ubicacion: 'Parque Las Heras',
+        latitud: -34.5842,
+        longitud: -58.4073,
+        lugares_totales: 8,
+        lugares_libres: 5,
+        organizador: 'Juan, 31',
+        organizador_avatar: 'JV',
+        descripcion: 'Círculo de cuentos e historias',
+        duracion: '2 hs',
+        hora: '16:30',
+        tags: 'cuentos, literatura',
+        estado: 'activa'
+      }
+    ];
+  }
+  
+  actualizarEstadisticas();
 }
 
-async function crearMateadaEnSheet(mateada) {
-  try {
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mateada)
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('Error:', error);
-    return { success: false };
-  }
+function guardarDatosLocales() {
+  localStorage.setItem('matear_datos', JSON.stringify({
+    mateadas: mateadas,
+    solicitudesPendientes: solicitudesPendientes
+  }));
 }
 
-async function enviarSolicitudAlSheet(solicitud) {
-  try {
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(solicitud)
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('Error:', error);
-    return { success: false };
-  }
+function actualizarEstadisticas() {
+  const misMateadas = mateadas.filter(m => m.organizador === 'Camila P.').length;
+  document.getElementById('statsMateadas').innerText = mateadas.length;
+  document.getElementById('statsOrganizadas').innerText = misMateadas;
 }
 
 // ==================== RENDERIZADO ====================
-async function cargarMateadas() {
+function renderHome() {
   const container = document.getElementById('homeContent');
-  container.innerHTML = '<div class="loading">Cargando mateadas... 🧉</div>';
+  const mateadasActivas = mateadas.filter(m => m.estado === 'activa' && m.lugares_libres > 0);
   
-  const mateadas = await obtenerMateadas();
-  
-  if (!mateadas.length) {
+  if (mateadasActivas.length === 0) {
     container.innerHTML = '<div class="empty-state">✨ No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
     return;
   }
   
-  container.innerHTML = `<div class="section-title" style="margin-bottom:12px;">✨ ${mateadas.length} mateadas activas</div>`;
+  container.innerHTML = `<div class="section-title" style="margin-bottom:12px;">✨ ${mateadasActivas.length} mateadas activas</div>`;
   
-  mateadas.forEach(m => {
+  mateadasActivas.forEach(m => {
     const badgeClass = m.lugares_libres <= 1 ? 'badge-amber' : 'badge-green';
     const badgeText = m.lugares_libres <= 1 ? `${m.lugares_libres} lugar` : `${m.lugares_libres} lugares`;
     
@@ -306,7 +338,7 @@ function goToDetail(mateada) {
     <div style="margin-bottom:12px;"><div style="font-size:26px; font-weight:700;">${mateada.titulo}</div><div class="card-meta"><span class="badge ${badgeClass}">${mateada.lugares_libres} lugares libres</span><span class="badge badge-gray">${mateada.hora} · ${mateada.duracion}</span></div></div>
     <div id="detailMap" class="map-container-detail"></div>
     <div class="gps-box"><div class="gps-dot"></div><div><div class="gps-place">📍 ${mateada.ubicacion}</div><div class="gps-text">Punto de encuentro en el parque</div></div></div>
-    <div class="detail-section"><div class="section-title">📋 Sobre la mateada</div><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Descripción</span><strong>${mateada.descripcion || 'Compartir mates y buenas charlas'}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres} de ${mateada.lugares_totales}</strong></div></div>
+    <div class="detail-section"><div class="section-title">📋 Sobre la mateada</div><div class="detail-row"><span>Tema</span><strong>${mateada.titulo}</strong></div><div class="detail-row"><span>Descripción</span><strong>${mateada.descripcion}</strong></div><div class="detail-row"><span>Participantes</span><strong>${mateada.lugares_totales - mateada.lugares_libres} de ${mateada.lugares_totales}</strong></div></div>
     <div class="host-row" style="border:none;"><div class="avatar">${mateada.organizador_avatar || mateada.organizador.charAt(0)}</div><div><div class="host-name">${mateada.organizador}</div><div class="host-tags">Anfitrión · ${mateada.tags || 'buena onda'}</div></div></div>
     <button class="btn-primary" onclick="goScreen('screen-join')">🧉 Quiero sumarme</button>
   `;
@@ -325,15 +357,12 @@ function goToDetail(mateada) {
   }, 80);
 }
 
-// ==================== ACCIONES CON DROPDOWNS ====================
-async function createMateada() {
-  // Obtener valores de los dropdowns
+// ==================== ACCIONES ====================
+function createMateada() {
   const tema = document.getElementById('eventTopic')?.value;
   const ubicacion = document.getElementById('eventLocation')?.value;
   const maxPersonas = document.getElementById('maxPeopleSelect')?.value;
   const duracion = document.getElementById('eventDuration')?.value;
-  
-  // Obtener preferencia de mate (amargo/dulce)
   const mateOption = document.querySelector('.option-btn.selected');
   const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
   
@@ -343,50 +372,51 @@ async function createMateada() {
   }
   
   const nuevaMateada = {
-    accion: 'crearMateada',
+    id: Date.now().toString(),
     titulo: tema,
     ubicacion: ubicacion,
     latitud: -34.5842,
     longitud: -58.4073,
     lugares_totales: parseInt(maxPersonas),
+    lugares_libres: parseInt(maxPersonas),
     organizador: 'Camila P.',
     organizador_avatar: 'CP',
     descripcion: `Mateada de ${tema} · ${tipoMate === 'Amargo' ? 'Mate amargo' : 'Mate dulce'}`,
     duracion: duracion,
     hora: '18:00',
-    tags: `${tema.split(' ')[0]}, mates, encuentro`
+    tags: tema.split(' ')[0],
+    estado: 'activa'
   };
   
-  const resultado = await crearMateadaEnSheet(nuevaMateada);
-  if (resultado.success) {
-    alert(`✅ ¡Mateada publicada!\n\n📌 Tema: ${tema}\n👥 Cupo: ${maxPersonas} personas\n📍 ${ubicacion}`);
-    goScreen('screen-home');
-    cargarMateadas();
-  } else {
-    alert('❌ Error al publicar. Verificá la conexión con Google Sheets.');
-  }
+  mateadas.push(nuevaMateada);
+  guardarDatosLocales();
+  actualizarEstadisticas();
+  
+  alert(`✅ ¡Mateada publicada!\n\n📌 Tema: ${tema}\n👥 Cupo: ${maxPersonas} personas\n📍 ${ubicacion}`);
+  goScreen('screen-home');
+  renderHome();
 }
 
-async function sendJoinRequest() {
+function sendJoinRequest() {
   if (!currentMateada) return;
   
-  const minutos = document.getElementById('arrivalRange')?.value || 12;
-  const solicitud = {
-    accion: 'enviarSolicitud',
-    mateada_id: currentMateada.id,
-    usuario_nombre: 'Camila P.',
-    usuario_edad: '25',
-    usuario_avatar: 'CP',
-    tiempo_llegada: minutos + ' min'
-  };
-  
-  const resultado = await enviarSolicitudAlSheet(solicitud);
-  if (resultado.success) {
-    document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
-    goScreen('screen-sent');
-  } else {
-    alert('No se pudo enviar la solicitud. Tal vez ya no hay lugares.');
+  if (currentMateada.lugares_libres <= 0) {
+    alert('❌ No hay lugares disponibles en esta mateada');
+    return;
   }
+  
+  const minutos = document.getElementById('arrivalRange')?.value || 12;
+  
+  // Reducir lugares libres
+  const index = mateadas.findIndex(m => m.id === currentMateada.id);
+  if (index !== -1) {
+    mateadas[index].lugares_libres--;
+    guardarDatosLocales();
+  }
+  
+  document.getElementById('showArrivalMins').innerText = minutos + ' minutos';
+  goScreen('screen-sent');
+  renderHome();
 }
 
 function acceptJoinRequest() {
@@ -415,7 +445,8 @@ if(arrivalSlider) arrivalSlider.addEventListener('input', function() {
   document.getElementById('arrivalValue').innerText = this.value + ' min'; 
 });
 
-cargarMateadas();
+cargarDatosLocales();
+renderHome();
 
 window.goScreen = goScreen;
 window.createMateada = createMateada;
