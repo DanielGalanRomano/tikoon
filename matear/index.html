@@ -7,9 +7,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=DM+Sans:opsz,wght@9..40,400;500;600&display=swap" rel="stylesheet">
-  <!-- Firebase SDK para autenticación con Google -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -41,7 +38,7 @@
     @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .content { flex: 1; overflow-y: auto; padding: 16px 16px 80px 16px; scrollbar-width: thin; }
 
-    /* HEADER MÁS BAJO */
+    /* HEADER */
     .header-fixed {
       position: sticky;
       top: 0;
@@ -70,7 +67,7 @@
     }
     .logo-main span { font-size: 28px; }
     .user-info { display: flex; align-items: center; gap: 8px; }
-    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--cta-soft); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; border: 1px solid var(--border-light); }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--cta-soft); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-light); }
     .brand-sub { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
     
     .nav-bar {
@@ -184,70 +181,60 @@
     .notification-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
     .notification-icon { width: 36px; height: 36px; background: var(--cta-soft); border-radius: 30px; display: flex; align-items: center; justify-content: center; }
     
-    /* Pantalla de login */
-    .login-screen {
+    /* Modal para pedir nombre */
+    .modal-nombre {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: var(--bg-primary);
+      background: rgba(0,0,0,0.5);
       z-index: 300;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
-    .login-card {
+    .modal-nombre-card {
       background: white;
-      border-radius: 40px;
-      padding: 32px 24px;
+      border-radius: 32px;
+      padding: 28px 24px;
       text-align: center;
       width: 100%;
-      max-width: 320px;
-      box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+      max-width: 300px;
     }
-    .login-logo { font-size: 60px; margin-bottom: 16px; }
-    .login-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
-    .login-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 32px; }
-    .google-btn {
-      background: white;
-      border: 1px solid #dadce0;
-      border-radius: 40px;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+    .modal-nombre-card input {
       width: 100%;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 15px;
-      transition: 0.2s;
+      padding: 14px;
+      border: 1px solid var(--border-light);
+      border-radius: 60px;
+      font-size: 16px;
+      margin: 20px 0;
+      text-align: center;
     }
-    .google-btn:hover { background: #f8f9fa; }
-    .google-icon { width: 20px; height: 20px; }
+    .modal-nombre-card button {
+      background: var(--cta-primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 60px;
+      width: 100%;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Pantalla de Login -->
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <div class="login-logo">🧉</div>
-      <div class="login-title">matear</div>
-      <div class="login-sub">by Taragüi · Encuentros con mate</div>
-      <button class="google-btn" onclick="loginWithGoogle()">
-        <svg class="google-icon" viewBox="0 0 24 24">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
-        Continuar con Google
-      </button>
+  <!-- Modal para pedir nombre al iniciar -->
+  <div id="modalNombre" class="modal-nombre">
+    <div class="modal-nombre-card">
+      <div style="font-size: 48px;">🧉</div>
+      <div style="font-size: 22px; font-weight: 800; margin: 8px 0;">matear</div>
+      <div style="font-size: 13px; color: var(--text-secondary);">¿Cómo querés que te llamen?</div>
+      <input type="text" id="nombreUsuarioInput" placeholder="Ej: Camila, Juan, Ana..." maxlength="30">
+      <button onclick="guardarNombre()">Comenzar</button>
     </div>
   </div>
 
@@ -257,8 +244,8 @@
         <div class="logo-main" onclick="irAlInicio()">
           <span>🧉</span> matear
         </div>
-        <div class="user-info" id="userInfo">
-          <div class="user-avatar" onclick="irAPerfil()">👤</div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar" onclick="irAPerfil()">👤</div>
         </div>
       </div>
       <div class="brand-sub">by Taragüi · Encuentros con mate en el parque</div>
@@ -268,7 +255,7 @@
         <div></div>
         <div style="display: flex; gap: 6px;">
           <button class="icon-btn" onclick="irANotificaciones()">🔔</button>
-          <button class="icon-btn" onclick="cerrarSesion()">🚪</button>
+          <button class="icon-btn" onclick="cambiarNombre()">✏️</button>
         </div>
       </div>
     </div>
@@ -388,27 +375,13 @@
 </div>
 
 <script>
-// ==================== CONFIGURACIÓN FIREBASE ====================
-const firebaseConfig = {
-  apiKey: "AIzaSyD7vC6w7k7xQx7k7xQx7k7xQx7k7xQx7k7",
-  authDomain: "mateapp-8b5c2.firebaseapp.com",
-  projectId: "mateapp-8b5c2",
-  storageBucket: "mateapp-8b5c2.firebasestorage.app",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abc123def456"
-};
-
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-// ==================== DATOS LOCALES ====================
+// ==================== DATOS ====================
 let mateadas = [];
 let currentMap = null;
 let currentMateada = null;
-let usuarioActual = null;
+let usuarioActual = { nombre: 'Usuario', avatar: '👤' };
 
-const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000; // 2 horas
+const DURACION_MATEADA_MS = 2 * 60 * 60 * 1000;
 const UMBRAL_NARANJA_MS = 60 * 60 * 1000;
 const UMBRAL_ROJO_MS = 30 * 60 * 1000;
 
@@ -451,14 +424,11 @@ function limpiarMateadasExpiradas() {
 }
 
 function guardarDatosLocales() { 
-  if (usuarioActual) {
-    localStorage.setItem(`matear_datos_${usuarioActual.uid}`, JSON.stringify({ mateadas: mateadas }));
-  }
+  localStorage.setItem('matear_datos', JSON.stringify({ mateadas: mateadas }));
 }
 
 function cargarDatosLocales() {
-  if (!usuarioActual) return;
-  const guardado = localStorage.getItem(`matear_datos_${usuarioActual.uid}`);
+  const guardado = localStorage.getItem('matear_datos');
   if (guardado) {
     const datos = JSON.parse(guardado);
     mateadas = datos.mateadas || [];
@@ -475,7 +445,7 @@ function cargarDatosLocales() {
 }
 
 function actualizarEstadisticas() {
-  const misMateadas = mateadas.filter(m => m.organizador === usuarioActual?.displayName || m.creador === usuarioActual?.uid).length;
+  const misMateadas = mateadas.filter(m => m.organizador === usuarioActual.nombre || m.creador === usuarioActual.nombre).length;
   document.getElementById('statsMateadas').innerText = mateadas.length;
   document.getElementById('statsOrganizadas').innerText = misMateadas;
 }
@@ -613,14 +583,14 @@ function createMateada() {
     longitud: -58.4073,
     lugares_totales: parseInt(maxPersonas),
     lugares_libres: parseInt(maxPersonas),
-    organizador: usuarioActual?.displayName || 'Anónimo',
-    organizador_avatar: (usuarioActual?.displayName || 'A').charAt(0),
+    organizador: usuarioActual.nombre,
+    organizador_avatar: usuarioActual.nombre.charAt(0),
     descripcion: `Mateada de ${tema}`,
     duracion: duracion,
     tags: tema.split(' ')[0],
     estado: 'activa',
     timestamp: Date.now(),
-    creador: usuarioActual?.uid
+    creador: usuarioActual.nombre
   };
   mateadas.push(nueva);
   guardarDatosLocales();
@@ -650,55 +620,64 @@ function toggleOpt(btn) {
   if (parent) { parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 }
 
-// ==================== LOGIN CON GOOGLE ====================
-async function loginWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
-  try {
-    const result = await auth.signInWithPopup(provider);
-    usuarioActual = result.user;
-    document.getElementById('profileName').innerText = usuarioActual.displayName || usuarioActual.email;
-    document.getElementById('profileEmail').innerText = usuarioActual.email;
-    document.getElementById('profileAvatar').innerText = (usuarioActual.displayName || 'U').charAt(0);
-    document.getElementById('perfilPublico').innerHTML = `${usuarioActual.displayName || usuarioActual.email} · Diseñador/a`;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appContent').style.display = 'flex';
-    cargarDatosLocales();
-    renderHome();
-    actualizarBreadcrumb();
-  } catch (error) {
-    console.error('Error en login:', error);
-    alert('Error al iniciar sesión: ' + error.message);
+// ==================== GESTIÓN DE NOMBRE ====================
+function guardarNombre() {
+  const nombreInput = document.getElementById('nombreUsuarioInput');
+  const nombre = nombreInput.value.trim();
+  if (nombre === '') {
+    alert('Por favor, ingresá un nombre');
+    return;
+  }
+  usuarioActual.nombre = nombre;
+  usuarioActual.avatar = nombre.charAt(0).toUpperCase();
+  
+  // Actualizar UI
+  document.getElementById('userAvatar').innerText = usuarioActual.avatar;
+  document.getElementById('profileName').innerText = usuarioActual.nombre;
+  document.getElementById('profileAvatar').innerText = usuarioActual.avatar;
+  document.getElementById('perfilPublico').innerHTML = `${usuarioActual.nombre} · Diseñador/a`;
+  
+  // Guardar en localStorage
+  localStorage.setItem('matear_usuario', JSON.stringify(usuarioActual));
+  
+  // Cerrar modal y mostrar app
+  document.getElementById('modalNombre').style.display = 'none';
+  document.getElementById('appContent').style.display = 'flex';
+  
+  cargarDatosLocales();
+  renderHome();
+  actualizarBreadcrumb();
+}
+
+function cambiarNombre() {
+  const nuevo = prompt('¿Cómo querés que te llamen?', usuarioActual.nombre);
+  if (nuevo && nuevo.trim() !== '') {
+    usuarioActual.nombre = nuevo.trim();
+    usuarioActual.avatar = usuarioActual.nombre.charAt(0).toUpperCase();
+    document.getElementById('userAvatar').innerText = usuarioActual.avatar;
+    document.getElementById('profileName').innerText = usuarioActual.nombre;
+    document.getElementById('profileAvatar').innerText = usuarioActual.avatar;
+    document.getElementById('perfilPublico').innerHTML = `${usuarioActual.nombre} · Diseñador/a`;
+    localStorage.setItem('matear_usuario', JSON.stringify(usuarioActual));
   }
 }
 
-function cerrarSesion() {
-  auth.signOut().then(() => {
-    usuarioActual = null;
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('appContent').style.display = 'none';
-    mateadas = [];
-  });
+// Cargar usuario guardado
+const usuarioGuardado = localStorage.getItem('matear_usuario');
+if (usuarioGuardado) {
+  const user = JSON.parse(usuarioGuardado);
+  usuarioActual.nombre = user.nombre;
+  usuarioActual.avatar = user.avatar;
+  document.getElementById('userAvatar').innerText = usuarioActual.avatar;
+  document.getElementById('profileName').innerText = usuarioActual.nombre;
+  document.getElementById('profileAvatar').innerText = usuarioActual.avatar;
+  document.getElementById('perfilPublico').innerHTML = `${usuarioActual.nombre} · Diseñador/a`;
+  document.getElementById('modalNombre').style.display = 'none';
+  document.getElementById('appContent').style.display = 'flex';
+  cargarDatosLocales();
+  renderHome();
+  actualizarBreadcrumb();
 }
-
-// Verificar si ya hay sesión activa
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    usuarioActual = user;
-    document.getElementById('profileName').innerText = usuarioActual.displayName || usuarioActual.email;
-    document.getElementById('profileEmail').innerText = usuarioActual.email;
-    document.getElementById('profileAvatar').innerText = (usuarioActual.displayName || 'U').charAt(0);
-    document.getElementById('perfilPublico').innerHTML = `${usuarioActual.displayName || usuarioActual.email} · Diseñador/a`;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appContent').style.display = 'flex';
-    cargarDatosLocales();
-    renderHome();
-    actualizarBreadcrumb();
-  } else {
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('appContent').style.display = 'none';
-  }
-});
 
 // Actualización automática
 setInterval(() => {
@@ -716,8 +695,8 @@ window.goToDetail = goToDetail;
 window.irAUnirse = irAUnirse;
 window.irAPerfil = irAPerfil;
 window.irANotificaciones = irANotificaciones;
-window.loginWithGoogle = loginWithGoogle;
-window.cerrarSesion = cerrarSesion;
+window.guardarNombre = guardarNombre;
+window.cambiarNombre = cambiarNombre;
 
 const arrivalSlider = document.getElementById('arrivalRange');
 if(arrivalSlider) arrivalSlider.addEventListener('input', function() { document.getElementById('arrivalValue').innerText = this.value + ' min'; });
