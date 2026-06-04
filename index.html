@@ -21,10 +21,91 @@
 
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client"></script>
+  
   <script>
      
  
-   const GOOGLE_CLIENT_ID = '171913559980-o482f3c09330o9sken6jujnfppo052hn.apps.googleusercontent.com';
+   // ============================================
+// AUTENTICACIÓN SIMPLE (sin Google)
+// ============================================
+let usuarioActual = null;
+
+// Cargar sesión guardada al inicio
+const sesionGuardada = localStorage.getItem('usuario_cebate');
+if (sesionGuardada) {
+    try {
+        usuarioActual = JSON.parse(sesionGuardada);
+    } catch(e) {}
+}
+
+function abrirLoginSimple() {
+    const email = prompt("📧 Ingresá tu correo electrónico:");
+    if (!email || !email.includes('@')) {
+        mostrarToast("❌ Correo inválido");
+        return;
+    }
+    
+    const nombre = prompt("👤 ¿Cómo te llamas?", email.split('@')[0]);
+    if (!nombre) return;
+    
+    usuarioActual = {
+        sub: email.replace(/[^a-zA-Z0-9]/g, '_'),
+        nombre: nombre,
+        email: email,
+        avatar: null
+    };
+    
+    localStorage.setItem('usuario_cebate', JSON.stringify(usuarioActual));
+    renderAuthArea();
+    mostrarToast(`✅ ¡Bienvenido/a, ${nombre}!`);
+    
+    const campoNombre = document.getElementById('nombreOrganizador');
+    if (campoNombre && !campoNombre.value) {
+        campoNombre.value = nombre;
+    }
+}
+
+function cerrarSesion() {
+    usuarioActual = null;
+    localStorage.removeItem('usuario_cebate');
+    if (typeof cerrarUserSheet === 'function') cerrarUserSheet();
+    renderAuthArea();
+    mostrarToast('👋 Sesión cerrada');
+}
+
+function renderAuthArea() {
+    const area = document.getElementById('authArea');
+    if (!area) return;
+    
+    if (!usuarioActual) {
+        area.innerHTML = `<button class="google-login-btn" onclick="abrirLoginSimple()">📧 Entrar con email</button>`;
+    } else {
+        const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
+        area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${letra}</div>`;
+    }
+}
+
+// Modificar abrirUserSheet para que funcione con nuestro usuario
+window.abrirUserSheet = function() {
+    if (!usuarioActual) return;
+    const profile = document.getElementById('userSheetProfile');
+    if (!profile) return;
+    
+    const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
+    profile.innerHTML = `
+        <div class="user-sheet-avatar-placeholder">${letra}</div>
+        <div>
+            <div class="user-sheet-name">${usuarioActual.nombre}</div>
+            <div class="user-sheet-email">${usuarioActual.email}</div>
+        </div>
+    `;
+    document.getElementById('userSheetOverlay')?.classList.add('visible');
+};
+
+// Eliminar o comentar la función inicializarGoogleAuth
+function inicializarGoogleAuth() {
+    renderAuthArea();
+}
     
   </script>
 
