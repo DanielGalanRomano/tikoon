@@ -22,6 +22,129 @@
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+  <script>
+// ============================================
+// VERSIÓN SIMPLIFICADA - SIN GOOGLE LOGIN
+// ============================================
+
+// Datos del usuario (se capturan automáticamente)
+let usuarioActual = {
+    nombre: '',
+    email: '',
+    dispositivo: '',
+    navegador: '',
+    sistema: '',
+    idioma: navigator.language || 'es',
+    zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    fechaVisita: new Date().toISOString()
+};
+
+// Capturar datos del dispositivo automáticamente
+function capturarDatosDispositivo() {
+    const userAgent = navigator.userAgent;
+    
+    // Detectar navegador
+    if (userAgent.indexOf('Chrome') > -1) usuarioActual.navegador = 'Chrome';
+    else if (userAgent.indexOf('Safari') > -1) usuarioActual.navegador = 'Safari';
+    else if (userAgent.indexOf('Firefox') > -1) usuarioActual.navegador = 'Firefox';
+    else if (userAgent.indexOf('Edge') > -1) usuarioActual.navegador = 'Edge';
+    else usuarioActual.navegador = 'Otro';
+    
+    // Detectar sistema operativo
+    if (userAgent.indexOf('Windows') > -1) usuarioActual.sistema = 'Windows';
+    else if (userAgent.indexOf('Mac') > -1) usuarioActual.sistema = 'macOS';
+    else if (userAgent.indexOf('Linux') > -1) usuarioActual.sistema = 'Linux';
+    else if (userAgent.indexOf('Android') > -1) usuarioActual.sistema = 'Android';
+    else if (userAgent.indexOf('iOS') > -1 || userAgent.indexOf('iPhone') > -1) usuarioActual.sistema = 'iOS';
+    else usuarioActual.sistema = 'Otro';
+    
+    // Detectar dispositivo
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(userAgent)) {
+        usuarioActual.dispositivo = 'Móvil/Tablet';
+    } else {
+        usuarioActual.dispositivo = 'Desktop';
+    }
+    
+    console.log('📱 Datos del dispositivo capturados:', usuarioActual);
+}
+
+// Pedir nombre al usuario (solo una vez)
+function pedirNombreUsuario() {
+    const nombreGuardado = localStorage.getItem('usuarioNombre');
+    if (nombreGuardado) {
+        usuarioActual.nombre = nombreGuardado;
+        return;
+    }
+    
+    // Mostrar modal/prompt para pedir el nombre
+    setTimeout(() => {
+        const nombre = prompt('🧉 ¡Bienvenido a Cebate Uno!\n\nPor favor, ingresá tu nombre para continuar:', '');
+        if (nombre && nombre.trim()) {
+            usuarioActual.nombre = nombre.trim();
+            localStorage.setItem('usuarioNombre', nombre.trim());
+            
+            // Si hay campo de organizador, prellenarlo
+            const nombreInput = document.getElementById('nombreOrganizador');
+            if (nombreInput) nombreInput.value = nombre;
+        } else {
+            usuarioActual.nombre = 'Mateador Anónimo';
+        }
+    }, 500);
+}
+
+// Función para pedir email opcional
+function pedirEmailOpcional() {
+    const emailGuardado = localStorage.getItem('usuarioEmail');
+    if (emailGuardado) {
+        usuarioActual.email = emailGuardado;
+        return;
+    }
+    
+    setTimeout(() => {
+        const email = prompt('📧 Opcional: Ingresá tu email para recibir actualizaciones (no obligatorio):', '');
+        if (email && email.trim() && email.includes('@')) {
+            usuarioActual.email = email.trim();
+            localStorage.setItem('usuarioEmail', email.trim());
+        }
+    }, 1000);
+}
+
+// Inicializar
+capturarDatosDispositivo();
+pedirNombreUsuario();
+pedirEmailOpcional();
+
+// Exportar funciones para usar en otros lugares
+window.obtenerUsuarioActual = () => usuarioActual;
+window.actualizarNombreUsuario = (nombre) => {
+    usuarioActual.nombre = nombre;
+    localStorage.setItem('usuarioNombre', nombre);
+};
+
+// Modificar la función de crear mateada para usar el nombre guardado
+const crearMateadaOriginal = window.crearMateada;
+window.crearMateada = async function() {
+    const organizadorInput = document.getElementById('nombreOrganizador');
+    if (organizadorInput && !organizadorInput.value.trim()) {
+        organizadorInput.value = usuarioActual.nombre || '';
+    }
+    return crearMateadaOriginal();
+};
+
+// Modificar el envío de solicitud
+const enviarSolicitudOriginal = window.enviarSolicitud;
+window.enviarSolicitud = async function() {
+    if (!usuarioActual.nombre || usuarioActual.nombre === 'Mateador Anónimo') {
+        const nombre = prompt('¿Cómo te llamás? (para que el organizador te identifique):', '');
+        if (nombre && nombre.trim()) {
+            usuarioActual.nombre = nombre.trim();
+            localStorage.setItem('usuarioNombre', nombre);
+        }
+    }
+    return enviarSolicitudOriginal();
+};
+</script>
+
   <style>
     :root {
       --verde: #0F7B5E;
