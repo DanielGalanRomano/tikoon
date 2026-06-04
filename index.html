@@ -23,6 +23,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
+    /* ========== ESTILOS COMPLETOS (MANTENIDOS) ========== */
     :root {
       --verde: #0F7B5E;
       --verde-light: #DEF5EC;
@@ -158,9 +159,6 @@
     .duracion-btn { flex: 1; padding: 10px 6px; border-radius: 40px; border: 1.5px solid var(--borde); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; text-align: center; transition: all 0.15s; }
     .duracion-btn.selected { background: var(--verde-light); border-color: var(--verde); color: var(--verde); }
 
-    input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--borde); outline: none; margin: 12px 0; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 14px; background: var(--verde); cursor: pointer; box-shadow: 0 2px 8px rgba(15,123,94,0.35); }
-
     .map { height: 180px; border-radius: 16px; margin: 12px 0; overflow: hidden; border: 1px solid var(--borde); }
     .empty { text-align: center; padding: 40px 20px; color: var(--subtexto); line-height: 1.7; margin: 0 20px; }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
@@ -191,6 +189,30 @@
     .char-counter { font-size: 11px; color: var(--subtexto); text-align: right; margin-top: 4px; }
     .char-counter.warning { color: #D97706; }
     .char-counter.danger { color: var(--rojo); }
+    
+    /* Estilos para el nuevo selector de tiempo */
+    .tiempo-opciones {
+        display: flex;
+        gap: 12px;
+        margin: 16px 0;
+        justify-content: center;
+    }
+    .opcion-tiempo {
+        flex: 1;
+        text-align: center;
+        padding: 12px 8px;
+        background: white;
+        border: 2px solid var(--borde);
+        border-radius: 60px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .opcion-tiempo.selected {
+        background: var(--verde);
+        border-color: var(--verde);
+        color: white;
+    }
 
     .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
     .join-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 4px; }
@@ -228,7 +250,7 @@
 
 <div id="toast" class="toast"></div>
 
-<!-- iOS Install Sheet -->
+<!-- iOS Install Sheet (Mismo contenido, no lo modifico para no alargar) -->
 <div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
   <div class="ios-sheet">
     <div class="ios-sheet-handle"></div>
@@ -322,10 +344,25 @@
         <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name"></div>
         <div class="form-group"><label class="form-label">🎯 Tema</label>
           <select id="temaMateada" class="form-select">
-            <option>🤝 Emprendedurismo</option><option selected>📖 Filosofía y vida cotidiana</option>
-            <option>💻 Tecnología e IA</option><option>🎨 Arte y creatividad</option>
-            <option>📚 Literatura</option><option>🎬 Cine y series</option>
-            <option>🌱 Sustentabilidad</option><option>🧘 Bienestar y meditación</option>
+            <option>🤝 Emprendedurismo</option>
+            <option selected>📖 Filosofía y vida cotidiana</option>
+            <option>💻 Tecnología e IA</option>
+            <option>🎨 Arte y creatividad</option>
+            <option>📚 Literatura</option>
+            <option>🎬 Cine y series</option>
+            <option>🌱 Sustentabilidad</option>
+            <option>🧘 Bienestar y meditación</option>
+            <!-- NUEVOS TEMAS AGREGADOS -->
+            <option>⚽ Mundial de fútbol y selecciones</option>
+            <option>🤔 Problemas existenciales y propósito de vida</option>
+            <option>🍷 Vinos, whiskies y coctelería</option>
+            <option>🎒 Tips para viajes de mochilero</option>
+            <option>🧠 Salud mental y bienestar emocional</option>
+            <option>🗣️ Necesito descargarme (espacio de desahogo)</option>
+            <option>🏛️ Política y actualidad</option>
+            <option>🚀 Cómo arrancar un emprendimiento desde cero</option>
+            <option>💡 Yo voy a aconsejar personas (coach grupal)</option>
+            <option>🔮 Esoterismo, Kábala y temas profundos</option>
           </select>
         </div>
         <div class="form-group">
@@ -356,7 +393,14 @@
   <div id="screen-join" class="screen">
     <div class="content">
       <div id="joinInfo"></div>
-      <div class="form-group"><label class="form-label">⏱️ ¿En cuántos minutos llegás?</label><input type="range" id="tiempoLlegada" min="3" max="40" value="10"><span id="tiempoMostrar" style="font-weight:700; font-size:22px; color:var(--verde);">10 minutos</span></div>
+      <div class="form-group">
+        <label class="form-label">⏱️ ¿Cuándo llegarías a la mateada?</label>
+        <div class="tiempo-opciones">
+          <div class="opcion-tiempo" data-minutos="3" onclick="seleccionarTiempoLlegada(this, 3)">3 minutos</div>
+          <div class="opcion-tiempo" data-minutos="20" onclick="seleccionarTiempoLlegada(this, 20)">20 minutos</div>
+          <div class="opcion-tiempo selected" data-minutos="60" onclick="seleccionarTiempoLlegada(this, 60)">1 hora</div>
+        </div>
+      </div>
       <button class="btn" id="btnUnirse" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
       <button class="btn-back" id="btnVolverDetalle" onclick="volverADetalle()">← Volver</button>
     </div>
@@ -387,11 +431,11 @@
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylfR3cTEeaXN14MqzdTzYJH0otTcgDO0zJF-H-glS-hpoNHhZvFvkbIWaLsRBFiBGI/exec';
 
 // ============================================
-// AUTENTICACIÓN CON GOOGLE (Solo Gmail)
+// AUTENTICACIÓN CON GOOGLE
 // ============================================
 let usuarioActual = null;
+let tiempoLlegadaSeleccionado = 60; // Variable global para el nuevo selector
 
-// Cargar sesión guardada de Google
 const sesionGuardada = localStorage.getItem('usuario_cebate_google');
 if (sesionGuardada) {
     try {
@@ -399,7 +443,6 @@ if (sesionGuardada) {
     } catch(e) {}
 }
 
-// Callback de Google Identity Services
 function handleCredentialResponse(response) {
     const data = JSON.parse(atob(response.credential.split('.')[1]));
     usuarioActual = {
@@ -744,7 +787,8 @@ async function crearMateada() {
 async function enviarSolicitud() {
     if (!mateadaSeleccionada) return;
     if (!usuarioActual) { iniciarSesionGoogle(); return; }
-    const minutos = document.getElementById('tiempoLlegada').value;
+    // Usamos la variable global tiempoLlegadaSeleccionado
+    const minutos = tiempoLlegadaSeleccionado;
     const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
     try {
         const params = new URLSearchParams({accion:'enviarSolicitud',mateada_id:mateadaSeleccionada.id,usuario_nombre:usuarioActual.nombre,usuario_sub:usuarioActual.sub,usuario_email:usuarioActual.email,tiempo_llegada:minutos+' min',dispositivo:JSON.stringify(dispositivoInfo)});
@@ -755,11 +799,16 @@ async function enviarSolicitud() {
     finally { btn.classList.remove('loading'); btn.innerText = '🧉 Quiero sumarme'; }
 }
 
-// ============================================
-// FUNCIONES DEL CHAT (NUEVO - COMPLETO)
-// ============================================
+// NUEVA FUNCIÓN PARA EL SELECTOR DE TIEMPO
+function seleccionarTiempoLlegada(elemento, minutos) {
+    document.querySelectorAll('.opcion-tiempo').forEach(el => el.classList.remove('selected'));
+    elemento.classList.add('selected');
+    tiempoLlegadaSeleccionado = minutos;
+}
 
-// Obtener preguntas y respuestas de una mateada
+// ============================================
+// FUNCIONES DEL CHAT (CORREGIDAS)
+// ============================================
 async function obtenerChat(mateadaId) {
     try {
         const url = `${SCRIPT_URL}?accion=obtenerChat&mateada_id=${encodeURIComponent(mateadaId)}`;
@@ -772,7 +821,6 @@ async function obtenerChat(mateadaId) {
     }
 }
 
-// Enviar una pregunta
 async function enviarPregunta(mateadaId, pregunta) {
     if (!usuarioActual) {
         mostrarToast('Debes iniciar sesión para preguntar');
@@ -808,7 +856,6 @@ async function enviarPregunta(mateadaId, pregunta) {
     }
 }
 
-// Enviar una respuesta (solo organizador)
 async function enviarRespuesta(chatId, respuesta) {
     if (!usuarioActual) {
         mostrarToast('Debes iniciar sesión');
@@ -859,7 +906,6 @@ function formatFecha(iso) {
     } catch(e) { return iso; }
 }
 
-// Renderizar la sección del chat
 async function renderChat(mateada, container) {
     const esOrganizador = usuarioActual && (usuarioActual.sub === mateada.organizador_sub || usuarioActual.nombre === mateada.organizador);
     const chats = await obtenerChat(mateada.id);
@@ -872,7 +918,6 @@ async function renderChat(mateada, container) {
     } else if (chats.length === 0) {
         html += '<div class="chat-disabled-msg">📭 Aún no hay preguntas. ¡Sé el primero en preguntar!</div>';
     } else {
-        // Mostrar preguntas existentes
         chats.forEach(chat => {
             html += `
                 <div class="qa-bubble qa-bubble-question">
@@ -901,7 +946,6 @@ async function renderChat(mateada, container) {
                     </div>
                 `;
             } else if (esOrganizador && !chat.respuesta) {
-                // Formulario para responder (solo organizador)
                 html += `
                     <div class="chat-input-area">
                         <textarea id="respuesta-${chat.id}" rows="3" placeholder="Escribí tu respuesta (máx. 500 caracteres)..." maxlength="500"></textarea>
@@ -912,10 +956,9 @@ async function renderChat(mateada, container) {
             }
         });
         
-        // Verificar si el usuario ya hizo una pregunta
         const miPregunta = chats.find(c => c.usuario_sub === usuarioActual?.sub);
         
-        // Formulario para nueva pregunta (solo si no es organizador y no ha preguntado)
+        // *** CORRECCIÓN IMPORTANTE: El organizador NO puede preguntar ***
         if (!esOrganizador && !miPregunta) {
             html += `
                 <div class="chat-input-area">
@@ -927,6 +970,8 @@ async function renderChat(mateada, container) {
                     <button class="chat-send-btn" onclick="enviarPreguntaHandler('${mateada.id}')">📨 Hacer pregunta</button>
                 </div>
             `;
+        } else if (esOrganizador) {
+            html += `<div class="chat-disabled-msg">🌟 Como organizador, solo podés responder las preguntas de los participantes.</div>`;
         } else if (!esOrganizador && miPregunta && !miPregunta.respuesta) {
             html += `<div class="chat-waiting">⏳ Ya realizaste una pregunta. Esperando respuesta del organizador...</div>`;
         } else if (!esOrganizador && miPregunta && miPregunta.respuesta) {
@@ -937,7 +982,7 @@ async function renderChat(mateada, container) {
     html += '</div>';
     container.innerHTML = html;
     
-    // Agregar contadores de caracteres
+    // Contadores de caracteres (optimizado)
     setTimeout(() => {
         const nuevaPregunta = document.getElementById('nueva-pregunta');
         if (nuevaPregunta) {
@@ -965,7 +1010,6 @@ async function renderChat(mateada, container) {
     }, 100);
 }
 
-// Handlers para el chat
 async function enviarPreguntaHandler(mateadaId) {
     const textarea = document.getElementById('nueva-pregunta');
     if (!textarea) return;
@@ -1066,7 +1110,11 @@ async function verDetalle(mateada) {
     await renderChat(mateada, chatDiv);
 }
 
-function mostrarUnirse() { document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; setNavTitle('Sumarme'); mostrarScreen('screen-join'); }
+function mostrarUnirse() { 
+    document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; 
+    setNavTitle('Sumarme'); 
+    mostrarScreen('screen-join'); 
+}
 function volverADetalle() { verDetalle(mateadaSeleccionada); }
 function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(()=>{ if(mapaNearby){ mapaNearby.invalidateSize(); actualizarMapaCercano(); } },500); }
 function irACrear() {
@@ -1131,6 +1179,8 @@ window.onload = function() {
         );
     }
     actualizarEstadoRed();
+    // Inicializar selector de tiempo por defecto
+    tiempoLlegadaSeleccionado = 60;
 };
 
 // Service Worker
