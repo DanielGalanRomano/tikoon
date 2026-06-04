@@ -135,7 +135,6 @@
     .screen { display: none; flex-direction: column; flex: 1; }
     .screen.active { display: flex; }
 
-    /* Mapa */
     .home-map-section {
       position: relative;
       height: 30dvh;
@@ -188,7 +187,6 @@
       gap: 8px;
     }
 
-    /* Cards */
     .card {
       background: white;
       border-radius: 20px;
@@ -213,13 +211,11 @@
     .badge.lleno { background: #FEE2E2; color: var(--rojo); }
     .badge.tuya { background: #FEF3C7; color: #92400E; }
 
-    /* Countdown */
     .countdown-wrap { margin-top: 10px; }
     .countdown-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtexto); margin-bottom: 5px; }
     .countdown-bar-track { height: 6px; background: var(--crema-dark); border-radius: 3px; overflow: hidden; }
     .countdown-bar-fill { height: 100%; border-radius: 3px; transition: width 1s linear; }
 
-    /* Botones */
     .btn {
       background: var(--verde);
       color: white;
@@ -263,7 +259,6 @@
       z-index: 300;
     }
 
-    /* Formularios */
     .form-input, .form-select {
       width: 100%;
       padding: 12px 16px;
@@ -274,7 +269,6 @@
     }
     .form-label { font-size: 13px; font-weight: 600; color: var(--subtexto); margin-bottom: 7px; display: block; }
 
-    /* Chat */
     .chat-section {
       background: white;
       border-radius: 20px;
@@ -368,7 +362,12 @@
       margin-bottom: 12px;
     }
     .map { height: 180px; border-radius: 16px; margin: 12px 0; overflow: hidden; border: 1px solid var(--borde); }
-    .empty { text-align: center; padding: 40px 20px; color: var(--subtexto); }
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--subtexto);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .join-card {
       background: #FFF8EC;
       border: 1px solid #F5D9A8;
@@ -395,6 +394,90 @@
     .toast.show { opacity: 1; }
     #headerSpacer { flex-shrink: 0; }
     #homeListContainer { overflow-y: auto; flex: 1; padding-bottom: 80px; }
+
+    .login-prompt-card {
+      background: linear-gradient(135deg, var(--verde-light), white);
+      border-radius: 24px;
+      padding: 32px 24px;
+      text-align: center;
+      margin: 20px;
+    }
+    .login-prompt-card h3 {
+      color: var(--verde);
+      margin-bottom: 8px;
+      font-family: 'Fraunces', serif;
+    }
+    .login-prompt-card p {
+      color: var(--subtexto);
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .duracion-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 40px;
+      border: 1.5px solid var(--borde);
+      background: white;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .duracion-btn.selected {
+      background: var(--verde-light);
+      border-color: var(--verde);
+      color: var(--verde);
+    }
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .bar-track {
+      height: 8px;
+      background: var(--crema-dark);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s linear;
+    }
+    .spinning {
+      animation: spin 0.6s linear;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .chat-disabled-msg {
+      background: var(--crema-dark);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--subtexto);
+      text-align: center;
+    }
+    .section-label {
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--texto);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .organizador-chip {
+      font-size: 12px;
+      color: var(--subtexto);
+      background: var(--crema-dark);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    #googleButtonContainer {
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -433,7 +516,7 @@
     </div>
     <div id="homeListContainer">
       <div class="section-label" style="padding: 14px 20px 8px;"><span>Mateadas activas</span><span id="contadorMateadas"></span></div>
-      <div id="homeContent"><div class="empty">Cargando mateadas...</div></div>
+      <div id="homeContent"></div>
     </div>
   </div>
 
@@ -463,7 +546,7 @@
       <div class="form-group"><label class="form-label">👥 Cupo máximo</label>
         <select id="cupoMateada" class="form-select"><option>4</option><option>6</option><option selected>8</option><option>10</option></select>
       </div>
-      <button class="btn" onclick="crearMateada()">🌿 Publicar mateada</button>
+      <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
       <button class="btn-back" onclick="irInicio()">Cancelar</button>
       <div style="height: 80px;"></div>
     </div>
@@ -478,7 +561,7 @@
         <input type="range" id="tiempoLlegada" min="3" max="40" value="10">
         <span id="tiempoMostrar" style="font-weight:700; font-size:22px; color:var(--verde);">10 minutos</span>
       </div>
-      <button class="btn" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
+      <button class="btn" id="btnUnirse" onclick="enviarSolicitud()">🧉 Quiero sumarme</button>
       <button class="btn-back" onclick="volverADetalle()">← Volver</button>
     </div>
   </div>
@@ -546,7 +629,8 @@ function actualizarInterfazUsuario() {
             );
         }
     } else {
-        area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${usuarioActual.nombre[0].toUpperCase()}</div>`;
+        const inicial = (usuarioActual.nombre || 'U')[0].toUpperCase();
+        area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${inicial}</div>`;
     }
 }
 
@@ -764,10 +848,41 @@ function mateadaTerminada(id) {
             card.remove();
             const activas = mateadasActuales.filter(m => m.id != id && !estaTerminada(m));
             if (activas.length === 0) {
-                document.getElementById('homeContent').innerHTML = '<div class="empty">✨ No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+                mostrarSinMateadas();
             }
             actualizarMapaCercano();
         }, 500);
+    }
+}
+
+function mostrarSinMateadas() {
+    const container = document.getElementById('homeContent');
+    const estaLogueado = !!usuarioActual;
+    
+    if (estaLogueado) {
+        container.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">✨</div>
+                <h3>No hay mateadas activas</h3>
+                <p>¡Sé el primero en crear una!</p>
+                <button class="btn" onclick="irACrear()" style="margin-top: 16px; max-width: 200px; margin-left: auto; margin-right: auto;">+ Crear mateada</button>
+            </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <div class="login-prompt-card">
+                <div class="empty-icon">🧉</div>
+                <h3>¡Bienvenido a Cebate Uno!</h3>
+                <p>Iniciá sesión con Google para crear o unirte a mateadas</p>
+                <div id="googleButtonCenter"></div>
+            </div>
+        `;
+        if (window.google && google.accounts && !usuarioActual) {
+            google.accounts.id.renderButton(
+                document.getElementById("googleButtonCenter"),
+                { theme: "outline", size: "large", text: "signin_with", shape: "pill" }
+            );
+        }
     }
 }
 
@@ -943,7 +1058,6 @@ async function renderChat(mateada, container) {
     html += '</div>';
     container.innerHTML = html;
     
-    // Agregar contadores de caracteres
     setTimeout(() => {
         const nuevaPregunta = document.getElementById('nueva-pregunta');
         if (nuevaPregunta) {
@@ -1047,7 +1161,7 @@ async function cargarMateadas() {
         }
         
         if (mateadasActuales.length === 0) {
-            container.innerHTML = '<div class="empty">✨ No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+            mostrarSinMateadas();
             actualizarMapaCercano();
             return;
         }
@@ -1298,14 +1412,17 @@ function mostrarScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
     const isHome = screenId === 'screen-home';
-    document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
-    document.getElementById('mainHeader').style.display = isHome ? '' : 'none';
-    document.getElementById('navBar').classList.toggle('visible', !isHome);
+    const fabBtn = document.getElementById('fabBtn');
+    if (fabBtn) fabBtn.style.display = isHome ? 'flex' : 'none';
+    const mainHeader = document.getElementById('mainHeader');
+    if (mainHeader) mainHeader.style.display = isHome ? '' : 'none';
+    const navBar = document.getElementById('navBar');
+    if (navBar) navBar.classList.toggle('visible', !isHome);
 }
 
 function seleccionarDuracion(mins) {
     document.querySelectorAll('.duracion-btn').forEach(btn => btn.classList.remove('selected'));
-    event.target.classList.add('selected');
+    if (event && event.target) event.target.classList.add('selected');
     duracionSeleccionada = mins;
 }
 
@@ -1353,7 +1470,8 @@ window.onload = function() {
             (p) => {
                 userLat = p.coords.latitude;
                 userLng = p.coords.longitude;
-                document.getElementById('gpsBtn').textContent = '✅';
+                const gpsBtn = document.getElementById('gpsBtn');
+                if (gpsBtn) gpsBtn.textContent = '✅';
                 actualizarMapaCercano();
             },
             () => {},
@@ -1364,79 +1482,14 @@ window.onload = function() {
     const tiempoLlegada = document.getElementById('tiempoLlegada');
     if (tiempoLlegada) {
         tiempoLlegada.oninput = function() {
-            document.getElementById('tiempoMostrar').innerText = this.value + ' minutos';
+            const tiempoMostrar = document.getElementById('tiempoMostrar');
+            if (tiempoMostrar) tiempoMostrar.innerText = this.value + ' minutos';
         };
     }
+    
+    const fabBtn = document.getElementById('fabBtn');
+    if (fabBtn) fabBtn.style.display = 'flex';
 };
-
-// Estilos adicionales para elementos dinámicos
-const style = document.createElement('style');
-style.textContent = `
-    .duracion-btn {
-        flex: 1;
-        padding: 10px;
-        border-radius: 40px;
-        border: 1.5px solid var(--borde);
-        background: white;
-        cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.15s;
-    }
-    .duracion-btn.selected {
-        background: var(--verde-light);
-        border-color: var(--verde);
-        color: var(--verde);
-    }
-    .loading {
-        opacity: 0.7;
-        pointer-events: none;
-    }
-    .bar-track {
-        height: 8px;
-        background: var(--crema-dark);
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .bar-fill {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 1s linear;
-    }
-    .spinning {
-        animation: spin 0.6s linear;
-    }
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    .chat-disabled-msg {
-        background: var(--crema-dark);
-        border-radius: 14px;
-        padding: 12px 14px;
-        font-size: 13px;
-        color: var(--subtexto);
-        text-align: center;
-    }
-    .section-label {
-        font-family: 'Fraunces', serif;
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--texto);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .organizador-chip {
-        font-size: 12px;
-        color: var(--subtexto);
-        background: var(--crema-dark);
-        padding: 3px 10px;
-        border-radius: 20px;
-    }
-`;
-document.head.appendChild(style);
 </script>
 </body>
 </html>
