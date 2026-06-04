@@ -22,8 +22,10 @@
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client"></script>
   <script>
-    // Tu Client ID de Google
-    const GOOGLE_CLIENT_ID = '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';
+    // const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycb...';
+ 
+    const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID || '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';
+    
   </script>
 
   <style>
@@ -386,7 +388,7 @@
 // CONFIGURACIÓN
 // ============================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYPss1yIBCaFmwR3d7EdSvCjfeo4aAh5igOo7lSY4YWHg2lzVVMhAaYZuMZahNMC1G/exec';
-const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID || '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';
+
 const VAPID_PUBLIC_KEY = 'TU_VAPID_PUBLIC_KEY'; // Dejalo así si no tenés aún
 
 // ============================================
