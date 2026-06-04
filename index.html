@@ -20,7 +20,11 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Google Identity Services -->
-  <script>const GOOGLE_CLIENT_ID = '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';</script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    // Tu Client ID de Google
+    const GOOGLE_CLIENT_ID = '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';
+  </script>
 
   <style>
     :root {
@@ -379,11 +383,11 @@
 
 <script>
 // ============================================
-// CONFIGURACIÓN - REEMPLAZÁ CON TUS VALORES
+// CONFIGURACIÓN
 // ============================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYPss1yIBCaFmwR3d7EdSvCjfeo4aAh5igOo7lSY4YWHg2lzVVMhAaYZuMZahNMC1G/exec';
-const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
-const VAPID_PUBLIC_KEY = 'TU_VAPID_PUBLIC_KEY';
+const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID || '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';
+const VAPID_PUBLIC_KEY = 'TU_VAPID_PUBLIC_KEY'; // Dejalo así si no tenés aún
 
 // ============================================
 // ESTADO GLOBAL
