@@ -20,7 +20,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
   <script>
     // Tu Client ID de Google
     const GOOGLE_CLIENT_ID = '171913559980-92jfnfempbesd1fon9e8r1o6kvk10el2.apps.googleusercontent.com';
@@ -451,24 +451,31 @@ capturarDatosDispositivo();
 // GOOGLE AUTH
 // ============================================
 function inicializarGoogleAuth() {
-    if (typeof google === 'undefined' || !google.accounts) {
-        setTimeout(inicializarGoogleAuth, 300);
+    // Esperar hasta que google.accounts esté disponible
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+        setTimeout(inicializarGoogleAuth, 200);
         return;
     }
+
     google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: onGoogleCredential,
-        auto_select: true
+        auto_select: false,  // no auto-login para evitar popups bloqueados
+        cancel_on_tap_outside: false
     });
-    
+
+    // Restaurar sesión guardada
     const savedUser = localStorage.getItem('google_user');
     if (savedUser) {
         try {
             usuarioActual = JSON.parse(savedUser);
             renderAuthArea();
             return;
-        } catch(e) { localStorage.removeItem('google_user'); }
+        } catch(e) {
+            localStorage.removeItem('google_user');
+        }
     }
+
     renderAuthArea();
 }
 
@@ -506,11 +513,20 @@ function parseJwt(token) {
 }
 
 function abrirLoginGoogle() {
-    if (typeof google === 'undefined' || !google.accounts) {
-        mostrarToast('⏳ Cargando Google Sign-In...');
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+        mostrarToast('⏳ Cargando Google Sign-In, intentá de nuevo...');
+        setTimeout(inicializarGoogleAuth, 500);
         return;
     }
-    google.accounts.id.prompt();
+    google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // El one-tap fue bloqueado — usar popup como fallback
+            google.accounts.id.renderButton(
+                document.getElementById('authArea'),
+                { theme: 'outline', size: 'medium', text: 'signin_with', shape: 'pill' }
+            );
+        }
+    });
 }
 
 function cerrarSesion() {
