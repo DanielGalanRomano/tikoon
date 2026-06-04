@@ -39,6 +39,7 @@
       --header-bg: #F2F2F7;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --header-h: 72px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -46,255 +47,116 @@
     body {
       background: var(--crema-dark);
       font-family: 'DM Sans', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 16px;
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 16px; overscroll-behavior: none;
     }
 
     .app {
-      max-width: 480px;
-      width: 100%;
-      background: var(--crema);
-      border-radius: 32px;
-      min-height: 600px;
+      max-width: 480px; width: 100%; background: var(--crema);
+      border-radius: 32px; min-height: 600px; overflow: visible;
       box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      display: flex;
-      flex-direction: column;
-      position: relative;
+      display: flex; flex-direction: column; position: relative;
     }
 
     .sticky-top {
-      position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(480px, 100vw);
-      z-index: 500;
-      background: var(--header-bg);
-      border-radius: 32px 32px 0 0;
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+      width: min(480px, 100vw); z-index: 500;
+      background: var(--header-bg); border-radius: 32px 32px 0 0;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.10), 0 2px 12px rgba(0,0,0,0.06);
     }
 
     @media (max-width: 500px) {
-      body { padding: 0; }
-      .app { border-radius: 0; max-width: 100%; }
       .sticky-top { width: 100vw; border-radius: 0; }
+      body { padding: 0; align-items: flex-start; }
+      .app { border-radius: 0; max-width: 100%; min-height: 100vh; min-height: 100dvh; }
       .fab { bottom: calc(20px + var(--safe-bottom)); right: 16px; }
     }
 
-    .header {
-      padding: calc(14px + var(--safe-top)) 16px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
+    .header { padding: calc(14px + var(--safe-top)) 16px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .logo-wrap { text-align: center; flex: 1; }
-    .logo { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: var(--verde); }
-    .sub { font-size: 10px; color: var(--subtexto); }
+    .logo { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: var(--verde); letter-spacing: -0.5px; }
+    .sub { font-size: 10px; color: var(--subtexto); margin-top: 2px; letter-spacing: 0.3px; }
 
-    .header-actions { display: flex; align-items: center; gap: 8px; }
-    .refresh-btn {
-      background: white;
-      border: 1px solid var(--borde);
-      width: 36px;
-      height: 36px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .user-avatar-placeholder {
-      width: 34px;
-      height: 34px;
-      border-radius: 17px;
-      background: var(--verde);
-      color: white;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .bell-btn { position: relative; background: white; border: 1px solid var(--borde); width: 38px; height: 38px; border-radius: 19px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; }
+    .bell-badge { position: absolute; top: -4px; right: -4px; background: var(--rojo); color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--header-bg); padding: 0 3px; display: none; }
+    .login-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--borde); padding: 7px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .user-avatar { width: 34px; height: 34px; border-radius: 17px; border: 2px solid var(--verde); object-fit: cover; cursor: pointer; }
+    .user-avatar-placeholder { width: 34px; height: 34px; border-radius: 17px; background: var(--verde); color: white; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .refresh-btn { background: none; border: 1px solid var(--borde); width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .refresh-btn.spinning { animation: spin 0.6s linear; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .nav-bar { display: none; align-items: center; padding: 10px 16px 12px; gap: 12px; }
+    .nav-bar { display: none; align-items: center; padding: 10px 16px 12px; }
     .nav-bar.visible { display: flex; }
-    .back-btn {
-      background: white;
-      border: 1px solid var(--borde);
-      width: 36px;
-      height: 36px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-    .nav-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); flex: 1; }
+    .back-btn { background: white; border: 1px solid var(--borde); width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+    .nav-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; margin-left: 12px; color: var(--texto); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .content { padding: 16px 20px 20px; overflow-y: auto; flex: 1; }
+    .offline-banner { display: none; background: #FEF3C7; color: #92400E; padding: 8px 16px; font-size: 13px; text-align: center; }
+    .offline-banner.visible { display: block; }
+
+    .sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9000; align-items: flex-end; justify-content: center; }
+    .sheet-overlay.visible { display: flex; }
+    .bottom-sheet { background: var(--crema); border-radius: 24px 24px 0 0; padding: 20px 20px calc(24px + var(--safe-bottom)); width: 100%; max-width: 480px; }
+    .sheet-handle { width: 36px; height: 4px; background: #C7C7CC; border-radius: 2px; margin: 0 auto 18px; }
+    .user-sheet-profile { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .user-sheet-avatar { width: 52px; height: 52px; border-radius: 26px; object-fit: cover; border: 3px solid var(--verde-light); }
+    .user-sheet-avatar-placeholder { width: 52px; height: 52px; border-radius: 26px; background: var(--verde); color: white; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+    .user-sheet-name { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--texto); }
+    .user-sheet-email { font-size: 13px; color: var(--subtexto); }
+    .sheet-divider { height: 1px; background: var(--borde); margin: 16px 0; }
+    .sheet-menu-item { display: flex; align-items: center; gap: 12px; padding: 13px 0; cursor: pointer; font-size: 15px; color: var(--texto); }
+    .sheet-logout { color: var(--rojo); }
+
+    .content { padding: 16px 20px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
     .screen { display: none; flex-direction: column; flex: 1; }
     .screen.active { display: flex; }
 
-    .home-map-section {
-      position: relative;
-      height: 30dvh;
-      min-height: 200px;
-      background: var(--crema-dark);
-      overflow: hidden;
-      flex-shrink: 0;
-    }
+    .home-map-section { position: relative; height: 30dvh; min-height: 180px; max-height: 260px; background: var(--crema-dark); overflow: hidden; flex-shrink: 0; }
     #nearbyMap { width: 100%; height: 100%; }
-    .nearby-pill {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15,123,94,0.92);
-      backdrop-filter: blur(8px);
-      color: white;
-      padding: 8px 18px;
-      border-radius: 40px;
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      z-index: 10;
-    }
-    .gps-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: white;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-size: 17px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 10;
-    }
-    .map-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--subtexto);
-      gap: 8px;
-    }
+    .nearby-pill { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(15,123,94,0.92); backdrop-filter: blur(8px); color: white; padding: 8px 18px; border-radius: 40px; font-size: 13px; font-weight: 600; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 10; pointer-events: none; }
+    .gps-btn { position: absolute; top: 10px; right: 10px; background: white; border: none; width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10; }
+    .map-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--subtexto); gap: 8px; font-size: 14px; }
 
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      border: 1px solid var(--borde);
-      transition: transform 0.15s;
-    }
+    .section-label { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--texto); padding: 14px 20px 8px; display: flex; justify-content: space-between; align-items: center; }
+    .card { background: white; border-radius: 20px; padding: 16px; margin: 0 20px 10px; cursor: pointer; border: 1px solid var(--borde); transition: transform 0.15s, box-shadow 0.15s; animation: fadeUp 0.3s ease both; }
     .card:active { transform: scale(0.98); }
+    .card.expiring { animation: fadeOut 0.6s ease forwards; pointer-events: none; }
+    @keyframes fadeOut { 0% { opacity: 1; transform: scale(1); max-height: 200px; margin-bottom: 10px; } 60% { opacity: 0; transform: scale(0.95); } 100% { opacity: 0; max-height: 0; margin-bottom: 0; padding: 0; border-width: 0; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--texto); margin-bottom: 8px; }
     .card-info { display: flex; gap: 12px; font-size: 13px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; gap: 8px; }
-    .badge {
-      background: var(--verde-light);
-      color: var(--verde);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+    .badge { background: var(--verde-light); color: var(--verde); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
     .badge.lleno { background: #FEE2E2; color: var(--rojo); }
     .badge.tuya { background: #FEF3C7; color: #92400E; }
-
+    .organizador-chip { font-size: 12px; color: var(--subtexto); background: var(--crema-dark); padding: 3px 10px; border-radius: 20px; }
     .countdown-wrap { margin-top: 10px; }
     .countdown-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtexto); margin-bottom: 5px; }
     .countdown-bar-track { height: 6px; background: var(--crema-dark); border-radius: 3px; overflow: hidden; }
-    .countdown-bar-fill { height: 100%; border-radius: 3px; transition: width 1s linear; }
+    .countdown-bar-fill { height: 100%; border-radius: 3px; transition: width 1s linear, background-color 1.5s ease; }
 
-    .btn {
-      background: var(--verde);
-      color: white;
-      border: none;
-      padding: 14px 20px;
-      border-radius: 60px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-      font-size: 15px;
-      margin-top: 12px;
-    }
-    .btn-back {
-      background: var(--gris-claro);
-      color: var(--gris);
-      border: none;
-      padding: 14px 20px;
-      border-radius: 60px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .fab {
-      position: fixed;
-      bottom: calc(24px + var(--safe-bottom));
-      right: 24px;
-      background: var(--verde);
-      color: white;
-      border: none;
-      height: 52px;
-      padding: 0 22px;
-      border-radius: 26px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(15,123,94,0.45);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 300;
-    }
+    .btn { background: var(--verde); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary { background: white; border: 1.5px solid var(--borde); color: var(--texto); }
+    .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
+    .btn-back:active { transform: scale(0.98); background: #D1D5DB; }
+    .btn.loading { opacity: 0.7; pointer-events: none; }
 
-    .form-input, .form-select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid var(--borde);
-      border-radius: 16px;
-      font-size: 16px;
-      margin-bottom: 16px;
-    }
+    .fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--verde); color: white; border: none; height: 52px; padding: 0 22px; border-radius: 26px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 300; }
+    .fab:active { transform: scale(0.96); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-input, .form-select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--borde); border-radius: 16px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--texto); transition: border-color 0.2s; }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--verde); }
     .form-label { font-size: 13px; font-weight: 600; color: var(--subtexto); margin-bottom: 7px; display: block; }
-
-    .duracion-btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 40px;
-      border: 1.5px solid var(--borde);
-      background: white;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.15s;
-    }
-    .duracion-btn.selected {
-      background: var(--verde-light);
-      border-color: var(--verde);
-      color: var(--verde);
-    }
-    .option-btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 40px;
-      border: 1.5px solid var(--borde);
-      background: white;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .option-btn.selected {
-      background: var(--verde-light);
-      border-color: var(--verde);
-      color: var(--verde);
-    }
+    .option-grid { display: flex; gap: 8px; }
+    .option-btn { flex: 1; padding: 10px; border-radius: 40px; border: 1.5px solid var(--borde); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; transition: all 0.15s; }
+    .option-btn.selected { background: var(--verde-light); border-color: var(--verde); color: var(--verde); font-weight: 600; }
+    .duracion-grid { display: flex; gap: 8px; }
+    .duracion-btn { flex: 1; padding: 10px 6px; border-radius: 40px; border: 1.5px solid var(--borde); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; text-align: center; transition: all 0.15s; }
+    .duracion-btn.selected { background: var(--verde-light); border-color: var(--verde); color: var(--verde); }
 
     .tiempo-opciones {
       display: flex;
@@ -319,186 +181,128 @@
       color: white;
     }
 
-    .chat-section {
-      background: white;
-      border-radius: 20px;
-      padding: 16px;
-      border: 1px solid var(--borde);
-      margin-bottom: 12px;
-    }
-    .chat-title {
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 18px;
-      color: var(--texto);
-      margin-bottom: 16px;
-      border-bottom: 2px solid var(--verde-light);
-      padding-bottom: 8px;
-    }
-    .qa-bubble {
-      border-radius: 16px;
-      padding: 13px 15px;
-      margin-bottom: 12px;
-    }
-    .qa-bubble-question {
-      background: var(--azul-claro);
-      border-left: 4px solid var(--azul);
-    }
-    .qa-bubble-answer {
-      background: var(--verde-light);
-      border-left: 4px solid var(--verde);
-      margin-left: 20px;
-      margin-bottom: 16px;
-    }
-    .qa-bubble-text { font-size: 14px; color: var(--texto); line-height: 1.5; }
-    .qa-meta { font-size: 11px; color: var(--subtexto); margin-top: 6px; display: flex; justify-content: space-between; }
-    .chat-input-area {
-      background: var(--crema-dark);
-      border-radius: 14px;
-      padding: 12px;
-      margin-top: 12px;
-    }
-    .chat-input-area textarea {
-      width: 100%;
-      border: 1.5px solid var(--borde);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 14px;
-      resize: vertical;
-    }
-    .chat-send-btn {
-      width: 100%;
-      margin-top: 8px;
-      padding: 10px;
-      background: var(--verde);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .chat-disabled-msg {
-      background: var(--crema-dark);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: var(--subtexto);
-      text-align: center;
-    }
-    .char-counter {
-      font-size: 11px;
-      color: var(--subtexto);
-      text-align: right;
-      margin-top: 4px;
-    }
+    .map { height: 180px; border-radius: 16px; margin: 12px 0; overflow: hidden; border: 1px solid var(--borde); }
+    .empty { text-align: center; padding: 40px 20px; color: var(--subtexto); line-height: 1.7; margin: 0 20px; }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
 
-    .detail-header {
-      background: white;
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 12px;
-      border: 1px solid var(--borde);
-    }
+    .detail-header { background: white; border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--borde); }
     .detail-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
     .detail-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
-    .detail-countdown {
-      background: white;
-      border-radius: 16px;
-      padding: 14px 16px;
-      border: 1px solid var(--borde);
-      margin-bottom: 12px;
-    }
-    .map { height: 180px; border-radius: 16px; margin: 12px 0; overflow: hidden; border: 1px solid var(--borde); }
-    .empty { text-align: center; padding: 60px 20px; color: var(--subtexto); }
-    .empty-icon { font-size: 48px; margin-bottom: 12px; }
-    .join-card {
-      background: #FFF8EC;
-      border: 1px solid #F5D9A8;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .toast {
-      position: fixed;
-      bottom: calc(90px + var(--safe-bottom));
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1C1C1E;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 24px;
-      font-size: 14px;
-      z-index: 9999;
-      opacity: 0;
-      transition: opacity 0.25s;
-      pointer-events: none;
-    }
-    .toast.show { opacity: 1; }
-    #headerSpacer { flex-shrink: 0; }
-    #homeListContainer { overflow-y: auto; flex: 1; padding-bottom: 80px; }
-
-    .login-prompt-card {
-      background: linear-gradient(135deg, var(--verde-light), white);
-      border-radius: 24px;
-      padding: 32px 24px;
-      text-align: center;
-      margin: 20px;
-    }
-    .login-prompt-card h3 {
-      color: var(--verde);
-      margin-bottom: 8px;
-      font-family: 'Fraunces', serif;
-    }
-    .section-label {
-      font-family: 'Fraunces', serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--texto);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 20px 8px;
-    }
-    .organizador-chip {
-      font-size: 12px;
-      color: var(--subtexto);
-      background: var(--crema-dark);
-      padding: 3px 10px;
-      border-radius: 20px;
-    }
-    .maps-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--verde);
-      text-decoration: none;
-      background: var(--verde-light);
-      padding: 5px 12px;
-      border-radius: 20px;
-    }
-    .loading { opacity: 0.7; pointer-events: none; }
-    .spinning { animation: spin 0.6s linear; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .detail-row strong { color: var(--texto); }
+    .detail-countdown { background: white; border-radius: 16px; padding: 14px 16px; border: 1px solid var(--borde); margin-bottom: 12px; }
+    .detail-countdown-label { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 8px; }
+    .detail-countdown-label .tiempo-restante { font-weight: 700; font-size: 14px; }
     .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background-color 2s ease; }
+
+    .chat-section { background: white; border-radius: 20px; padding: 16px; border: 1px solid var(--borde); margin-bottom: 12px; }
+    .chat-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; color: var(--texto); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--verde-light); padding-bottom: 8px; }
+    .qa-bubble { border-radius: 16px; padding: 13px 15px; margin-bottom: 12px; }
+    .qa-bubble-question { background: var(--azul-claro); border-left: 4px solid var(--azul); }
+    .qa-bubble-answer { background: var(--verde-light); border-left: 4px solid var(--verde); margin-left: 20px; margin-bottom: 16px; }
+    .qa-bubble-text { font-size: 14px; color: var(--texto); line-height: 1.5; }
+    .qa-meta { font-size: 11px; color: var(--subtexto); margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .chat-input-area { background: var(--crema-dark); border-radius: 14px; padding: 12px; margin-top: 12px; }
+    .chat-input-area textarea { width: 100%; border: 1.5px solid var(--borde); border-radius: 12px; padding: 10px 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; background: white; }
+    .chat-send-btn { width: 100%; margin-top: 8px; padding: 10px; background: var(--verde); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .chat-waiting { background: #FEF3C7; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #92400E; margin-bottom: 12px; }
+    .chat-disabled-msg { background: var(--crema-dark); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--subtexto); text-align: center; }
+    .char-counter { font-size: 11px; color: var(--subtexto); text-align: right; margin-top: 4px; }
+    .char-counter.warning { color: #D97706; }
+    .char-counter.danger { color: var(--rojo); }
+
+    .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+    .join-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 4px; }
+
+    .sent-screen { text-align: center; padding: 60px 20px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .sent-icon { font-size: 72px; margin-bottom: 16px; animation: pop 0.4s ease; }
+    @keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+    .sent-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
+    .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
+
+    .maps-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--verde); text-decoration: none; background: var(--verde-light); padding: 5px 12px; border-radius: 20px; }
+
+    .login-required-note { display: flex; align-items: center; gap: 10px; background: var(--azul-claro); border: 1px solid #BFDBFE; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #1D4ED8; margin-bottom: 12px; }
+
+    #homeListContainer { overflow-y: auto; flex: 1; padding-bottom: calc(80px + var(--safe-bottom)); }
+
+    .map-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; }
+    .map-modal-header { background: var(--verde); padding: 16px; color: white; display: flex; justify-content: space-between; align-items: center; }
+    .map-modal-header button { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+    .map-modal-content { flex: 1; }
+    .map-modal-footer { padding: 16px; background: white; }
+
+    .install-banner { display: none; align-items: center; gap: 10px; background: linear-gradient(135deg, #0F7B5E, #0a6650); color: white; padding: 12px 16px; font-size: 13px; }
+    .install-banner.visible { display: flex; }
+    .install-banner-text { flex: 1; line-height: 1.4; }
+    .install-banner-text strong { display: block; font-size: 14px; }
+    .install-btn-banner { background: white; color: var(--verde); border: none; padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .install-dismiss { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer; }
+
+    .toast { position: fixed; bottom: calc(90px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: #1C1C1E; color: white; padding: 12px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; max-width: calc(100vw - 40px); pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
 <div id="toast" class="toast"></div>
 
+<!-- iOS Install Sheet -->
+<div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
+  <div class="ios-sheet">
+    <div class="ios-sheet-handle"></div>
+    <h3>Instalá Cebate Uno 🧉</h3>
+    <p>Guardala en tu pantalla de inicio<br>para usarla como una app nativa.</p>
+    <div class="ios-steps">
+      <div class="ios-step"><span class="ios-step-num">1</span><div class="ios-step-text"><strong>Tocá el botón Compartir</strong>El ícono de la caja con flecha ↑ en Safari</div><span class="ios-step-icon">⬆️</span></div>
+      <div class="ios-step"><span class="ios-step-num">2</span><div class="ios-step-text"><strong>«Agregar a inicio»</strong>Deslizá y tocá "Agregar a pantalla de inicio"</div><span class="ios-step-icon">➕</span></div>
+      <div class="ios-step"><span class="ios-step-num">3</span><div class="ios-step-text"><strong>Confirmá</strong>Tocá "Agregar" arriba a la derecha</div><span class="ios-step-icon">✅</span></div>
+    </div>
+    <button class="ios-sheet-close" onclick="cerrarIosSheet()">Entendido</button>
+  </div>
+</div>
+
+<style>
+.ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9100; align-items: flex-end; justify-content: center; padding-bottom: var(--safe-bottom); }
+.ios-sheet-overlay.visible { display: flex; }
+.ios-sheet { background: #F2F2F7; border-radius: 24px 24px 0 0; padding: 20px 24px calc(28px + var(--safe-bottom)); width: 100%; max-width: 480px; animation: sheetUp 0.35s cubic-bezier(0.32,0.72,0,1); }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.ios-sheet-handle { width: 36px; height: 4px; background: #C7C7CC; border-radius: 2px; margin: 0 auto 20px; }
+.ios-sheet h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; color: var(--texto); margin-bottom: 6px; text-align: center; }
+.ios-sheet p { font-size: 14px; color: var(--subtexto); text-align: center; margin-bottom: 22px; line-height: 1.5; }
+.ios-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+.ios-step { display: flex; align-items: center; gap: 14px; background: white; border-radius: 16px; padding: 14px 16px; }
+.ios-step-num { background: var(--verde); color: white; width: 28px; height: 28px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.ios-step-text { font-size: 14px; color: var(--texto); line-height: 1.4; flex: 1; }
+.ios-step-text strong { display: block; font-size: 15px; }
+.ios-step-icon { font-size: 22px; flex-shrink: 0; }
+.ios-sheet-close { width: 100%; padding: 14px; background: white; border: 1px solid var(--borde); border-radius: 60px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); cursor: pointer; }
+</style>
+
 <div class="app">
   <div class="sticky-top" id="stickyTop">
+
+    <div class="install-banner" id="installBanner">
+      <span style="font-size:26px;">🧉</span>
+      <div class="install-banner-text"><strong>Instalá Cebate Uno</strong>Usala sin internet, como app nativa</div>
+      <button class="install-btn-banner" id="installBtnBanner">Instalar</button>
+      <button class="install-dismiss" id="installDismiss">✕</button>
+    </div>
+
+    <div class="offline-banner" id="offlineBanner">📵 Sin conexión — mostrando datos en caché</div>
+
     <div class="header" id="mainHeader">
+      <div id="headerLeft" style="flex-shrink:0; min-width:38px;"></div>
+
       <div class="logo-wrap">
         <div class="logo">🧉 cebate uno</div>
         <div class="sub">Encuentros con mate en el parque</div>
       </div>
+
       <div class="header-actions">
-        <button class="refresh-btn" onclick="recargar()">↻</button>
+        <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
+        <button class="bell-btn" id="bellBtn" onclick="abrirNotifPanel()">🔔<span class="bell-badge" id="bellBadge">0</span></button>
         <div id="authArea"></div>
       </div>
     </div>
@@ -509,21 +313,19 @@
     </div>
   </div>
 
-  <div id="headerSpacer"></div>
+  <div id="headerSpacer" style="flex-shrink:0;"></div>
 
   <!-- HOME -->
   <div id="screen-home" class="screen active">
-    <div class="home-map-section">
+    <div class="home-map-section" id="homeMapSection">
       <div id="nearbyMap"></div>
       <div class="nearby-pill" id="nearbyPill" style="display:none;"></div>
-      <button class="gps-btn" onclick="pedirUbicacion()">📍</button>
-      <div class="map-placeholder" id="mapPlaceholder">
-        <span>🗺️</span><span>Activá el GPS</span>
-      </div>
+      <button class="gps-btn" id="gpsBtn" onclick="pedirUbicacion()" title="Mi ubicación">📍</button>
+      <div class="map-placeholder" id="mapPlaceholder"><span>🗺️</span><span>Activá el GPS para ver la mateada más cercana</span></div>
     </div>
     <div id="homeListContainer">
       <div class="section-label"><span>Mateadas activas</span><span id="contadorMateadas"></span></div>
-      <div id="homeContent"></div>
+      <div id="homeContent"><div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div></div>
     </div>
   </div>
 
@@ -533,39 +335,54 @@
   <!-- CREATE -->
   <div id="screen-create" class="screen">
     <div class="content">
-      <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan"></div>
-      <div class="form-group"><label class="form-label">🎯 Tema</label>
-        <select id="temaMateada" class="form-select">
-          <option>🤝 Emprendedurismo</option><option selected>📖 Filosofía y vida cotidiana</option>
-          <option>💻 Tecnología e IA</option><option>🎨 Arte y creatividad</option>
-          <option>📚 Literatura</option><option>🎬 Cine y series</option>
-          <option>🌱 Sustentabilidad</option><option>🧘 Bienestar y meditación</option>
-          <option>⚽ Mundial de fútbol</option><option>🤔 Problemas existenciales</option>
-          <option>🍷 Vinos y whiskies</option><option>🎒 Viajes de mochilero</option>
-          <option>🧠 Salud mental</option><option>🗣️ Necesito descargarme</option>
-          <option>🏛️ Política</option><option>🚀 Emprendimientos</option>
-          <option>💡 Aconsejar personas</option><option>🔮 Esoterismo</option>
-        </select>
+      <div id="createLoginGate" style="display:none;">
+        <div class="login-required-note">ℹ️ <span>Para publicar una mateada necesitás iniciar sesión con Google.</span></div>
       </div>
-      <div class="form-group"><label class="form-label">📍 Ubicación</label><input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras"></div>
-      <div class="form-group"><label class="form-label">⏳ Duración</label>
-        <div style="display: flex; gap: 8px;">
-          <button class="duracion-btn" onclick="seleccionarDuracion(this,30)">30 min</button>
-          <button class="duracion-btn selected" onclick="seleccionarDuracion(this,60)">1 hora</button>
-          <button class="duracion-btn" onclick="seleccionarDuracion(this,120)">2 horas</button>
+      <div id="createForm">
+        <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name"></div>
+        <div class="form-group"><label class="form-label">🎯 Tema</label>
+          <select id="temaMateada" class="form-select">
+            <option>🤝 Emprendedurismo</option>
+            <option selected>📖 Filosofía y vida cotidiana</option>
+            <option>💻 Tecnología e IA</option>
+            <option>🎨 Arte y creatividad</option>
+            <option>📚 Literatura</option>
+            <option>🎬 Cine y series</option>
+            <option>🌱 Sustentabilidad</option>
+            <option>🧘 Bienestar y meditación</option>
+            <option>⚽ Mundial de fútbol y selecciones</option>
+            <option>🤔 Problemas existenciales y propósito de vida</option>
+            <option>🍷 Vinos, whiskies y coctelería</option>
+            <option>🎒 Tips para viajes de mochilero</option>
+            <option>🧠 Salud mental y bienestar emocional</option>
+            <option>🗣️ Necesito descargarme (espacio de desahogo)</option>
+            <option>🏛️ Política y actualidad</option>
+            <option>🚀 Cómo arrancar un emprendimiento desde cero</option>
+            <option>💡 Yo voy a aconsejar personas (coach grupal)</option>
+            <option>🔮 Esoterismo, Kábala y temas profundos</option>
+          </select>
         </div>
-      </div>
-      <div class="form-group"><label class="form-label">🧉 ¿Cómo tomás el mate?</label>
-        <div class="option-grid" style="display:flex; gap:8px;">
-          <button class="option-btn" onclick="seleccionarMate(this)">Amargo</button>
-          <button class="option-btn selected" onclick="seleccionarMate(this)">Dulce</button>
+        <div class="form-group">
+          <label class="form-label">📍 Ubicación</label>
+          <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras, Córdoba" autocomplete="off">
+          <button type="button" onclick="abrirSelectorUbicacion()" style="margin-top:8px; background:var(--verde-light); border:none; padding:10px; border-radius:12px; width:100%; color:var(--verde); font-weight:600; cursor:pointer;">🗺️ Seleccionar en el mapa</button>
         </div>
+        <div class="form-group"><label class="form-label">⏳ Duración</label>
+          <div class="duracion-grid" id="duracionGrid">
+            <button class="duracion-btn" onclick="seleccionarDuracion(this, 30)">30 min</button>
+            <button class="duracion-btn selected" onclick="seleccionarDuracion(this, 60)">1 hora</button>
+            <button class="duracion-btn" onclick="seleccionarDuracion(this, 120)">2 horas</button>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">🧉 ¿Cómo tomás el mate?</label>
+          <div class="option-grid"><button class="option-btn" onclick="seleccionarMate(this)">Amargo</button><button class="option-btn selected" onclick="seleccionarMate(this)">Dulce</button></div>
+        </div>
+        <div class="form-group"><label class="form-label">👥 Cupo máximo</label>
+          <select id="cupoMateada" class="form-select"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>15</option><option>20</option></select>
+        </div>
+        <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
+        <div style="height: calc(80px + var(--safe-bottom));"></div>
       </div>
-      <div class="form-group"><label class="form-label">👥 Cupo máximo</label>
-        <select id="cupoMateada" class="form-select"><option>4</option><option>6</option><option selected>8</option><option>10</option></select>
-      </div>
-      <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
-      <button class="btn-back" onclick="irInicio()">Cancelar</button>
     </div>
   </div>
 
@@ -574,34 +391,39 @@
     <div class="content">
       <div id="joinInfo"></div>
       <div class="form-group">
-        <label class="form-label">📝 Tu pregunta (máx. 500 caracteres)</label>
-        <textarea id="preguntaUnirse" rows="3" placeholder="Ej: ¿Hay que llevar algo? ¿Dónde nos encontramos?" maxlength="500" style="width:100%; border:1.5px solid var(--borde); border-radius:12px; padding:10px;"></textarea>
+        <label class="form-label">📝 Tu pregunta para el organizador (máx. 500 caracteres)</label>
+        <textarea id="preguntaUnirse" rows="3" placeholder="Ej: ¿Hay que llevar algo? ¿Dónde nos encontramos exactamente?..." maxlength="500" style="width:100%; border:1.5px solid var(--borde); border-radius:12px; padding:10px; font-family:'DM Sans',sans-serif;"></textarea>
         <div class="char-counter" id="preguntaUnirseCounter">0/500</div>
       </div>
       <div class="form-group">
-        <label class="form-label">⏱️ ¿Cuándo llegarías?</label>
+        <label class="form-label">⏱️ ¿En cuánto tiempo llegarías?</label>
         <div class="tiempo-opciones">
-          <div class="opcion-tiempo" onclick="seleccionarTiempoLlegada(this,3)">3 min</div>
-          <div class="opcion-tiempo" onclick="seleccionarTiempoLlegada(this,20)">20 min</div>
-          <div class="opcion-tiempo selected" onclick="seleccionarTiempoLlegada(this,60)">1 hora</div>
+          <div class="opcion-tiempo" onclick="seleccionarTiempoLlegada(this, 3)">3 minutos</div>
+          <div class="opcion-tiempo" onclick="seleccionarTiempoLlegada(this, 20)">20 minutos</div>
+          <div class="opcion-tiempo selected" onclick="seleccionarTiempoLlegada(this, 60)">1 hora</div>
         </div>
       </div>
       <button class="btn" id="btnUnirse" onclick="enviarSolicitudYPregunta()">🧉 Enviar todo</button>
-      <button class="btn-back" onclick="volverADetalle()">← Volver</button>
+      <button class="btn-back" id="btnVolverDetalle" onclick="volverADetalle()">← Volver</button>
     </div>
   </div>
 
   <!-- SENT -->
   <div id="screen-sent" class="screen">
-    <div class="sent-screen" style="text-align:center; padding:60px 20px;">
-      <div style="font-size:72px;">🧉✨</div>
-      <div style="font-family:'Fraunces',serif; font-size:28px;">¡Listo!</div>
-      <p>Le avisamos al organizador<br>tu pregunta y llegada.</p>
-      <button class="btn btn-secondary" onclick="irInicio()" style="margin-top:28px;">← Volver</button>
-    </div>
+    <div class="sent-screen"><div class="sent-icon">🧉✨</div><div class="sent-title">¡Listo!</div><p class="sent-text">Le avisamos al organizador<br>que llegás y le consultaste.</p><button class="btn btn-secondary" onclick="irInicio()" style="margin-top:28px; max-width:240px;">← Volver al inicio</button></div>
   </div>
 
-  <button class="fab" id="fabBtn" onclick="irACrear()"><span>+</span> Agregar mateada</button>
+  <button class="fab" id="fabBtn" onclick="irACrear()"><span style="font-size:20px;">+</span> Agregar mateada</button>
+</div>
+
+<!-- User Menu Sheet -->
+<div class="sheet-overlay" id="userSheetOverlay" onclick="cerrarUserSheet(event)">
+  <div class="bottom-sheet" id="userSheet">
+    <div class="sheet-handle"></div>
+    <div class="user-sheet-profile" id="userSheetProfile"></div>
+    <div class="sheet-divider"></div>
+    <div class="sheet-menu-item" onclick="cerrarSesion()"><span class="sheet-menu-icon">🚪</span><span>Cerrar sesión</span></div>
+  </div>
 </div>
 
 <script>
@@ -611,10 +433,11 @@
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylfR3cTEeaXN14MqzdTzYJH0otTcgDO0zJF-H-glS-hpoNHhZvFvkbIWaLsRBFiBGI/exec';
 
 // ============================================
-// AUTENTICACIÓN GOOGLE
+// AUTENTICACIÓN CON GOOGLE
 // ============================================
 let usuarioActual = null;
 let tiempoLlegadaSeleccionado = 60;
+let chatCache = {};
 
 const sesionGuardada = localStorage.getItem('usuario_cebate_google');
 if (sesionGuardada) {
@@ -627,18 +450,34 @@ function handleCredentialResponse(response) {
         sub: data.sub,
         nombre: data.name,
         email: data.email,
-        avatar: data.picture
+        avatar: data.picture,
+        googleId: data.sub
     };
     localStorage.setItem('usuario_cebate_google', JSON.stringify(usuarioActual));
     actualizarInterfazUsuario();
     mostrarToast(`✅ ¡Bienvenido/a, ${usuarioActual.nombre}!`);
+    
+    const campoNombre = document.getElementById('nombreOrganizador');
+    if (campoNombre && !campoNombre.value) {
+        campoNombre.value = usuarioActual.nombre.split(' ')[0];
+    }
+    
     cargarMateadas();
+}
+
+function iniciarSesionGoogle() {
+    if (window.google && google.accounts) {
+        google.accounts.id.prompt();
+    } else {
+        mostrarToast("⏳ Cargando autenticación de Google...");
+    }
 }
 
 function cerrarSesion() {
     usuarioActual = null;
     localStorage.removeItem('usuario_cebate_google');
     actualizarInterfazUsuario();
+    cerrarUserSheet();
     mostrarToast('👋 Sesión cerrada');
     cargarMateadas();
 }
@@ -646,6 +485,7 @@ function cerrarSesion() {
 function actualizarInterfazUsuario() {
     const area = document.getElementById('authArea');
     if (!area) return;
+    
     if (!usuarioActual) {
         area.innerHTML = `<div id="googleButtonContainer"></div>`;
         if (window.google && google.accounts) {
@@ -653,19 +493,44 @@ function actualizarInterfazUsuario() {
                 document.getElementById("googleButtonContainer"),
                 { theme: "outline", size: "small", text: "signin_with", shape: "pill" }
             );
+        } else {
+            area.innerHTML = `<button class="login-btn" onclick="iniciarSesionGoogle()">🔑 Iniciar sesión con Google</button>`;
         }
     } else {
-        area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${usuarioActual.nombre[0].toUpperCase()}</div>`;
+        const avatarHtml = usuarioActual.avatar 
+            ? `<img src="${usuarioActual.avatar}" class="user-avatar" onclick="abrirUserSheet()" crossorigin="anonymous" referrerpolicy="no-referrer">`
+            : `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${(usuarioActual.nombre || 'U')[0].toUpperCase()}</div>`;
+        area.innerHTML = avatarHtml;
     }
 }
 
 function abrirUserSheet() {
     if (!usuarioActual) return;
-    if (confirm(`Usuario: ${usuarioActual.nombre}\nEmail: ${usuarioActual.email}\n\n¿Cerrar sesión?`)) cerrarSesion();
+    const profile = document.getElementById('userSheetProfile');
+    if (!profile) return;
+    
+    const avatarHtml = usuarioActual.avatar 
+        ? `<img src="${usuarioActual.avatar}" class="user-sheet-avatar" crossorigin="anonymous" referrerpolicy="no-referrer">`
+        : `<div class="user-sheet-avatar-placeholder">${(usuarioActual.nombre || 'U')[0].toUpperCase()}</div>`;
+    
+    profile.innerHTML = `
+        ${avatarHtml}
+        <div>
+            <div class="user-sheet-name">${usuarioActual.nombre}</div>
+            <div class="user-sheet-email">${usuarioActual.email}</div>
+        </div>
+    `;
+    document.getElementById('userSheetOverlay')?.classList.add('visible');
+}
+
+function cerrarUserSheet(e) {
+    if (!e || e.target === document.getElementById('userSheetOverlay')) {
+        document.getElementById('userSheetOverlay')?.classList.remove('visible');
+    }
 }
 
 // ============================================
-// ESTADO GLOBAL
+// FUNCIONES PRINCIPALES DE LA APP
 // ============================================
 let mateadasActuales = [];
 let mateadaSeleccionada = null;
@@ -675,208 +540,214 @@ let nearbyMarkers = [];
 let duracionSeleccionada = 60;
 let countdownIntervals = {};
 let userLat = null, userLng = null;
-let chatCache = {};
+let ubicacionSeleccionadaMapa = null;
+let mapaSelector = null;
+let markerSelector = null;
+let dispositivoInfo = {};
+let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
+let unreadCount = notificaciones.filter(n => !n.leida).length;
 
-// ============================================
-// FUNCIONES AUXILIARES
-// ============================================
-function duracionTexto(mins) {
-    if (mins == 30) return '30 min';
-    if (mins == 60) return '1 hora';
-    if (mins == 120) return '2 horas';
-    return mins + ' min';
+function capturarDatosDispositivo() {
+    const userAgent = navigator.userAgent;
+    let navegador = 'Otro';
+    if (userAgent.indexOf('Chrome') > -1) navegador = 'Chrome';
+    else if (userAgent.indexOf('Safari') > -1) navegador = 'Safari';
+    else if (userAgent.indexOf('Firefox') > -1) navegador = 'Firefox';
+    else if (userAgent.indexOf('Edge') > -1) navegador = 'Edge';
+    
+    let sistema = 'Otro';
+    if (userAgent.indexOf('Windows') > -1) sistema = 'Windows';
+    else if (userAgent.indexOf('Mac') > -1) sistema = 'macOS';
+    else if (userAgent.indexOf('Linux') > -1) sistema = 'Linux';
+    else if (userAgent.indexOf('Android') > -1) sistema = 'Android';
+    else if (userAgent.indexOf('iOS') > -1 || userAgent.indexOf('iPhone') > -1) sistema = 'iOS';
+    
+    let dispositivo = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent) ? 'Móvil/Tablet' : 'Desktop';
+    
+    dispositivoInfo = {
+        navegador, sistema, dispositivo,
+        idioma: navigator.language,
+        zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        resolucion: `${window.screen.width}x${window.screen.height}`,
+        fechaVisita: new Date().toISOString()
+    };
 }
 
-function formatTiempoRestante(ms) {
-    if (ms <= 0) return 'Terminada';
-    const s = Math.floor(ms/1000), h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
-    if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
-    if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`;
-    return `${sec}s`;
+capturarDatosDispositivo();
+
+function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
+    const notif = {
+        id: Date.now(),
+        tipo, titulo, cuerpo, mateadaId,
+        leida: false,
+        fecha: new Date().toISOString()
+    };
+    notificaciones.unshift(notif);
+    if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
+    localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+    actualizarBellBadge();
 }
 
-function haversineKm(lat1, lng1, lat2, lng2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLng/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+function actualizarBellBadge() {
+    unreadCount = notificaciones.filter(n => !n.leida).length;
+    const badge = document.getElementById('bellBadge');
+    if (!badge) return;
+    if (unreadCount > 0) { badge.style.display = 'flex'; badge.textContent = unreadCount > 9 ? '9+' : unreadCount; }
+    else { badge.style.display = 'none'; }
+}
+
+function abrirNotifPanel() {
+    mostrarToast(`🔔 Tenés ${unreadCount} notificación${unreadCount !== 1 ? 'es' : ''}`);
+    notificaciones.forEach(n => n.leida = true);
+    localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+    actualizarBellBadge();
+}
+
+function duracionTexto(mins) { 
+    if (mins == 30) return '30 min'; 
+    if (mins == 60) return '1 hora'; 
+    if (mins == 120) return '2 horas'; 
+    return mins + ' min'; 
+}
+
+function formatTiempoRestante(ms) { 
+    if (ms <= 0) return 'Terminada'; 
+    const s = Math.floor(ms/1000), h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60; 
+    if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`; 
+    if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`; 
+    return `${sec}s`; 
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) { 
+    const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180, 
+    a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2; 
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 }
 
 function getInicioMs(m) {
-    if (m.timestamp_unix) return parseInt(m.timestamp_unix) * 1000;
+    if (m.timestamp_unix) return parseInt(m.timestamp_unix)*1000;
     if (m.timestamp_ms) return parseInt(m.timestamp_ms);
-    if (m.fecha_hora) { const d = new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
-    if (m.hora) {
-        const [h,min] = m.hora.split(':').map(Number);
-        if (!isNaN(h) && !isNaN(min)) {
-            const n = new Date();
-            return new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
-        }
-    }
+    if (m.fecha_hora) { const d=new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
+    if (m.fecha && m.hora) { const d=new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
+    if (m.hora) { const [h,min]=m.hora.split(':').map(Number); if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); } }
     return null;
 }
 
-function estaTerminada(m) {
-    const inicio = getInicioMs(m);
-    if (!inicio) return false;
-    return Date.now() > (inicio + (parseInt(m.duracion_minutos)||60) * 60000);
+function estaTerminada(m) { 
+    const i=getInicioMs(m); 
+    if (!i) return false; 
+    return Date.now() > (i + (parseInt(m.duracion_minutos)||60)*60000); 
 }
 
-function getMsRestante(m) {
-    const inicio = getInicioMs(m);
-    if (!inicio) return null;
-    return (inicio + (parseInt(m.duracion_minutos)||60) * 60000) - Date.now();
+function getMsRestante(m) { 
+    const i=getInicioMs(m); 
+    if (!i) return null; 
+    return (i + (parseInt(m.duracion_minutos)||60)*60000) - Date.now(); 
 }
 
 function iniciarCountdown(m, fillId, labelId, onTerminada) {
-    const durMs = (parseInt(m.duracion_minutos)||60) * 60000;
+    const durMs = (parseInt(m.duracion_minutos)||60)*60000;
     function tick() {
-        const fill = document.getElementById(fillId);
-        const label = document.getElementById(labelId);
-        if (!fill || !label) { clearInterval(countdownIntervals[m.id]); return; }
+        const fill = document.getElementById(fillId), label = document.getElementById(labelId);
+        if (!fill||!label) { clearInterval(countdownIntervals[m.id]); return; }
         const ms = getMsRestante(m);
-        if (ms === null) {
-            fill.style.width = '100%';
-            fill.style.background = '#0F7B5E';
-            label.textContent = duracionTexto(parseInt(m.duracion_minutos)||60);
-            return;
-        }
-        const pct = Math.max(0, Math.min(1, ms / durMs));
-        const color = pct > 0.5 ? '#0F7B5E' : (pct > 0.25 ? '#D97706' : '#DC2626');
-        fill.style.width = (pct * 100) + '%';
-        fill.style.background = color;
-        if (ms <= 0) {
-            fill.style.width = '0%';
-            label.textContent = 'Terminada ✓';
-            label.style.color = '#DC2626';
-            clearInterval(countdownIntervals[m.id]);
-            if (onTerminada) onTerminada(m.id);
-        } else {
-            label.textContent = formatTiempoRestante(ms);
-            label.style.color = color;
-        }
+        if (ms === null) { fill.style.width='100%'; fill.style.background='#0F7B5E'; label.textContent=duracionTexto(parseInt(m.duracion_minutos)||60); label.style.color='#0F7B5E'; return; }
+        const pct = Math.max(0, Math.min(1, ms/durMs));
+        const color = pct>0.5?'#0F7B5E':pct>0.25?'#D97706':'#DC2626';
+        fill.style.width=(pct*100)+'%'; fill.style.background=color;
+        if (ms<=0) { fill.style.width='0%'; label.textContent='Terminada ✓'; label.style.color='#DC2626'; clearInterval(countdownIntervals[m.id]); if(onTerminada) onTerminada(m.id); }
+        else { label.textContent=formatTiempoRestante(ms); label.style.color=color; }
     }
-    clearInterval(countdownIntervals[m.id]);
-    tick();
-    countdownIntervals[m.id] = setInterval(tick, 1000);
+    clearInterval(countdownIntervals[m.id]); tick(); countdownIntervals[m.id] = setInterval(tick, 1000);
 }
 
-function recargar() {
-    const btn = document.getElementById('refreshBtn');
-    btn.classList.add('spinning');
-    setTimeout(() => btn.classList.remove('spinning'), 600);
-    cargarMateadas();
+async function geocodificarUbicacion(direccion) {
+    try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`, { headers: {'User-Agent':'MatearApp/1.0'} });
+        const d = await r.json();
+        if (d && d.length > 0) return { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon) };
+        return null;
+    } catch(e) { return null; }
+}
+
+function abrirSelectorUbicacion() {
+    const modal = document.createElement('div');
+    modal.className = 'map-modal';
+    modal.innerHTML = `<div class="map-modal-header"><span>📍 Seleccioná la ubicación</span><button onclick="this.closest('.map-modal').remove()">✕</button></div><div id="mapaSelectorContainer" class="map-modal-content"></div><div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>`;
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        const c = document.getElementById('mapaSelectorContainer');
+        if (!c) return;
+        mapaSelector = L.map(c).setView([userLat || -34.5842, userLng || -58.4073], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
+        mapaSelector.on('click', (e) => {
+            if (markerSelector) mapaSelector.removeLayer(markerSelector);
+            markerSelector = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapaSelector);
+            ubicacionSeleccionadaMapa = { lat: e.latlng.lat, lng: e.latlng.lng };
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18`)
+                .then(r => r.json()).then(d => { document.getElementById('ubicacionMateada').value = d.display_name?.split(',')[0] || 'Ubicación seleccionada'; }).catch(() => {});
+        });
+        document.getElementById('confirmarUbicacionBtn').onclick = () => {
+            if (ubicacionSeleccionadaMapa) { modal.remove(); mostrarToast('✅ Ubicación seleccionada'); }
+            else { mostrarToast('📍 Tocá el mapa para seleccionar'); }
+        };
+    }, 100);
 }
 
 function pedirUbicacion() {
+    const btn = document.getElementById('gpsBtn');
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
-        (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; actualizarMapaCercano(); },
-        () => { userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); }
+        (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; btn.textContent = '✅'; actualizarMapaCercano(); },
+        () => { userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
+        { timeout: 8000 }
     );
 }
 
 function actualizarMapaCercano() {
-    const ph = document.getElementById('mapPlaceholder');
-    const pill = document.getElementById('nearbyPill');
+    const ph = document.getElementById('mapPlaceholder'), pill = document.getElementById('nearbyPill');
     const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
-    
-    if (vigentes.length === 0) {
-        if (ph) ph.style.display = 'flex';
-        if (pill) pill.style.display = 'none';
-        if (mapaNearby) {
-            nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk));
-            nearbyMarkers = [];
-        }
-        return;
-    }
-    
-    if (ph) ph.style.display = 'none';
-    
-    let ordenadas = vigentes;
-    if (userLat && userLng) {
-        ordenadas = [...vigentes].sort((a,b) => 
-            haversineKm(userLat, userLng, parseFloat(a.latitud), parseFloat(a.longitud)) - 
-            haversineKm(userLat, userLng, parseFloat(b.latitud), parseFloat(b.longitud))
-        );
-    }
-    
+    if (vigentes.length === 0) { ph.style.display='flex'; pill.style.display='none'; if (mapaNearby) { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; } return; }
+    ph.style.display='none';
+    let ordenadas = userLat&&userLng ? [...vigentes].sort((a,b)=>haversineKm(userLat,userLng,a.latitud,a.longitud)-haversineKm(userLat,userLng,b.latitud,b.longitud)) : vigentes;
     const cercana = ordenadas[0];
-    
-    if (!mapaNearby) {
-        mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false })
-            .setView([-34.6, -64.0], 4);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
-    } else {
-        nearbyMarkers.forEach(mk => mapaNearby.removeLayer(mk));
-        nearbyMarkers = [];
-    }
-    
+    if (!mapaNearby) { mapaNearby=L.map('nearbyMap',{zoomControl:false,attributionControl:false}).setView([-34.6,-64.0],4); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby); }
+    else { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; }
     const bounds = [];
-    ordenadas.forEach((m, i) => {
-        const esCercana = (i === 0);
-        const icon = L.divIcon({
-            html: `<div style="background:${esCercana ? '#0F7B5E' : 'rgba(15,123,94,0.55)'};color:white;width:${esCercana ? '38px' : '26px'};height:${esCercana ? '38px' : '26px'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${esCercana ? '18px' : '13px'};border:${esCercana ? '3px' : '2px'} solid white;">🧉</div>`,
-            iconSize: esCercana ? [38,38] : [26,26],
-            iconAnchor: esCercana ? [19,19] : [13,13]
-        });
-        const mk = L.marker([parseFloat(m.latitud), parseFloat(m.longitud)], { icon }).addTo(mapaNearby);
-        mk.on('click', () => verDetalle(m));
-        nearbyMarkers.push(mk);
-        bounds.push([parseFloat(m.latitud), parseFloat(m.longitud)]);
+    ordenadas.forEach((m,i)=>{
+        const esCercana=(i===0);
+        const icon=L.divIcon({html:`<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.55)'};color:white;width:${esCercana?'38px':'26px'};height:${esCercana?'38px':'26px'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${esCercana?'18px':'13px'};box-shadow:0 3px 10px rgba(15,123,94,0.45);border:${esCercana?'3px':'2px'} solid white;">🧉</div>`,iconSize:esCercana?[38,38]:[26,26],iconAnchor:esCercana?[19,19]:[13,13]});
+        const mk = L.marker([m.latitud,m.longitud],{icon}).addTo(mapaNearby);
+        mk.on('click',()=>verDetalle(m)); nearbyMarkers.push(mk); bounds.push([m.latitud,m.longitud]);
     });
-    
-    if (userLat && userLng) {
-        const userIcon = L.divIcon({
-            html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;"></div>`,
-            iconSize: [14,14],
-            iconAnchor: [7,7]
-        });
-        const mkU = L.marker([userLat, userLng], { icon: userIcon }).addTo(mapaNearby);
-        nearbyMarkers.push(mkU);
-        bounds.push([userLat, userLng]);
-    }
-    
-    if (bounds.length === 1) {
-        mapaNearby.setView(bounds[0], 15);
-    } else if (bounds.length > 1) {
-        mapaNearby.fitBounds(bounds, { padding: [24,24], maxZoom: 14 });
-    }
-    
-    const dist = (userLat && userLng) ? ` · ${haversineKm(userLat, userLng, parseFloat(cercana.latitud), parseFloat(cercana.longitud)).toFixed(1)} km` : '';
-    pill.style.display = 'block';
-    pill.textContent = `📍 ${cercana.titulo}${dist}`;
-    setTimeout(() => mapaNearby?.invalidateSize(), 200);
+    if (userLat&&userLng) { const mkU = L.marker([userLat,userLng],{icon:L.divIcon({html:`<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`,iconSize:[14,14],iconAnchor:[7,7]})}).addTo(mapaNearby); nearbyMarkers.push(mkU); bounds.push([userLat,userLng]); }
+    if (bounds.length===1) mapaNearby.setView(bounds[0],15);
+    else if (bounds.length>1) mapaNearby.fitBounds(bounds,{padding:[24,24],maxZoom:14});
+    const dist = (userLat&&userLng)?` · ${haversineKm(userLat,userLng,cercana.latitud,cercana.longitud).toFixed(1)} km`:'';
+    pill.style.display='block'; pill.textContent=`📍 ${cercana.titulo}${dist}`;
+    setTimeout(()=>mapaNearby?.invalidateSize(),220);
 }
 
 async function cargarMateadas() {
-    Object.values(countdownIntervals).forEach(clearInterval);
-    countdownIntervals = {};
+    Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals={};
     const container = document.getElementById('homeContent');
     container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
-    
     try {
-        const response = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
-        const data = await response.json();
+        const r = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+        const data = await r.json();
         let todas = (data.success && data.mateadas) ? data.mateadas : [];
         mateadasActuales = todas.filter(m => !estaTerminada(m));
-        
-        const contadorSpan = document.getElementById('contadorMateadas');
-        if (contadorSpan) {
-            contadorSpan.textContent = mateadasActuales.length ? `${mateadasActuales.length} activa${mateadasActuales.length !== 1 ? 's' : ''}` : '';
-        }
-        
-        if (mateadasActuales.length === 0) {
+        document.getElementById('contadorMateadas').textContent = mateadasActuales.length ? `${mateadasActuales.length} activa${mateadasActuales.length !== 1 ? 's' : ''}` : '';
+        if (mateadasActuales.length === 0) { 
             if (usuarioActual) {
                 container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
             } else {
                 container.innerHTML = `
-                    <div class="login-prompt-card">
+                    <div class="empty">
                         <div class="empty-icon">🧉</div>
                         <h3>¡Bienvenido a Cebate Uno!</h3>
                         <p>Iniciá sesión con Google para crear o unirte a mateadas</p>
-                        <div id="googleButtonCenter"></div>
+                        <div id="googleButtonCenter" style="margin-top:16px;"></div>
                     </div>
                 `;
                 if (window.google && google.accounts && !usuarioActual) {
@@ -886,120 +757,85 @@ async function cargarMateadas() {
                     );
                 }
             }
-            actualizarMapaCercano();
-            return;
+            actualizarMapaCercano(); 
+            return; 
         }
-        
         container.innerHTML = '';
-        mateadasActuales.forEach((m, i) => {
-            const libres = parseInt(m.lugares_libres) || 0;
-            const durMins = parseInt(m.duracion_minutos) || 60;
-            const fillId = `fill-${m.id}`;
-            const labelId = `label-${m.id}`;
+        mateadasActuales.forEach((m,i)=>{
+            const libres = parseInt(m.lugares_libres)||0, durMins = parseInt(m.duracion_minutos)||60, fillId=`fill-${m.id}`, labelId=`label-${m.id}`;
             const esMia = usuarioActual && (usuarioActual.sub === m.organizador_sub || usuarioActual.nombre === m.organizador);
-            
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.id = `card-${m.id}`;
-            card.onclick = () => verDetalle(m);
-            card.innerHTML = `
-                <div class="card-title">${escapeHtml(m.titulo)}</div>
-                <div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${m.hora || 'Ahora'}</span></div>
-                <div class="card-footer">
-                    <span class="badge ${libres === 0 ? 'lleno' : (esMia ? 'tuya' : '')}">
-                        ${libres === 0 ? '🔴 Sin lugares' : (esMia ? '🌟 Tu mateada' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre`)}
-                    </span>
-                    <span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span>
-                </div>
-                <div class="countdown-wrap">
-                    <div class="countdown-label">
-                        <span>⏳ ${duracionTexto(durMins)}</span>
-                        <span id="${labelId}">—</span>
-                    </div>
-                    <div class="countdown-bar-track">
-                        <div class="countdown-bar-fill" id="${fillId}"></div>
-                    </div>
-                </div>
-            `;
+            const card = document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${i*60}ms`; card.onclick=()=>verDetalle(m);
+            card.innerHTML = `<div class="card-title">${escapeHtml(m.titulo)}</div><div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${m.hora||'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres===0?'lleno':esMia?'tuya':''}">${libres===0?'🔴 Sin lugares':esMia?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span><span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span></div><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div></div>`;
             container.appendChild(card);
-            setTimeout(() => iniciarCountdown(m, fillId, labelId, (id) => {
-                const cardEl = document.getElementById(`card-${id}`);
-                if (cardEl) cardEl.style.opacity = '0.5';
-            }), 50);
+            setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada),50);
         });
         actualizarMapaCercano();
-    } catch(e) {
-        console.error(e);
-        container.innerHTML = '<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>';
-    }
+    } catch(e) { container.innerHTML = '<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>'; }
 }
 
+function mateadaTerminada(id) {
+    const card = document.getElementById(`card-${id}`);
+    if (card) { card.classList.add('expiring'); setTimeout(()=>{ card.remove(); mateadasActuales = mateadasActuales.filter(m=>m.id!=id); if(mateadasActuales.filter(m=>!estaTerminada(m)).length===0) { 
+        if (usuarioActual) {
+            document.getElementById('homeContent').innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+        } else {
+            document.getElementById('homeContent').innerHTML=`
+                <div class="empty">
+                    <div class="empty-icon">🧉</div>
+                    <h3>¡Bienvenido a Cebate Uno!</h3>
+                    <p>Iniciá sesión con Google para crear o unirte a mateadas</p>
+                    <div id="googleButtonCenter2" style="margin-top:16px;"></div>
+                </div>
+            `;
+            if (window.google && google.accounts && !usuarioActual) {
+                google.accounts.id.renderButton(
+                    document.getElementById("googleButtonCenter2"),
+                    { theme: "outline", size: "large", text: "signin_with", shape: "pill" }
+                );
+            }
+        }
+        actualizarMapaCercano(); 
+    } },700); }
+}
+
+function recargar() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(()=>btn.classList.remove('spinning'),600); cargarMateadas(); }
+
 async function crearMateada() {
-    if (!usuarioActual) {
-        mostrarToast('Primero iniciá sesión con Google');
-        return;
-    }
-    
+    if (!usuarioActual) { iniciarSesionGoogle(); return; }
     const organizador = document.getElementById('nombreOrganizador').value.trim();
     const titulo = document.getElementById('temaMateada').value;
     const ubicacion = document.getElementById('ubicacionMateada').value.trim();
     const cupo = parseInt(document.getElementById('cupoMateada').value);
     const mateOption = document.querySelector('.option-btn.selected');
     const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
-    const hora = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-    
+    const hora = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
     if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
     if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
-    
-    const btn = document.getElementById('btnPublicar');
-    btn.classList.add('loading');
+
+    const btn = document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText = 'Buscando ubicación...';
+    let latitud = userLat || -34.5842, longitud = userLng || -58.4073;
+    const coord = await geocodificarUbicacion(ubicacion);
+    if (coord) { latitud = coord.lat; longitud = coord.lng; }
     btn.innerText = 'Publicando...';
-    
     try {
-        const params = new URLSearchParams({
-            accion: 'crearMateada',
-            titulo: titulo,
-            ubicacion: ubicacion,
-            latitud: userLat || -34.5842,
-            longitud: userLng || -58.4073,
-            lugares_totales: cupo,
-            organizador: organizador,
-            organizador_sub: usuarioActual.sub,
-            organizador_email: usuarioActual.email,
-            descripcion: `Mateada de ${titulo} · ${tipoMate}`,
-            duracion_minutos: duracionSeleccionada,
-            hora: hora
-        });
-        
-        const response = await fetch(`${SCRIPT_URL}?${params}`);
-        const resultado = await response.json();
-        
-        if (resultado.success) {
-            mostrarToast('✅ ¡Mateada publicada!');
-            irInicio();
-        } else {
-            mostrarToast('❌ ' + (resultado.error || 'No se pudo publicar'));
-        }
-    } catch(e) {
-        mostrarToast('❌ Error de conexión');
-    } finally {
-        btn.classList.remove('loading');
-        btn.innerText = '🌿 Publicar mateada';
-    }
+        const params = new URLSearchParams({accion:'crearMateada',titulo,ubicacion,latitud,longitud,lugares_totales:cupo,organizador,organizador_sub:usuarioActual.sub,organizador_email:usuarioActual.email,organizador_avatar:usuarioActual.avatar||organizador.charAt(0).toUpperCase(),descripcion:`Mateada de ${titulo} · ${tipoMate}`,duracion_minutos:duracionSeleccionada,duracion:duracionTexto(duracionSeleccionada),hora,dispositivo:JSON.stringify(dispositivoInfo)});
+        const r = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await r.json();
+        if (resultado.success) { mostrarToast('✅ ¡Mateada publicada!'); irInicio(); }
+        else { mostrarToast('❌ '+(resultado.error||'No se pudo publicar')); }
+    } catch(e) { mostrarToast('❌ Error de conexión'); }
+    finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
 }
 
+// NUEVA FUNCIÓN UNIFICADA
 async function enviarSolicitudYPregunta() {
     if (!mateadaSeleccionada) return;
-    if (!usuarioActual) {
-        mostrarToast('Primero iniciá sesión');
-        return;
-    }
+    if (!usuarioActual) { iniciarSesionGoogle(); return; }
     
     const minutos = tiempoLlegadaSeleccionado;
     const pregunta = document.getElementById('preguntaUnirse').value.trim();
     
     if (!pregunta) {
-        mostrarToast('📝 Escribí tu pregunta');
+        mostrarToast('📝 Escribí tu pregunta antes de sumarte');
         return;
     }
     if (pregunta.length > 500) {
@@ -1007,10 +843,7 @@ async function enviarSolicitudYPregunta() {
         return;
     }
     
-    const btn = document.getElementById('btnUnirse');
-    btn.classList.add('loading');
-    btn.innerText = 'Enviando...';
-    
+    const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
     try {
         const paramsPregunta = new URLSearchParams({
             accion: 'enviarPregunta',
@@ -1018,7 +851,8 @@ async function enviarSolicitudYPregunta() {
             pregunta: pregunta,
             usuario_sub: usuarioActual.sub,
             usuario_nombre: usuarioActual.nombre,
-            usuario_email: usuarioActual.email
+            usuario_email: usuarioActual.email,
+            dispositivo: JSON.stringify(dispositivoInfo)
         });
         await fetch(`${SCRIPT_URL}?${paramsPregunta}`);
         
@@ -1028,36 +862,40 @@ async function enviarSolicitudYPregunta() {
             usuario_nombre: usuarioActual.nombre,
             usuario_sub: usuarioActual.sub,
             usuario_email: usuarioActual.email,
-            tiempo_llegada: minutos + ' min'
+            tiempo_llegada: minutos + ' min',
+            dispositivo: JSON.stringify(dispositivoInfo)
         });
-        const response = await fetch(`${SCRIPT_URL}?${paramsSolicitud}`);
-        const resultado = await response.json();
+        const r = await fetch(`${SCRIPT_URL}?${paramsSolicitud}`);
+        const resultado = await r.json();
         
-        if (resultado.success) {
-            mostrarToast('✅ ¡Listo! Tu pregunta y solicitud fueron enviadas');
-            mostrarScreen('screen-sent');
-        } else {
-            mostrarToast('❌ ' + (resultado.error || 'Error'));
+        if (resultado.success) { 
+            document.getElementById('tiempoEnviado').innerText = minutos; 
+            mostrarScreen('screen-sent'); 
         }
-    } catch(e) {
-        mostrarToast('❌ Error de conexión');
-    } finally {
-        btn.classList.remove('loading');
-        btn.innerText = '🧉 Enviar todo';
-    }
+        else { mostrarToast('❌ '+(resultado.error||'Error')); }
+    } catch(e) { mostrarToast('❌ Error de conexión'); }
+    finally { btn.classList.remove('loading'); btn.innerText = '🧉 Enviar todo'; }
+}
+
+function seleccionarTiempoLlegada(elemento, minutos) {
+    document.querySelectorAll('.opcion-tiempo').forEach(el => el.classList.remove('selected'));
+    elemento.classList.add('selected');
+    tiempoLlegadaSeleccionado = minutos;
 }
 
 // ============================================
-// CHAT
+// FUNCIONES DEL CHAT
 // ============================================
 async function obtenerChat(mateadaId) {
     if (chatCache[mateadaId]) return chatCache[mateadaId];
     try {
-        const response = await fetch(`${SCRIPT_URL}?accion=obtenerChat&mateada_id=${encodeURIComponent(mateadaId)}`);
+        const url = `${SCRIPT_URL}?accion=obtenerChat&mateada_id=${encodeURIComponent(mateadaId)}`;
+        const response = await fetch(url);
         const data = await response.json();
         chatCache[mateadaId] = data.success ? (data.chats || []) : [];
         return chatCache[mateadaId];
-    } catch(e) {
+    } catch (error) {
+        console.error('Error al obtener chat:', error);
         return [];
     }
 }
@@ -1082,10 +920,11 @@ async function enviarRespuesta(chatId, respuesta) {
         if (data.success) {
             mostrarToast('✅ Respuesta enviada');
             delete chatCache[mateadaSeleccionada.id];
-            await verDetalle(mateadaSeleccionada);
+        } else {
+            mostrarToast(data.error || 'Error al enviar respuesta');
         }
         return data;
-    } catch(e) {
+    } catch (error) {
         mostrarToast('Error de conexión');
         return { success: false };
     }
@@ -1104,8 +943,8 @@ function escapeHtml(text) {
 function formatFecha(iso) {
     if (!iso) return '';
     try {
-        const d = new Date(iso);
-        return d.toLocaleString('es-AR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+        const date = new Date(iso);
+        return date.toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     } catch(e) { return iso; }
 }
 
@@ -1117,27 +956,26 @@ async function renderChat(mateada, container) {
     html += '<div class="chat-title">💬 Preguntas y respuestas</div>';
     
     if (!usuarioActual) {
-        html += '<div class="chat-disabled-msg">🔐 Iniciá sesión para ver las preguntas</div>';
+        html += '<div class="chat-disabled-msg">🔐 Iniciá sesión con Google para ver las preguntas</div>';
     } else if (chats.length === 0) {
-        html += '<div class="chat-disabled-msg">📭 Aún no hay preguntas</div>';
+        html += '<div class="chat-disabled-msg">📭 Aún no hay preguntas. Los participantes preguntarán al sumarse.</div>';
     } else {
         chats.forEach(chat => {
-            // Solo mostrar preguntas de OTROS usuarios si el actual es el organizador
-            // El organizador NO debe ver opción de preguntarse a sí mismo
             const esMiPregunta = usuarioActual && chat.usuario_sub === usuarioActual.sub;
             
-            // Mostrar la pregunta (siempre visible para todos)
             html += `
                 <div class="qa-bubble qa-bubble-question">
                     <div class="qa-bubble-text">
-                        <strong>❓ ${escapeHtml(chat.usuario_nombre)}:</strong><br>
+                        <strong>❓ ${escapeHtml(chat.usuario_nombre || 'Alguien')}:</strong><br>
                         ${escapeHtml(chat.pregunta)}
                     </div>
-                    <div class="qa-meta">📅 ${formatFecha(chat.fecha)}</div>
+                    <div class="qa-meta">
+                        <span>📅 ${formatFecha(chat.fecha)}</span>
+                        ${chat.pregunta.length > 400 ? `<span>📏 ${chat.pregunta.length}/500</span>` : ''}
+                    </div>
                 </div>
             `;
             
-            // Mostrar respuesta si existe
             if (chat.respuesta) {
                 html += `
                     <div class="qa-bubble qa-bubble-answer">
@@ -1145,23 +983,22 @@ async function renderChat(mateada, container) {
                             <strong>✅ ${escapeHtml(mateada.organizador)} (Organizador):</strong><br>
                             ${escapeHtml(chat.respuesta)}
                         </div>
-                        <div class="qa-meta">📅 ${formatFecha(chat.fecha_respuesta)}</div>
+                        <div class="qa-meta">
+                            <span>📅 ${formatFecha(chat.fecha_respuesta)}</span>
+                            ${chat.respuesta.length > 400 ? `<span>📏 ${chat.respuesta.length}/500</span>` : ''}
+                        </div>
                     </div>
                 `;
-            } 
-            // Si es organizador y la pregunta NO es suya, puede responder
-            else if (esOrganizador && !esMiPregunta) {
+            } else if (esOrganizador && !esMiPregunta) {
                 html += `
                     <div class="chat-input-area">
-                        <textarea id="respuesta-${chat.id}" rows="2" placeholder="Responder a ${escapeHtml(chat.usuario_nombre)}..." maxlength="500"></textarea>
+                        <textarea id="respuesta-${chat.id}" rows="3" placeholder="Responder a ${escapeHtml(chat.usuario_nombre)} (máx. 500 caracteres)..." maxlength="500"></textarea>
                         <div class="char-counter" id="resp-counter-${chat.id}">0/500</div>
                         <button class="chat-send-btn" onclick="enviarRespuestaHandler('${chat.id}')">✏️ Responder</button>
                     </div>
                 `;
-            }
-            // Si el usuario es el que preguntó y aún no hay respuesta
-            else if (esMiPregunta && !chat.respuesta) {
-                html += `<div class="chat-disabled-msg" style="background:#FEF3C7; color:#92400E;">⏳ Esperando respuesta del organizador...</div>`;
+            } else if (!esOrganizador && esMiPregunta && !chat.respuesta) {
+                html += `<div class="chat-waiting">⏳ Tu pregunta fue enviada. Esperando respuesta del organizador...</div>`;
             }
         });
     }
@@ -1171,11 +1008,14 @@ async function renderChat(mateada, container) {
     
     setTimeout(() => {
         chats.forEach(chat => {
-            const ta = document.getElementById(`respuesta-${chat.id}`);
-            if (ta) {
-                ta.addEventListener('input', function() {
-                    const c = document.getElementById(`resp-counter-${chat.id}`);
-                    if (c) c.textContent = `${this.value.length}/500`;
+            const textarea = document.getElementById(`respuesta-${chat.id}`);
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    const counter = document.getElementById(`resp-counter-${chat.id}`);
+                    if (counter) {
+                        counter.textContent = `${this.value.length}/500`;
+                        counter.className = `char-counter ${this.value.length > 450 ? (this.value.length > 490 ? 'danger' : 'warning') : ''}`;
+                    }
                 });
             }
         });
@@ -1183,11 +1023,17 @@ async function renderChat(mateada, container) {
 }
 
 async function enviarRespuestaHandler(chatId) {
-    const ta = document.getElementById(`respuesta-${chatId}`);
-    if (!ta) return;
-    const respuesta = ta.value.trim();
-    if (!respuesta) { mostrarToast('Escribí una respuesta'); return; }
-    if (respuesta.length > 500) { mostrarToast('Máximo 500 caracteres'); return; }
+    const textarea = document.getElementById(`respuesta-${chatId}`);
+    if (!textarea) return;
+    const respuesta = textarea.value.trim();
+    if (!respuesta) {
+        mostrarToast('✏️ Escribí una respuesta antes de enviar');
+        return;
+    }
+    if (respuesta.length > 500) {
+        mostrarToast('La respuesta no puede superar los 500 caracteres');
+        return;
+    }
     
     const btn = event.target;
     btn.disabled = true;
@@ -1195,7 +1041,6 @@ async function enviarRespuestaHandler(chatId) {
     
     const result = await enviarRespuesta(chatId, respuesta);
     if (result.success) {
-        ta.value = '';
         await verDetalle(mateadaSeleccionada);
     }
     
@@ -1209,52 +1054,37 @@ async function enviarRespuestaHandler(chatId) {
 async function verDetalle(mateada) {
     mateadaSeleccionada = mateada;
     const container = document.getElementById('detailContent');
-    const libres = parseInt(mateada.lugares_libres) || 0;
-    const ocupados = (parseInt(mateada.lugares_totales) || 0) - libres;
-    const durMins = parseInt(mateada.duracion_minutos) || 60;
-    const fillId = `detail-fill-${mateada.id}`;
-    const labelId = `detail-label-${mateada.id}`;
+    const libres = parseInt(mateada.lugares_libres)||0, ocupados = (parseInt(mateada.lugares_totales)||0)-libres;
+    const durMins = parseInt(mateada.duracion_minutos)||60, fillId=`detail-fill-${mateada.id}`, labelId=`detail-label-${mateada.id}`;
     const esOrganizador = usuarioActual && (usuarioActual.sub === mateada.organizador_sub || usuarioActual.nombre === mateada.organizador);
     
     container.innerHTML = `
-        <div class="detail-header">
-            <div class="detail-title">${escapeHtml(mateada.titulo)}</div>
-            <span class="badge ${libres === 0 ? 'lleno' : (esOrganizador ? 'tuya' : '')}">
-                ${libres === 0 ? '🔴 Sin lugares' : (esOrganizador ? '🌟 Tu mateada' : `🎟️ ${libres} lugar${libres !== 1 ? 'es' : ''} libre`)}
-            </span>
-        </div>
-        <div class="detail-countdown">
-            <div class="detail-countdown-label">
-                <span>⏳ ${duracionTexto(durMins)}</span>
-                <span class="tiempo-restante" id="${labelId}">—</span>
-            </div>
-            <div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div>
-        </div>
+        <div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrganizador?'tuya':''}">${libres===0?'🔴 Sin lugares':esOrganizador?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>
+        <div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div>
         <div class="map" id="detailMap"></div>
-        <div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);">
-            <div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong></div>
-            <div class="detail-row">📋 ${escapeHtml(mateada.descripcion || 'Compartir mates')}</div>
+        <div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;">
+            <div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div>
+            <div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div>
             <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
             <div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div>
-            <div class="detail-row">⏰ Empezó: ${mateada.hora || 'Ahora'}</div>
+            <div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div>
         </div>
         <div id="chatContainer"></div>
-        ${!esOrganizador && libres > 0 ? '<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>' : ''}
-        ${libres === 0 && !esOrganizador ? '<button class="btn" disabled style="opacity:0.5;">Sin lugares</button>' : ''}
-        <button class="btn-back" onclick="irInicio()">← Volver</button>
-    `;
+        ${esOrganizador ? `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Aquí verás las preguntas de los participantes.</div>` : (libres > 0 ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>` : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`)}
+        <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>
+        <div style="height:calc(80px + var(--safe-bottom));"></div>`;
     
     setNavTitle(mateada.titulo);
     mostrarScreen('screen-detail');
     
     setTimeout(() => {
-        iniciarCountdown(mateada, fillId, labelId, () => {});
+        iniciarCountdown(mateada, fillId, labelId, (id) => { const l=document.getElementById(labelId); if(l){l.textContent='⏰ Terminada';l.style.color='#DC2626';} });
         const mapEl = document.getElementById('detailMap');
         if (mapEl && mateada.latitud && mateada.longitud) {
-            if (mapaDetalle) mapaDetalle.remove();
-            mapaDetalle = L.map('detailMap').setView([parseFloat(mateada.latitud), parseFloat(mateada.longitud)], 15);
+            if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
+            mapaDetalle = L.map('detailMap').setView([mateada.latitud,mateada.longitud],15);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
-            L.marker([parseFloat(mateada.latitud), parseFloat(mateada.longitud)]).bindPopup(mateada.titulo).addTo(mapaDetalle);
+            L.marker([mateada.latitud,mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
         }
     }, 150);
     
@@ -1262,69 +1092,60 @@ async function verDetalle(mateada) {
     await renderChat(mateada, chatDiv);
 }
 
-function mostrarUnirse() {
-    document.getElementById('joinInfo').innerHTML = `<div class="join-card">📍 ${escapeHtml(mateadaSeleccionada.ubicacion)}<br>${escapeHtml(mateadaSeleccionada.titulo)} · ${escapeHtml(mateadaSeleccionada.organizador)}</div>`;
+function mostrarUnirse() { 
+    document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${escapeHtml(mateadaSeleccionada.ubicacion)}</div><div style="font-size:14px;color:var(--subtexto);">${escapeHtml(mateadaSeleccionada.titulo)} · con ${escapeHtml(mateadaSeleccionada.organizador)}</div></div>`; 
     document.getElementById('preguntaUnirse').value = '';
     document.getElementById('preguntaUnirseCounter').innerText = '0/500';
-    setNavTitle('Sumarme');
-    mostrarScreen('screen-join');
+    setNavTitle('Sumarme'); 
+    mostrarScreen('screen-join'); 
 }
 
 function volverADetalle() { verDetalle(mateadaSeleccionada); }
-function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(() => { if(mapaNearby) { mapaNearby.invalidateSize(); actualizarMapaCercano(); } }, 500); }
+function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(()=>{ if(mapaNearby){ mapaNearby.invalidateSize(); actualizarMapaCercano(); } },500); }
 function irACrear() {
-    if (!usuarioActual) { mostrarToast('Primero iniciá sesión'); return; }
-    const campo = document.getElementById('nombreOrganizador');
-    if (campo && !campo.value && usuarioActual) campo.value = usuarioActual.nombre.split(' ')[0];
-    setNavTitle('Nueva mateada');
-    mostrarScreen('screen-create');
+    if (!usuarioActual) {
+        document.getElementById('createLoginGate').style.display = 'block';
+        document.getElementById('createForm').style.opacity = '0.5';
+        document.getElementById('createForm').style.pointerEvents = 'none';
+    } else {
+        document.getElementById('createLoginGate').style.display = 'none';
+        document.getElementById('createForm').style.opacity = '1';
+        document.getElementById('createForm').style.pointerEvents = '';
+        const campo = document.getElementById('nombreOrganizador');
+        if (campo && !campo.value) campo.value = usuarioActual.nombre.split(' ')[0];
+    }
+    setNavTitle('Nueva mateada'); mostrarScreen('screen-create');
 }
-function goBack() {
-    if (document.getElementById('screen-join').classList.contains('active')) verDetalle(mateadaSeleccionada);
-    else irInicio();
-}
+function goBack() { if(document.getElementById('screen-join').classList.contains('active')){ verDetalle(mateadaSeleccionada); } else { irInicio(); } }
 function setNavTitle(t) { document.getElementById('navTitle').innerText = t; }
-function mostrarScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    const isHome = id === 'screen-home';
-    document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
-    document.getElementById('mainHeader').style.display = isHome ? '' : 'none';
-    document.getElementById('navBar').classList.toggle('visible', !isHome);
-}
-function seleccionarMate(btn) {
-    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-}
-function seleccionarDuracion(btn, mins) {
-    document.querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    duracionSeleccionada = mins;
-}
-function seleccionarTiempoLlegada(el, minutos) {
-    document.querySelectorAll('.opcion-tiempo').forEach(e => e.classList.remove('selected'));
-    el.classList.add('selected');
-    tiempoLlegadaSeleccionado = minutos;
-}
+function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const isHome=id==='screen-home'; document.getElementById('fabBtn').style.display=isHome?'flex':'none'; document.getElementById('mainHeader').style.display=isHome?'':'none'; document.getElementById('navBar').classList.toggle('visible',!isHome); }
+function seleccionarMate(btn){ btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
+function seleccionarDuracion(btn,mins){ document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada = mins; }
 function mostrarToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
 }
+
 function ajustarSpacer() {
-    const h = document.getElementById('stickyTop').offsetHeight;
+    const h = document.getElementById('stickyTop').getBoundingClientRect().height;
     document.getElementById('headerSpacer').style.height = h + 'px';
 }
 
-// ============================================
-// INICIALIZACIÓN
-// ============================================
+function actualizarEstadoRed() { document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine); }
+window.addEventListener('online', actualizarEstadoRed);
+window.addEventListener('offline', actualizarEstadoRed);
+window.addEventListener('resize', ajustarSpacer);
+
+// Inicializar Google Identity Services
 window.onload = function() {
     if (window.google && google.accounts) {
         google.accounts.id.initialize({
             client_id: '171913559980-sagqbpfmm7r7m5rt3tolkaoej08ngn8j.apps.googleusercontent.com',
-            callback: handleCredentialResponse
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
         });
         google.accounts.id.renderButton(
             document.getElementById("googleButtonContainer") || {},
@@ -1335,28 +1156,42 @@ window.onload = function() {
     actualizarInterfazUsuario();
     ajustarSpacer();
     cargarMateadas();
-    window.addEventListener('resize', ajustarSpacer);
-    
-    const preguntaTa = document.getElementById('preguntaUnirse');
-    if (preguntaTa) {
-        preguntaTa.addEventListener('input', function() {
-            const c = document.getElementById('preguntaUnirseCounter');
-            if (c) c.textContent = `${this.value.length}/500`;
-        });
-    }
-    
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; actualizarMapaCercano(); },
-            () => {}
+            (p)=>{ userLat=p.coords.latitude; userLng=p.coords.longitude; document.getElementById('gpsBtn').textContent='✅'; actualizarMapaCercano(); },
+            ()=>{},
+            {timeout:5000}
         );
+    }
+    actualizarEstadoRed();
+    
+    const preguntaTextarea = document.getElementById('preguntaUnirse');
+    if (preguntaTextarea) {
+        preguntaTextarea.addEventListener('input', function() {
+            const counter = document.getElementById('preguntaUnirseCounter');
+            if (counter) {
+                counter.textContent = `${this.value.length}/500`;
+                counter.className = `char-counter ${this.value.length > 450 ? (this.value.length > 490 ? 'danger' : 'warning') : ''}`;
+            }
+        });
     }
 };
 
 // Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
-}
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+
+// iOS install
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+function abrirIosSheet(){ document.getElementById('iosSheetOverlay').classList.add('visible'); }
+function cerrarIosSheet(e){ if(!e||e.target===document.getElementById('iosSheetOverlay')||!e.target){ document.getElementById('iosSheetOverlay').classList.remove('visible'); } }
+if (isIOS && !isInStandaloneMode && !sessionStorage.getItem('iosSheetShown')) { setTimeout(()=>{ document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown','1'); },2500); }
+
+// Install banner
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredInstallPrompt=e; if(!sessionStorage.getItem('installDismissed')) setTimeout(()=>document.getElementById('installBanner').classList.add('visible'),2000); });
+document.getElementById('installBtnBanner')?.addEventListener('click',async()=>{ if(!deferredInstallPrompt)return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; document.getElementById('installBanner').classList.remove('visible'); });
+document.getElementById('installDismiss')?.addEventListener('click',()=>{ document.getElementById('installBanner').classList.remove('visible'); sessionStorage.setItem('installDismissed','1'); });
 </script>
 </body>
 </html>
