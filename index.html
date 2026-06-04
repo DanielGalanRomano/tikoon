@@ -19,96 +19,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client"></script>
-  
-  <script>
-     
- 
-   // ============================================
-// AUTENTICACIÓN SIMPLE (sin Google)
-// ============================================
-let usuarioActual = null;
-
-// Cargar sesión guardada al inicio
-const sesionGuardada = localStorage.getItem('usuario_cebate');
-if (sesionGuardada) {
-    try {
-        usuarioActual = JSON.parse(sesionGuardada);
-    } catch(e) {}
-}
-
-function abrirLoginSimple() {
-    const email = prompt("📧 Ingresá tu correo electrónico:");
-    if (!email || !email.includes('@')) {
-        mostrarToast("❌ Correo inválido");
-        return;
-    }
-    
-    const nombre = prompt("👤 ¿Cómo te llamas?", email.split('@')[0]);
-    if (!nombre) return;
-    
-    usuarioActual = {
-        sub: email.replace(/[^a-zA-Z0-9]/g, '_'),
-        nombre: nombre,
-        email: email,
-        avatar: null
-    };
-    
-    localStorage.setItem('usuario_cebate', JSON.stringify(usuarioActual));
-    renderAuthArea();
-    mostrarToast(`✅ ¡Bienvenido/a, ${nombre}!`);
-    
-    const campoNombre = document.getElementById('nombreOrganizador');
-    if (campoNombre && !campoNombre.value) {
-        campoNombre.value = nombre;
-    }
-}
-
-function cerrarSesion() {
-    usuarioActual = null;
-    localStorage.removeItem('usuario_cebate');
-    if (typeof cerrarUserSheet === 'function') cerrarUserSheet();
-    renderAuthArea();
-    mostrarToast('👋 Sesión cerrada');
-}
-
-function renderAuthArea() {
-    const area = document.getElementById('authArea');
-    if (!area) return;
-    
-    if (!usuarioActual) {
-        area.innerHTML = `<button class="google-login-btn" onclick="abrirLoginSimple()">📧 Entrar con email</button>`;
-    } else {
-        const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
-        area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${letra}</div>`;
-    }
-}
-
-// Modificar abrirUserSheet para que funcione con nuestro usuario
-window.abrirUserSheet = function() {
-    if (!usuarioActual) return;
-    const profile = document.getElementById('userSheetProfile');
-    if (!profile) return;
-    
-    const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
-    profile.innerHTML = `
-        <div class="user-sheet-avatar-placeholder">${letra}</div>
-        <div>
-            <div class="user-sheet-name">${usuarioActual.nombre}</div>
-            <div class="user-sheet-email">${usuarioActual.email}</div>
-        </div>
-    `;
-    document.getElementById('userSheetOverlay')?.classList.add('visible');
-};
-
-// Eliminar o comentar la función inicializarGoogleAuth
-function inicializarGoogleAuth() {
-    renderAuthArea();
-}
-    
-  </script>
-
   <style>
     :root {
       --verde: #0F7B5E;
@@ -168,7 +78,7 @@ function inicializarGoogleAuth() {
     .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .bell-btn { position: relative; background: white; border: 1px solid var(--borde); width: 38px; height: 38px; border-radius: 19px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; }
     .bell-badge { position: absolute; top: -4px; right: -4px; background: var(--rojo); color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--header-bg); padding: 0 3px; display: none; }
-    .google-login-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--borde); padding: 7px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .login-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--borde); padding: 7px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
     .user-avatar { width: 34px; height: 34px; border-radius: 17px; border: 2px solid var(--verde); object-fit: cover; cursor: pointer; }
     .user-avatar-placeholder { width: 34px; height: 34px; border-radius: 17px; background: var(--verde); color: white; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .refresh-btn { background: none; border: 1px solid var(--borde); width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
@@ -367,7 +277,7 @@ function inicializarGoogleAuth() {
       <div class="header-actions">
         <button class="refresh-btn" id="refreshBtn" onclick="recargar()" title="Actualizar">↻</button>
         <button class="bell-btn" id="bellBtn" onclick="abrirNotifPanel()">🔔<span class="bell-badge" id="bellBadge">0</span></button>
-        
+        <div id="authArea"></div>
       </div>
     </div>
 
@@ -400,7 +310,7 @@ function inicializarGoogleAuth() {
   <div id="screen-create" class="screen">
     <div class="content">
       <div id="createLoginGate" style="display:none;">
-        <div class="login-required-note">ℹ️ <span>Para publicar una mateada necesitás iniciar sesión con Google.</span></div>
+        <div class="login-required-note">ℹ️ <span>Para publicar una mateada necesitás iniciar sesión.</span></div>
       </div>
       <div id="createForm">
         <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name"></div>
@@ -470,7 +380,90 @@ function inicializarGoogleAuth() {
 // ============================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYPss1yIBCaFmwR3d7EdSvCjfeo4aAh5igOo7lSY4YWHg2lzVVMhAaYZuMZahNMC1G/exec';
 
-const VAPID_PUBLIC_KEY = 'TU_VAPID_PUBLIC_KEY'; // Dejalo así si no tenés aún
+// ============================================
+// AUTENTICACIÓN SIMPLE (solo email)
+// ============================================
+let usuarioActual = null;
+
+// Cargar sesión guardada
+const sesionGuardada = localStorage.getItem('usuario_cebate');
+if (sesionGuardada) {
+    try {
+        usuarioActual = JSON.parse(sesionGuardada);
+    } catch(e) {}
+}
+
+function iniciarSesion() {
+    const email = prompt("📧 Ingresá tu correo electrónico:");
+    if (!email || !email.includes('@')) {
+        mostrarToast("❌ Correo inválido");
+        return;
+    }
+    
+    const nombre = prompt("👤 ¿Cómo te llamas?", email.split('@')[0]);
+    if (!nombre) return;
+    
+    usuarioActual = {
+        sub: email.replace(/[^a-zA-Z0-9]/g, '_'),
+        nombre: nombre,
+        email: email,
+        avatar: null
+    };
+    
+    localStorage.setItem('usuario_cebate', JSON.stringify(usuarioActual));
+    actualizarInterfazUsuario();
+    mostrarToast(`✅ ¡Bienvenido/a, ${nombre}!`);
+    
+    const campoNombre = document.getElementById('nombreOrganizador');
+    if (campoNombre && !campoNombre.value) {
+        campoNombre.value = nombre;
+    }
+    
+    cargarMateadas();
+}
+
+function cerrarSesion() {
+    usuarioActual = null;
+    localStorage.removeItem('usuario_cebate');
+    actualizarInterfazUsuario();
+    cerrarUserSheet();
+    mostrarToast('👋 Sesión cerrada');
+    cargarMateadas();
+}
+
+function actualizarInterfazUsuario() {
+    const area = document.getElementById('authArea');
+    if (!area) return;
+    
+    if (!usuarioActual) {
+        area.innerHTML = `<button class="login-btn" onclick="iniciarSesion()">📧 Entrar</button>`;
+    } else {
+        const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
+        area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${letra}</div>`;
+    }
+}
+
+function abrirUserSheet() {
+    if (!usuarioActual) return;
+    const profile = document.getElementById('userSheetProfile');
+    if (!profile) return;
+    
+    const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
+    profile.innerHTML = `
+        <div class="user-sheet-avatar-placeholder">${letra}</div>
+        <div>
+            <div class="user-sheet-name">${usuarioActual.nombre}</div>
+            <div class="user-sheet-email">${usuarioActual.email}</div>
+        </div>
+    `;
+    document.getElementById('userSheetOverlay')?.classList.add('visible');
+}
+
+function cerrarUserSheet(e) {
+    if (!e || e.target === document.getElementById('userSheetOverlay')) {
+        document.getElementById('userSheetOverlay')?.classList.remove('visible');
+    }
+}
 
 // ============================================
 // ESTADO GLOBAL
@@ -486,9 +479,6 @@ let userLat = null, userLng = null;
 let ubicacionSeleccionadaMapa = null;
 let mapaSelector = null;
 let markerSelector = null;
-
-// Usuario autenticado con Google
-let usuarioActual = null;
 
 // Datos del dispositivo capturados
 let dispositivoInfo = {};
@@ -531,164 +521,8 @@ function capturarDatosDispositivo() {
 capturarDatosDispositivo();
 
 // ============================================
-// GOOGLE AUTH
+// NOTIFICACIONES
 // ============================================
-function inicializarGoogleAuth() {
-    // Esperar hasta que google.accounts esté disponible
-    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-        setTimeout(inicializarGoogleAuth, 200);
-        return;
-    }
-
-    google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: onGoogleCredential,
-        auto_select: false,  // no auto-login para evitar popups bloqueados
-        cancel_on_tap_outside: false
-    });
-
-    // Restaurar sesión guardada
-    const savedUser = localStorage.getItem('google_user');
-    if (savedUser) {
-        try {
-            usuarioActual = JSON.parse(savedUser);
-            renderAuthArea();
-            return;
-        } catch(e) {
-            localStorage.removeItem('google_user');
-        }
-    }
-
-    renderAuthArea();
-}
-
-function onGoogleCredential(response) {
-    const payload = parseJwt(response.credential);
-    if (!payload) { mostrarToast('❌ Error al autenticar'); return; }
-    
-    usuarioActual = {
-        sub: payload.sub,
-        nombre: payload.name,
-        email: payload.email,
-        avatar: payload.picture,
-        idToken: response.credential
-    };
-    
-    localStorage.setItem('google_user', JSON.stringify({
-        sub: payload.sub, nombre: payload.name, email: payload.email, avatar: payload.picture
-    }));
-    
-    renderAuthArea();
-    mostrarToast(`✅ ¡Bienvenido/a, ${payload.name.split(' ')[0]}!`);
-    
-    const campoNombre = document.getElementById('nombreOrganizador');
-    if (campoNombre && !campoNombre.value) campoNombre.value = payload.name.split(' ')[0];
-    
-    suscribirWebPush();
-    registrarUsuarioBackend();
-}
-
-function parseJwt(token) {
-    try {
-        const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-        return JSON.parse(atob(base64));
-    } catch(e) { return null; }
-}
-
-function abrirLoginGoogle() {
-    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-        mostrarToast('⏳ Cargando Google Sign-In, intentá de nuevo...');
-        setTimeout(inicializarGoogleAuth, 500);
-        return;
-    }
-    google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // El one-tap fue bloqueado — usar popup como fallback
-            google.accounts.id.renderButton(
-                document.getElementById('authArea'),
-                { theme: 'outline', size: 'medium', text: 'signin_with', shape: 'pill' }
-            );
-        }
-    });
-}
-
-function cerrarSesion() {
-    if (typeof google !== 'undefined' && google.accounts) {
-        google.accounts.id.disableAutoSelect();
-    }
-    usuarioActual = null;
-    localStorage.removeItem('google_user');
-    cerrarUserSheet();
-    renderAuthArea();
-    mostrarToast('👋 Sesión cerrada');
-}
-
-function renderAuthArea() {
-    const area = document.getElementById('authArea');
-    if (!area) return;
-    if (!usuarioActual) {
-        area.innerHTML = `<button class="google-login-btn" onclick="abrirLoginGoogle()"><img src="https://www.google.com/favicon.ico" alt="G" style="width:16px;height:16px;"> Entrar</button>`;
-    } else {
-        if (usuarioActual.avatar) {
-            area.innerHTML = `<img src="${usuarioActual.avatar}" class="user-avatar" onclick="abrirUserSheet()" alt="avatar">`;
-        } else {
-            const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
-            area.innerHTML = `<div class="user-avatar-placeholder" onclick="abrirUserSheet()">${letra}</div>`;
-        }
-    }
-}
-
-function abrirUserSheet() {
-    if (!usuarioActual) return;
-    const profile = document.getElementById('userSheetProfile');
-    const letra = (usuarioActual.nombre || 'U')[0].toUpperCase();
-    profile.innerHTML = usuarioActual.avatar
-        ? `<img src="${usuarioActual.avatar}" class="user-sheet-avatar">`
-        : `<div class="user-sheet-avatar-placeholder">${letra}</div>`;
-    profile.innerHTML += `<div><div class="user-sheet-name">${usuarioActual.nombre}</div><div class="user-sheet-email">${usuarioActual.email}</div></div>`;
-    document.getElementById('userSheetOverlay').classList.add('visible');
-}
-
-function cerrarUserSheet(e) {
-    if (!e || e.target === document.getElementById('userSheetOverlay')) {
-        document.getElementById('userSheetOverlay').classList.remove('visible');
-    }
-}
-
-// ============================================
-// NOTIFICACIONES Y PUSH
-// ============================================
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
-    const raw = window.atob(base64);
-    return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
-}
-
-async function suscribirWebPush() {
-    if (!('PushManager' in window) || !('serviceWorker' in navigator)) return;
-    if (VAPID_PUBLIC_KEY === 'TU_VAPID_PUBLIC_KEY') return;
-    try {
-        const reg = await navigator.serviceWorker.ready;
-        const existing = await reg.pushManager.getSubscription();
-        if (existing) return;
-        const perm = await Notification.requestPermission();
-        if (perm !== 'granted') return;
-        const sub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-        });
-        console.log('✅ Suscrito a notificaciones push');
-    } catch(e) { console.warn('Web Push error:', e); }
-}
-
-async function registrarUsuarioBackend() {
-    if (!usuarioActual) return;
-    try {
-        await fetch(`${SCRIPT_URL}?accion=registrarUsuario&sub=${encodeURIComponent(usuarioActual.sub)}&nombre=${encodeURIComponent(usuarioActual.nombre)}&email=${encodeURIComponent(usuarioActual.email)}`);
-    } catch(e) {}
-}
-
 function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
     const notif = {
         id: Date.now(),
@@ -711,7 +545,6 @@ function actualizarBellBadge() {
 }
 
 function abrirNotifPanel() {
-    // Simplificado - en producción se mostraría panel
     mostrarToast(`🔔 Tenés ${unreadCount} notificación${unreadCount !== 1 ? 'es' : ''}`);
     notificaciones.forEach(n => n.leida = true);
     localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
@@ -766,8 +599,8 @@ async function renderChatSection(mateada, container) {
             <div class="chat-section">
                 <div class="chat-title">💬 Preguntale al organizador</div>
                 <div class="chat-login-prompt">
-                    <p>Iniciá sesión con Google para hacer una pregunta.</p>
-                    <button class="btn" onclick="abrirLoginGoogle()" style="margin-top:0; max-width:240px; margin:0 auto; display:block;">🔑 Iniciar sesión</button>
+                    <p>Iniciá sesión para hacer una pregunta.</p>
+                    <button class="btn" onclick="iniciarSesion()" style="margin-top:0; max-width:240px; margin:0 auto; display:block;">🔑 Iniciar sesión</button>
                 </div>
             </div>`;
         return;
@@ -985,7 +818,7 @@ function mateadaTerminada(id) {
 function recargar() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(()=>btn.classList.remove('spinning'),600); cargarMateadas(); }
 
 async function crearMateada() {
-    if (!usuarioActual) { abrirLoginGoogle(); mostrarToast('🔑 Iniciá sesión para publicar'); return; }
+    if (!usuarioActual) { iniciarSesion(); return; }
     const organizador = document.getElementById('nombreOrganizador').value.trim();
     const titulo = document.getElementById('temaMateada').value;
     const ubicacion = document.getElementById('ubicacionMateada').value.trim();
@@ -1012,7 +845,7 @@ async function crearMateada() {
 
 async function enviarSolicitud() {
     if (!mateadaSeleccionada) return;
-    if (!usuarioActual) { abrirLoginGoogle(); mostrarToast('🔑 Iniciá sesión para sumarte'); return; }
+    if (!usuarioActual) { iniciarSesion(); return; }
     const minutos = document.getElementById('tiempoLlegada').value;
     const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
     try {
@@ -1113,7 +946,7 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navi
 
 // Inicialización
 window.addEventListener('load', () => {
-    inicializarGoogleAuth();
+    actualizarInterfazUsuario();
     ajustarSpacer();
     cargarMateadas();
     if (navigator.geolocation) {
