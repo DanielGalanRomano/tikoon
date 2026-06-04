@@ -377,13 +377,6 @@
       font-weight: 600;
       cursor: pointer;
     }
-    .chat-waiting {
-      background: #FEF3C7;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: #92400E;
-    }
     .chat-disabled-msg {
       background: var(--crema-dark);
       border-radius: 14px;
@@ -398,8 +391,6 @@
       text-align: right;
       margin-top: 4px;
     }
-    .char-counter.warning { color: #D97706; }
-    .char-counter.danger { color: var(--rojo); }
 
     .detail-header {
       background: white;
@@ -440,7 +431,6 @@
       z-index: 9999;
       opacity: 0;
       transition: opacity 0.25s;
-      white-space: nowrap;
       pointer-events: none;
     }
     .toast.show { opacity: 1; }
@@ -494,41 +484,14 @@
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear; }
-    .map-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; }
-    .map-modal-header { background: var(--verde); padding: 16px; color: white; display: flex; justify-content: space-between; }
-    .map-modal-content { flex: 1; }
-    .map-modal-footer { padding: 16px; background: white; }
-    .install-banner { display: none; align-items: center; gap: 10px; background: linear-gradient(135deg, #0F7B5E, #0a6650); color: white; padding: 12px 16px; }
-    .install-banner.visible { display: flex; }
-    .ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9100; align-items: flex-end; justify-content: center; }
-    .ios-sheet-overlay.visible { display: flex; }
-    .ios-sheet { background: #F2F2F7; border-radius: 24px 24px 0 0; padding: 20px 24px 28px; width: 100%; max-width: 480px; }
   </style>
 </head>
 <body>
 
 <div id="toast" class="toast"></div>
 
-<div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
-  <div class="ios-sheet">
-    <div class="ios-sheet-handle"></div>
-    <h3>Instalá Cebate Uno 🧉</h3>
-    <p>Guardala en tu pantalla de inicio<br>para usarla como una app nativa.</p>
-    <button class="ios-sheet-close" onclick="cerrarIosSheet()">Entendido</button>
-  </div>
-</div>
-
 <div class="app">
   <div class="sticky-top" id="stickyTop">
-    <div class="install-banner" id="installBanner">
-      <span>🧉</span>
-      <div class="install-banner-text"><strong>Instalá Cebate Uno</strong>Usala sin internet</div>
-      <button class="install-btn-banner" id="installBtnBanner">Instalar</button>
-      <button class="install-dismiss" id="installDismiss">✕</button>
-    </div>
-
-    <div class="offline-banner" id="offlineBanner">📵 Sin conexión</div>
-
     <div class="header" id="mainHeader">
       <div class="logo-wrap">
         <div class="logo">🧉 cebate uno</div>
@@ -712,9 +675,6 @@ let nearbyMarkers = [];
 let duracionSeleccionada = 60;
 let countdownIntervals = {};
 let userLat = null, userLng = null;
-let dispositivoInfo = {};
-let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
-let unreadCount = notificaciones.filter(n => !n.leida).length;
 let chatCache = {};
 
 // ============================================
@@ -800,21 +760,6 @@ function iniciarCountdown(m, fillId, labelId, onTerminada) {
     clearInterval(countdownIntervals[m.id]);
     tick();
     countdownIntervals[m.id] = setInterval(tick, 1000);
-}
-
-function mateadaTerminada(id) {
-    const card = document.getElementById(`card-${id}`);
-    if (card) {
-        card.style.opacity = '0.5';
-        setTimeout(() => {
-            card.remove();
-            const activas = mateadasActuales.filter(m => m.id != id && !estaTerminada(m));
-            if (activas.length === 0) {
-                document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
-            }
-            actualizarMapaCercano();
-        }, 500);
-    }
 }
 
 function recargar() {
@@ -977,7 +922,10 @@ async function cargarMateadas() {
                 </div>
             `;
             container.appendChild(card);
-            setTimeout(() => iniciarCountdown(m, fillId, labelId, mateadaTerminada), 50);
+            setTimeout(() => iniciarCountdown(m, fillId, labelId, (id) => {
+                const cardEl = document.getElementById(`card-${id}`);
+                if (cardEl) cardEl.style.opacity = '0.5';
+            }), 50);
         });
         actualizarMapaCercano();
     } catch(e) {
@@ -1064,7 +1012,6 @@ async function enviarSolicitudYPregunta() {
     btn.innerText = 'Enviando...';
     
     try {
-        // Enviar pregunta
         const paramsPregunta = new URLSearchParams({
             accion: 'enviarPregunta',
             mateada_id: mateadaSeleccionada.id,
@@ -1075,7 +1022,6 @@ async function enviarSolicitudYPregunta() {
         });
         await fetch(`${SCRIPT_URL}?${paramsPregunta}`);
         
-        // Enviar solicitud
         const paramsSolicitud = new URLSearchParams({
             accion: 'enviarSolicitud',
             mateada_id: mateadaSeleccionada.id,
@@ -1136,6 +1082,7 @@ async function enviarRespuesta(chatId, respuesta) {
         if (data.success) {
             mostrarToast('✅ Respuesta enviada');
             delete chatCache[mateadaSeleccionada.id];
+            await verDetalle(mateadaSeleccionada);
         }
         return data;
     } catch(e) {
@@ -1175,6 +1122,11 @@ async function renderChat(mateada, container) {
         html += '<div class="chat-disabled-msg">📭 Aún no hay preguntas</div>';
     } else {
         chats.forEach(chat => {
+            // Solo mostrar preguntas de OTROS usuarios si el actual es el organizador
+            // El organizador NO debe ver opción de preguntarse a sí mismo
+            const esMiPregunta = usuarioActual && chat.usuario_sub === usuarioActual.sub;
+            
+            // Mostrar la pregunta (siempre visible para todos)
             html += `
                 <div class="qa-bubble qa-bubble-question">
                     <div class="qa-bubble-text">
@@ -1185,24 +1137,31 @@ async function renderChat(mateada, container) {
                 </div>
             `;
             
+            // Mostrar respuesta si existe
             if (chat.respuesta) {
                 html += `
                     <div class="qa-bubble qa-bubble-answer">
                         <div class="qa-bubble-text">
-                            <strong>✅ ${escapeHtml(mateada.organizador)}:</strong><br>
+                            <strong>✅ ${escapeHtml(mateada.organizador)} (Organizador):</strong><br>
                             ${escapeHtml(chat.respuesta)}
                         </div>
                         <div class="qa-meta">📅 ${formatFecha(chat.fecha_respuesta)}</div>
                     </div>
                 `;
-            } else if (esOrganizador) {
+            } 
+            // Si es organizador y la pregunta NO es suya, puede responder
+            else if (esOrganizador && !esMiPregunta) {
                 html += `
                     <div class="chat-input-area">
-                        <textarea id="respuesta-${chat.id}" rows="2" placeholder="Responder..." maxlength="500"></textarea>
+                        <textarea id="respuesta-${chat.id}" rows="2" placeholder="Responder a ${escapeHtml(chat.usuario_nombre)}..." maxlength="500"></textarea>
                         <div class="char-counter" id="resp-counter-${chat.id}">0/500</div>
                         <button class="chat-send-btn" onclick="enviarRespuestaHandler('${chat.id}')">✏️ Responder</button>
                     </div>
                 `;
+            }
+            // Si el usuario es el que preguntó y aún no hay respuesta
+            else if (esMiPregunta && !chat.respuesta) {
+                html += `<div class="chat-disabled-msg" style="background:#FEF3C7; color:#92400E;">⏳ Esperando respuesta del organizador...</div>`;
             }
         });
     }
@@ -1235,7 +1194,10 @@ async function enviarRespuestaHandler(chatId) {
     btn.textContent = 'Enviando...';
     
     const result = await enviarRespuesta(chatId, respuesta);
-    if (result.success) await verDetalle(mateadaSeleccionada);
+    if (result.success) {
+        ta.value = '';
+        await verDetalle(mateadaSeleccionada);
+    }
     
     btn.disabled = false;
     btn.textContent = '✏️ Responder';
@@ -1354,9 +1316,6 @@ function ajustarSpacer() {
     const h = document.getElementById('stickyTop').offsetHeight;
     document.getElementById('headerSpacer').style.height = h + 'px';
 }
-function actualizarEstadoRed() {
-    document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine);
-}
 
 // ============================================
 // INICIALIZACIÓN
@@ -1377,9 +1336,6 @@ window.onload = function() {
     ajustarSpacer();
     cargarMateadas();
     window.addEventListener('resize', ajustarSpacer);
-    window.addEventListener('online', actualizarEstadoRed);
-    window.addEventListener('offline', actualizarEstadoRed);
-    actualizarEstadoRed();
     
     const preguntaTa = document.getElementById('preguntaUnirse');
     if (preguntaTa) {
@@ -1401,33 +1357,6 @@ window.onload = function() {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
-
-// iOS install
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-function abrirIosSheet(){ document.getElementById('iosSheetOverlay').classList.add('visible'); }
-function cerrarIosSheet(e){ if(!e || e.target === document.getElementById('iosSheetOverlay')) document.getElementById('iosSheetOverlay').classList.remove('visible'); }
-if (isIOS && !isInStandaloneMode && !sessionStorage.getItem('iosSheetShown')) {
-    setTimeout(() => { document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown','1'); }, 2500);
-}
-
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    if (!sessionStorage.getItem('installDismissed')) setTimeout(() => document.getElementById('installBanner').classList.add('visible'), 2000);
-});
-document.getElementById('installBtnBanner')?.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    document.getElementById('installBanner').classList.remove('visible');
-});
-document.getElementById('installDismiss')?.addEventListener('click', () => {
-    document.getElementById('installBanner').classList.remove('visible');
-    sessionStorage.setItem('installDismissed','1');
-});
 </script>
 </body>
 </html>
