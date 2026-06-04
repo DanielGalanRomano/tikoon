@@ -225,7 +225,7 @@
 
 <div id="toast" class="toast"></div>
 
-<!-- iOS Install Sheet (mismo contenido que antes pero omito por brevedad) -->
+<!-- iOS Install Sheet -->
 <div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
   <div class="ios-sheet">
     <div class="ios-sheet-handle"></div>
@@ -410,7 +410,6 @@ function handleCredentialResponse(response) {
     actualizarInterfazUsuario();
     mostrarToast(`✅ ¡Bienvenido/a, ${usuarioActual.nombre}!`);
     
-    // Prellenar campo de nombre si existe
     const campoNombre = document.getElementById('nombreOrganizador');
     if (campoNombre && !campoNombre.value) {
         campoNombre.value = usuarioActual.nombre.split(' ')[0];
@@ -420,10 +419,8 @@ function handleCredentialResponse(response) {
 }
 
 function iniciarSesionGoogle() {
-    // Usamos la API de Google Identity Services
-    // El botón ya estará renderizado por el SDK, pero forzamos el login si no hay sesión
     if (window.google && google.accounts) {
-        google.accounts.id.prompt(); // Muestra el diálogo de One Tap
+        google.accounts.id.prompt();
     } else {
         mostrarToast("⏳ Cargando autenticación de Google...");
     }
@@ -444,7 +441,6 @@ function actualizarInterfazUsuario() {
     
     if (!usuarioActual) {
         area.innerHTML = `<div id="googleButtonContainer"></div>`;
-        // Renderizar botón de Google
         if (window.google && google.accounts) {
             google.accounts.id.renderButton(
                 document.getElementById("googleButtonContainer"),
@@ -486,35 +482,8 @@ function cerrarUserSheet(e) {
     }
 }
 
-// Inicializar Google Identity Services
-window.onload = function() {
-    if (window.google && google.accounts) {
-        google.accounts.id.initialize({
-            client_id: '171913559980-sagqbpfmm7r7m5rt3tolkaoej08ngn8j.apps.googleusercontent.com', // Reemplazar con tu Client ID
-            callback: handleCredentialResponse,
-            auto_select: false,
-            cancel_on_tap_outside: true,
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("googleButtonContainer") || {},
-            { theme: "outline", size: "small", text: "signin_with", shape: "pill" }
-        );
-        google.accounts.id.prompt(); // One Tap
-    }
-    actualizarInterfazUsuario();
-    ajustarSpacer();
-    cargarMateadas();
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (p)=>{ userLat=p.coords.latitude; userLng=p.coords.longitude; document.getElementById('gpsBtn').textContent='✅'; actualizarMapaCercano(); },
-            ()=>{},
-            {timeout:5000}
-        );
-    }
-};
-
 // ============================================
-// ESTADO GLOBAL (el resto del código se mantiene igual)
+// FUNCIONES PRINCIPALES DE LA APP
 // ============================================
 let mateadasActuales = [];
 let mateadaSeleccionada = null;
@@ -527,11 +496,7 @@ let userLat = null, userLng = null;
 let ubicacionSeleccionadaMapa = null;
 let mapaSelector = null;
 let markerSelector = null;
-
-// Datos del dispositivo capturados
 let dispositivoInfo = {};
-
-// Notificaciones locales
 let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
 let unreadCount = notificaciones.filter(n => !n.leida).length;
 
@@ -559,8 +524,6 @@ function capturarDatosDispositivo() {
         resolucion: `${window.screen.width}x${window.screen.height}`,
         fechaVisita: new Date().toISOString()
     };
-    
-    console.log('📱 Datos del dispositivo:', dispositivoInfo);
 }
 
 capturarDatosDispositivo();
@@ -593,16 +556,325 @@ function abrirNotifPanel() {
     actualizarBellBadge();
 }
 
-// Resto de funciones: cargarChat, enviarPreguntaBackend, enviarRespuestaBackend, renderChatSection, escHtml, formatFecha, submitPregunta, submitRespuesta, geocodificarUbicacion, abrirSelectorUbicacion, pedirUbicacion, duracionTexto, formatTiempoRestante, haversineKm, getInicioMs, estaTerminada, getMsRestante, iniciarCountdown, actualizarMapaCercano, cargarMateadas, mateadaTerminada, recargar, crearMateada, enviarSolicitud, verDetalle, mostrarUnirse, volverADetalle, irInicio, irACrear, goBack, setNavTitle, mostrarScreen, seleccionarMate, seleccionarDuracion, mostrarToast, ajustarSpacer, actualizarEstadoRed, service worker, iOS install, etc.
-// (Se mantienen exactamente igual que en el código original, por lo que no los repito para no extender la respuesta. Puedes copiarlos del código anterior sin cambios.)
+function duracionTexto(mins) { 
+    if (mins == 30) return '30 min'; 
+    if (mins == 60) return '1 hora'; 
+    if (mins == 120) return '2 horas'; 
+    return mins + ' min'; 
+}
 
-// Nota: En la función crearMateada y enviarSolicitud se debe usar usuarioActual.email y usuarioActual.sub correctamente, ya que ahora provienen de Google.
-// También en la función iniciarSesion() original ya no se usa, ahora es iniciarSesionGoogle().
-// Asegúrate de reemplazar 'TU_CLIENT_ID_DE_GOOGLE.apps.googleusercontent.com' con tu Client ID de Google Cloud Console.
+function formatTiempoRestante(ms) { 
+    if (ms <= 0) return 'Terminada'; 
+    const s = Math.floor(ms/1000), h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60; 
+    if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`; 
+    if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`; 
+    return `${sec}s`; 
+}
 
-// Para que el código sea funcional en GitHub Pages, necesitas crear un proyecto en Google Cloud Console, habilitar la API de Google Identity Services, y obtener un Client ID. Luego reemplázalo en el código.
+function haversineKm(lat1, lng1, lat2, lng2) { 
+    const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180, 
+    a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2; 
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+}
 
-// El resto del código (todas las funciones del backend y renderizado) son idénticas al original, solo cambia la autenticación.
+function getInicioMs(m) {
+    if (m.timestamp_unix) return parseInt(m.timestamp_unix)*1000;
+    if (m.timestamp_ms) return parseInt(m.timestamp_ms);
+    if (m.fecha_hora) { const d=new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
+    if (m.fecha && m.hora) { const d=new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
+    if (m.hora) { const [h,min]=m.hora.split(':').map(Number); if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); } }
+    return null;
+}
+
+function estaTerminada(m) { 
+    const i=getInicioMs(m); 
+    if (!i) return false; 
+    return Date.now() > (i + (parseInt(m.duracion_minutos)||60)*60000); 
+}
+
+function getMsRestante(m) { 
+    const i=getInicioMs(m); 
+    if (!i) return null; 
+    return (i + (parseInt(m.duracion_minutos)||60)*60000) - Date.now(); 
+}
+
+function iniciarCountdown(m, fillId, labelId, onTerminada) {
+    const durMs = (parseInt(m.duracion_minutos)||60)*60000;
+    function tick() {
+        const fill = document.getElementById(fillId), label = document.getElementById(labelId);
+        if (!fill||!label) { clearInterval(countdownIntervals[m.id]); return; }
+        const ms = getMsRestante(m);
+        if (ms === null) { fill.style.width='100%'; fill.style.background='#0F7B5E'; label.textContent=duracionTexto(parseInt(m.duracion_minutos)||60); label.style.color='#0F7B5E'; return; }
+        const pct = Math.max(0, Math.min(1, ms/durMs));
+        const color = pct>0.5?'#0F7B5E':pct>0.25?'#D97706':'#DC2626';
+        fill.style.width=(pct*100)+'%'; fill.style.background=color;
+        if (ms<=0) { fill.style.width='0%'; label.textContent='Terminada ✓'; label.style.color='#DC2626'; clearInterval(countdownIntervals[m.id]); if(onTerminada) onTerminada(m.id); }
+        else { label.textContent=formatTiempoRestante(ms); label.style.color=color; }
+    }
+    clearInterval(countdownIntervals[m.id]); tick(); countdownIntervals[m.id] = setInterval(tick, 1000);
+}
+
+async function geocodificarUbicacion(direccion) {
+    try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`, { headers: {'User-Agent':'MatearApp/1.0'} });
+        const d = await r.json();
+        if (d && d.length > 0) return { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon) };
+        return null;
+    } catch(e) { return null; }
+}
+
+function abrirSelectorUbicacion() {
+    const modal = document.createElement('div');
+    modal.className = 'map-modal';
+    modal.innerHTML = `<div class="map-modal-header"><span>📍 Seleccioná la ubicación</span><button onclick="this.closest('.map-modal').remove()">✕</button></div><div id="mapaSelectorContainer" class="map-modal-content"></div><div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>`;
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        const c = document.getElementById('mapaSelectorContainer');
+        if (!c) return;
+        mapaSelector = L.map(c).setView([userLat || -34.5842, userLng || -58.4073], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
+        mapaSelector.on('click', (e) => {
+            if (markerSelector) mapaSelector.removeLayer(markerSelector);
+            markerSelector = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mapaSelector);
+            ubicacionSeleccionadaMapa = { lat: e.latlng.lat, lng: e.latlng.lng };
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18`)
+                .then(r => r.json()).then(d => { document.getElementById('ubicacionMateada').value = d.display_name?.split(',')[0] || 'Ubicación seleccionada'; }).catch(() => {});
+        });
+        document.getElementById('confirmarUbicacionBtn').onclick = () => {
+            if (ubicacionSeleccionadaMapa) { modal.remove(); mostrarToast('✅ Ubicación seleccionada'); }
+            else { mostrarToast('📍 Tocá el mapa para seleccionar'); }
+        };
+    }, 100);
+}
+
+function pedirUbicacion() {
+    const btn = document.getElementById('gpsBtn');
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+        (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; btn.textContent = '✅'; actualizarMapaCercano(); },
+        () => { userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
+        { timeout: 8000 }
+    );
+}
+
+function actualizarMapaCercano() {
+    const ph = document.getElementById('mapPlaceholder'), pill = document.getElementById('nearbyPill');
+    const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
+    if (vigentes.length === 0) { ph.style.display='flex'; pill.style.display='none'; if (mapaNearby) { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; } return; }
+    ph.style.display='none';
+    let ordenadas = userLat&&userLng ? [...vigentes].sort((a,b)=>haversineKm(userLat,userLng,a.latitud,a.longitud)-haversineKm(userLat,userLng,b.latitud,b.longitud)) : vigentes;
+    const cercana = ordenadas[0];
+    if (!mapaNearby) { mapaNearby=L.map('nearbyMap',{zoomControl:false,attributionControl:false}).setView([-34.6,-64.0],4); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby); }
+    else { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; }
+    const bounds = [];
+    ordenadas.forEach((m,i)=>{
+        const esCercana=(i===0);
+        const icon=L.divIcon({html:`<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.55)'};color:white;width:${esCercana?'38px':'26px'};height:${esCercana?'38px':'26px'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${esCercana?'18px':'13px'};box-shadow:0 3px 10px rgba(15,123,94,0.45);border:${esCercana?'3px':'2px'} solid white;">🧉</div>`,iconSize:esCercana?[38,38]:[26,26],iconAnchor:esCercana?[19,19]:[13,13]});
+        const mk = L.marker([m.latitud,m.longitud],{icon}).addTo(mapaNearby);
+        mk.on('click',()=>verDetalle(m)); nearbyMarkers.push(mk); bounds.push([m.latitud,m.longitud]);
+    });
+    if (userLat&&userLng) { const mkU = L.marker([userLat,userLng],{icon:L.divIcon({html:`<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`,iconSize:[14,14],iconAnchor:[7,7]})}).addTo(mapaNearby); nearbyMarkers.push(mkU); bounds.push([userLat,userLng]); }
+    if (bounds.length===1) mapaNearby.setView(bounds[0],15);
+    else if (bounds.length>1) mapaNearby.fitBounds(bounds,{padding:[24,24],maxZoom:14});
+    const dist = (userLat&&userLng)?` · ${haversineKm(userLat,userLng,cercana.latitud,cercana.longitud).toFixed(1)} km`:'';
+    pill.style.display='block'; pill.textContent=`📍 ${cercana.titulo}${dist}`;
+    setTimeout(()=>mapaNearby?.invalidateSize(),220);
+}
+
+async function cargarMateadas() {
+    Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals={};
+    const container = document.getElementById('homeContent');
+    container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+    try {
+        const r = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas`);
+        const data = await r.json();
+        let todas = (data.success && data.mateadas) ? data.mateadas : [];
+        mateadasActuales = todas.filter(m => !estaTerminada(m));
+        document.getElementById('contadorMateadas').textContent = mateadasActuales.length ? `${mateadasActuales.length} activa${mateadasActuales.length !== 1 ? 's' : ''}` : '';
+        if (mateadasActuales.length === 0) { container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); return; }
+        container.innerHTML = '';
+        mateadasActuales.forEach((m,i)=>{
+            const libres = parseInt(m.lugares_libres)||0, durMins = parseInt(m.duracion_minutos)||60, fillId=`fill-${m.id}`, labelId=`label-${m.id}`;
+            const esMia = usuarioActual && (usuarioActual.sub === m.organizador_sub || usuarioActual.nombre === m.organizador);
+            const card = document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${i*60}ms`; card.onclick=()=>verDetalle(m);
+            card.innerHTML = `<div class="card-title">${m.titulo}</div><div class="card-info"><span>📍 ${m.ubicacion}</span><span>⏰ ${m.hora||'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres===0?'lleno':esMia?'tuya':''}">${libres===0?'🔴 Sin lugares':esMia?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span><span class="organizador-chip">🧑 ${m.organizador}</span></div><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div></div>`;
+            container.appendChild(card);
+            setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada),50);
+        });
+        actualizarMapaCercano();
+    } catch(e) { container.innerHTML = navigator.onLine ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión</div>' : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>'; }
+}
+
+function mateadaTerminada(id) {
+    const card = document.getElementById(`card-${id}`);
+    if (card) { card.classList.add('expiring'); setTimeout(()=>{ card.remove(); mateadasActuales = mateadasActuales.filter(m=>m.id!=id); if(mateadasActuales.filter(m=>!estaTerminada(m)).length===0) document.getElementById('homeContent').innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); },700); }
+}
+
+function recargar() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(()=>btn.classList.remove('spinning'),600); cargarMateadas(); }
+
+async function crearMateada() {
+    if (!usuarioActual) { iniciarSesionGoogle(); return; }
+    const organizador = document.getElementById('nombreOrganizador').value.trim();
+    const titulo = document.getElementById('temaMateada').value;
+    const ubicacion = document.getElementById('ubicacionMateada').value.trim();
+    const cupo = parseInt(document.getElementById('cupoMateada').value);
+    const mateOption = document.querySelector('.option-btn.selected');
+    const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
+    const hora = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
+    if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
+
+    const btn = document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText = 'Buscando ubicación...';
+    let latitud = userLat || -34.5842, longitud = userLng || -58.4073;
+    const coord = await geocodificarUbicacion(ubicacion);
+    if (coord) { latitud = coord.lat; longitud = coord.lng; }
+    btn.innerText = 'Publicando...';
+    try {
+        const params = new URLSearchParams({accion:'crearMateada',titulo,ubicacion,latitud,longitud,lugares_totales:cupo,organizador,organizador_sub:usuarioActual.sub,organizador_email:usuarioActual.email,organizador_avatar:usuarioActual.avatar||organizador.charAt(0).toUpperCase(),descripcion:`Mateada de ${titulo} · ${tipoMate}`,duracion_minutos:duracionSeleccionada,duracion:duracionTexto(duracionSeleccionada),hora,dispositivo:JSON.stringify(dispositivoInfo)});
+        const r = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await r.json();
+        if (resultado.success) { mostrarToast('✅ ¡Mateada publicada!'); irInicio(); }
+        else { mostrarToast('❌ '+(resultado.error||'No se pudo publicar')); }
+    } catch(e) { mostrarToast('❌ Error de conexión'); }
+    finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
+}
+
+async function enviarSolicitud() {
+    if (!mateadaSeleccionada) return;
+    if (!usuarioActual) { iniciarSesionGoogle(); return; }
+    const minutos = document.getElementById('tiempoLlegada').value;
+    const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
+    try {
+        const params = new URLSearchParams({accion:'enviarSolicitud',mateada_id:mateadaSeleccionada.id,usuario_nombre:usuarioActual.nombre,usuario_sub:usuarioActual.sub,usuario_email:usuarioActual.email,tiempo_llegada:minutos+' min',dispositivo:JSON.stringify(dispositivoInfo)});
+        const r = await fetch(`${SCRIPT_URL}?${params}`); const resultado = await r.json();
+        if (resultado.success) { document.getElementById('tiempoEnviado').innerText = minutos; mostrarScreen('screen-sent'); }
+        else { mostrarToast('❌ '+(resultado.error||'Error')); }
+    } catch(e) { mostrarToast('❌ Error de conexión'); }
+    finally { btn.classList.remove('loading'); btn.innerText = '🧉 Quiero sumarme'; }
+}
+
+async function verDetalle(mateada) {
+    mateadaSeleccionada = mateada;
+    const container = document.getElementById('detailContent');
+    const libres = parseInt(mateada.lugares_libres)||0, ocupados = (parseInt(mateada.lugares_totales)||0)-libres;
+    const durMins = parseInt(mateada.duracion_minutos)||60, fillId=`detail-fill-${mateada.id}`, labelId=`detail-label-${mateada.id}`;
+    const esOrganizador = usuarioActual && (usuarioActual.sub === mateada.organizador_sub || usuarioActual.nombre === mateada.organizador);
+    
+    container.innerHTML = `
+        <div class="detail-header"><div class="detail-title">${mateada.titulo}</div><span class="badge ${libres===0?'lleno':esOrganizador?'tuya':''}">${libres===0?'🔴 Sin lugares':esOrganizador?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>
+        <div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div>
+        <div class="map" id="detailMap"></div>
+        <div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;">
+            <div class="detail-row">📍 <strong>${mateada.ubicacion}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div>
+            <div class="detail-row">📋 ${mateada.descripcion||'Compartir mates y buenas charlas'}</div>
+            <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
+            <div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div>
+            <div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div>
+        </div>
+        <div id="chatContainer"></div>
+        ${esOrganizador ? `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Revisá las preguntas arriba y respondelas.</div>` : (libres > 0 ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>` : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;">Sin lugares disponibles</button>`)}
+        <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>
+        <div style="height:calc(80px + var(--safe-bottom));"></div>`;
+    
+    setNavTitle(mateada.titulo);
+    mostrarScreen('screen-detail');
+    
+    setTimeout(() => {
+        iniciarCountdown(mateada, fillId, labelId, (id) => { const l=document.getElementById(labelId); if(l){l.textContent='⏰ Terminada';l.style.color='#DC2626';} });
+        const mapEl = document.getElementById('detailMap');
+        if (mapEl && mateada.latitud && mateada.longitud) {
+            if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
+            mapaDetalle = L.map('detailMap').setView([mateada.latitud,mateada.longitud],15);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
+            L.marker([mateada.latitud,mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
+        }
+    }, 150);
+    
+    const chatDiv = document.getElementById('chatContainer');
+    if (chatDiv) chatDiv.innerHTML = '<div class="chat-section"><div class="chat-title">💬 Chat disponible próximamente</div></div>';
+}
+
+function mostrarUnirse() { document.getElementById('joinInfo').innerHTML = `<div class="join-card"><div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div><div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div></div>`; setNavTitle('Sumarme'); mostrarScreen('screen-join'); }
+function volverADetalle() { verDetalle(mateadaSeleccionada); }
+function irInicio() { mostrarScreen('screen-home'); document.getElementById('navBar').classList.remove('visible'); document.getElementById('mainHeader').style.display = ''; cargarMateadas(); setTimeout(()=>{ if(mapaNearby){ mapaNearby.invalidateSize(); actualizarMapaCercano(); } },500); }
+function irACrear() {
+    if (!usuarioActual) {
+        document.getElementById('createLoginGate').style.display = 'block';
+        document.getElementById('createForm').style.opacity = '0.5';
+        document.getElementById('createForm').style.pointerEvents = 'none';
+    } else {
+        document.getElementById('createLoginGate').style.display = 'none';
+        document.getElementById('createForm').style.opacity = '1';
+        document.getElementById('createForm').style.pointerEvents = '';
+        const campo = document.getElementById('nombreOrganizador');
+        if (campo && !campo.value) campo.value = usuarioActual.nombre.split(' ')[0];
+    }
+    setNavTitle('Nueva mateada'); mostrarScreen('screen-create');
+}
+function goBack() { if(document.getElementById('screen-join').classList.contains('active')){ verDetalle(mateadaSeleccionada); } else { irInicio(); } }
+function setNavTitle(t) { document.getElementById('navTitle').innerText = t; }
+function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const isHome=id==='screen-home'; document.getElementById('fabBtn').style.display=isHome?'flex':'none'; document.getElementById('mainHeader').style.display=isHome?'':'none'; document.getElementById('navBar').classList.toggle('visible',!isHome); }
+function seleccionarMate(btn){ btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
+function seleccionarDuracion(btn,mins){ document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada = mins; }
+function mostrarToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function ajustarSpacer() {
+    const h = document.getElementById('stickyTop').getBoundingClientRect().height;
+    document.getElementById('headerSpacer').style.height = h + 'px';
+}
+
+function actualizarEstadoRed() { document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine); }
+window.addEventListener('online', actualizarEstadoRed);
+window.addEventListener('offline', actualizarEstadoRed);
+window.addEventListener('resize', ajustarSpacer);
+
+// Inicializar Google Identity Services
+window.onload = function() {
+    if (window.google && google.accounts) {
+        google.accounts.id.initialize({
+            client_id: '171913559980-sagqbpfmm7r7m5rt3tolkaoej08ngn8j.apps.googleusercontent.com',
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("googleButtonContainer") || {},
+            { theme: "outline", size: "small", text: "signin_with", shape: "pill" }
+        );
+        google.accounts.id.prompt();
+    }
+    actualizarInterfazUsuario();
+    ajustarSpacer();
+    cargarMateadas();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (p)=>{ userLat=p.coords.latitude; userLng=p.coords.longitude; document.getElementById('gpsBtn').textContent='✅'; actualizarMapaCercano(); },
+            ()=>{},
+            {timeout:5000}
+        );
+    }
+    actualizarEstadoRed();
+};
+
+// Service Worker
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+
+// iOS install
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+function abrirIosSheet(){ document.getElementById('iosSheetOverlay').classList.add('visible'); }
+function cerrarIosSheet(e){ if(!e||e.target===document.getElementById('iosSheetOverlay')||!e.target){ document.getElementById('iosSheetOverlay').classList.remove('visible'); } }
+if (isIOS && !isInStandaloneMode && !sessionStorage.getItem('iosSheetShown')) { setTimeout(()=>{ document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown','1'); },2500); }
+
+// Install banner
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredInstallPrompt=e; if(!sessionStorage.getItem('installDismissed')) setTimeout(()=>document.getElementById('installBanner').classList.add('visible'),2000); });
+document.getElementById('installBtnBanner')?.addEventListener('click',async()=>{ if(!deferredInstallPrompt)return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; document.getElementById('installBanner').classList.remove('visible'); });
+document.getElementById('installDismiss')?.addEventListener('click',()=>{ document.getElementById('installBanner').classList.remove('visible'); sessionStorage.setItem('installDismissed','1'); });
 </script>
 </body>
 </html>
