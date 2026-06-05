@@ -370,10 +370,20 @@
         <div class="form-group"><label class="form-label">👤 Tu nombre</label><input class="form-input" id="nombreOrganizador" placeholder="Ej: Juan, Camila" autocomplete="name"></div>
         <div class="form-group"><label class="form-label">🎯 Tema</label>
           <select id="temaMateada" class="form-select">
-            <option>🤝 Emprendedurismo</option><option selected>📖 Filosofía y vida cotidiana</option>
-            <option>💻 Tecnología e IA</option><option>🎨 Arte y creatividad</option>
-            <option>📚 Literatura</option><option>🎬 Cine y series</option>
-            <option>🌱 Sustentabilidad</option><option>🧘 Bienestar y meditación</option>
+            <option>🤝 Emprendedurismo</option>
+            <option selected>📖 Filosofía y vida cotidiana</option>
+            <option>💻 Tecnología e IA</option>
+            <option>🎨 Arte y creatividad</option>
+            <option>📚 Literatura</option>
+            <option>🎬 Cine y series</option>
+            <option>🌱 Sustentabilidad</option>
+            <option>🧘 Bienestar y meditación</option>
+            <option>⚽ Copa del Mundo</option>
+            <option>🫂 Quiero aconsejar</option>
+            <option>💭 Me quiero descargar</option>
+            <option>🚀 Tips para emprender</option>
+            <option>🎌 Anime</option>
+            <option>🎸 Llevo un instrumento musical</option>
           </select>
         </div>
         <div class="form-group">
@@ -587,6 +597,55 @@ function capturarDatosDispositivo() {
   dispositivoInfo = { nav, so, disp, idioma: navigator.language, zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone, resolucion: `${screen.width}x${screen.height}`, fecha: new Date().toISOString() };
 }
 capturarDatosDispositivo();
+
+// ============================================
+// LÍMITES DIARIOS Y VALIDACIONES
+// ============================================
+function getFechaHoy() {
+  return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+}
+
+// --- Límite creaciones (2/día por email) ---
+function getCreacionesHoy(email) {
+  try {
+    const data = JSON.parse(localStorage.getItem(`creaciones_${email}`) || '{}');
+    return data.fecha === getFechaHoy() ? (data.count || 0) : 0;
+  } catch(e) { return 0; }
+}
+function registrarCreacion(email) {
+  const hoy = getFechaHoy();
+  const count = getCreacionesHoy(email) + 1;
+  localStorage.setItem(`creaciones_${email}`, JSON.stringify({ fecha: hoy, count }));
+}
+function puedeCrear(email) { return getCreacionesHoy(email) < 2; }
+
+// --- Límite sumadas (3/día por email) ---
+function getSumadasHoy(email) {
+  try {
+    const data = JSON.parse(localStorage.getItem(`sumadas_${email}`) || '{}');
+    return data.fecha === getFechaHoy() ? (data.count || 0) : 0;
+  } catch(e) { return 0; }
+}
+function registrarSumada(email) {
+  const hoy = getFechaHoy();
+  const count = getSumadasHoy(email) + 1;
+  localStorage.setItem(`sumadas_${email}`, JSON.stringify({ fecha: hoy, count }));
+}
+function puedeSumarse(email) { return getSumadasHoy(email) < 3; }
+
+// --- Rastrear si ya se sumó a una mateada concreta ---
+function yaSeUnio(mateadaId, email) {
+  return !!localStorage.getItem(`unido_${mateadaId}_${email}`);
+}
+function registrarUnion(mateadaId, email) {
+  localStorage.setItem(`unido_${mateadaId}_${email}`, '1');
+}
+
+// --- Es organizador de esta mateada ---
+function esOrganizadorDe(mateada) {
+  if (!usuarioActual) return false;
+  return usuarioActual.email === mateada.organizador_email || usuarioActual.sub === mateada.organizador_sub;
+}
 
 function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
   const notif = { id: Date.now(), tipo, titulo, cuerpo, mateadaId, leida: false, fecha: new Date().toISOString() };
@@ -863,6 +922,10 @@ async function crearMateada() {
   const hora = new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
   if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
+  if (!puedeCrear(usuarioActual.email)) {
+    mostrarToast('⏳ Límite alcanzado: solo podés crear 2 mateadas por día');
+    return;
+  }
 
   const btn = document.getElementById('btnPublicar');
   btn.classList.add('loading'); btn.innerText = 'Buscando ubicación...';
@@ -890,7 +953,7 @@ async function crearMateada() {
     });
     const r = await fetch(`${SCRIPT_URL}?${params}`);
     const resultado = await r.json();
-    if (resultado.success) { mostrarToast('✅ ¡Mateada publicada!'); irInicio(); }
+    if (resultado.success) { registrarCreacion(usuarioActual.email); mostrarToast('✅ ¡Mateada publicada!'); irInicio(); }
     else { mostrarToast('❌ ' + (resultado.error||'No se pudo publicar')); }
   } catch(e) { mostrarToast('❌ Error de conexión'); }
   finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
@@ -906,12 +969,25 @@ async function verDetalle(mateada) {
   const ocupados = (parseInt(mateada.lugares_totales)||0) - libres;
   const durMins = parseInt(mateada.duracion_minutos)||60;
   const fillId = `detail-fill-${mateada.id}`, labelId = `detail-label-${mateada.id}`;
-  const esOrganizador = usuarioActual && (usuarioActual.sub === mateada.organizador_sub || usuarioActual.email === mateada.organizador_email);
+  const esOrg = esOrganizadorDe(mateada);
+  const yaUnido = usuarioActual && !esOrg && yaSeUnio(mateada.id, usuarioActual.email);
+
+  // Botón de acción según estado
+  let accionBtn = '';
+  if (esOrg) {
+    accionBtn = `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div>`;
+  } else if (yaUnido) {
+    accionBtn = `<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`;
+  } else if (libres === 0) {
+    accionBtn = `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
+  } else {
+    accionBtn = `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
+  }
 
   container.innerHTML = `
     <div class="detail-header">
       <div class="detail-title">${mateada.titulo}</div>
-      <span class="badge ${libres===0?'lleno':esOrganizador?'tuya':''}">${libres===0?'🔴 Sin lugares':esOrganizador?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span>
+      <span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span>
     </div>
     <div class="detail-countdown">
       <div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div>
@@ -928,12 +1004,7 @@ async function verDetalle(mateada) {
       <div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div>
     </div>
     <div id="chatContainer"></div>
-    ${esOrganizador
-      ? `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas en el chat de abajo.</div>`
-      : (libres > 0
-        ? `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`
-        : `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`)
-    }
+    ${accionBtn}
     <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>
     <div class="screen-bottom-spacer"></div>`;
 
@@ -954,7 +1025,7 @@ async function verDetalle(mateada) {
     }
   }, 150);
 
-  renderizarChat(mateada, esOrganizador);
+  renderizarChat(mateada, esOrg);
 }
 
 // ============================================
@@ -996,7 +1067,7 @@ function renderizarChat(mateada, esOrganizador) {
     });
   }
 
-  // Área para hacer nueva pregunta
+  // Área para hacer nueva pregunta — solo otros usuarios (no organizador)
   if (!esOrganizador && !estaTerminada(mateada)) {
     if (!usuarioActual) {
       html += `<div class="chat-info-msg" style="margin-top:8px;">🔑 <a href="#" onclick="iniciarSesionGoogle();return false;" style="color:var(--verde);font-weight:600;">Iniciá sesión</a> para hacer una pregunta</div>`;
@@ -1012,8 +1083,14 @@ function renderizarChat(mateada, esOrganizador) {
           </div>`;
       }
     }
-  } else if (esOrganizador && qas.filter(q=>!q.respuesta).length === 0 && qas.length > 0) {
-    html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Respondiste todas las preguntas</div>`;
+  } else if (esOrganizador) {
+    // El organizador solo ve el estado de sus respuestas, no puede preguntar
+    const sinResponder = qas.filter(q => !q.respuesta).length;
+    if (qas.length === 0) {
+      // no mostrar nada extra
+    } else if (sinResponder === 0) {
+      html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Respondiste todas las preguntas</div>`;
+    }
   }
 
   html += `</div>`;
@@ -1092,17 +1169,36 @@ function seleccionarTiempo(btn, mins) {
 
 function mostrarUnirse() {
   if (!usuarioActual) { iniciarSesionGoogle(); return; }
+
+  // Bloquear si es el organizador
+  if (esOrganizadorDe(mateadaSeleccionada)) {
+    mostrarToast('🌟 No podés sumarte a tu propia mateada');
+    return;
+  }
+
+  // Bloquear si ya se sumó
+  if (yaSeUnio(mateadaSeleccionada.id, usuarioActual.email)) {
+    mostrarToast('✅ Ya te sumaste a esta mateada');
+    return;
+  }
+
+  // Límite diario de sumas
+  if (!puedeSumarse(usuarioActual.email)) {
+    mostrarToast('⏳ Límite alcanzado: solo podés sumarte a 3 mateadas por día');
+    return;
+  }
+
   document.getElementById('joinInfo').innerHTML = `
     <div class="join-card">
       <div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div>
       <div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
     </div>`;
 
-  // Área de pregunta en el join (si no la hizo antes desde detalle)
+  // Área de pregunta en el join (si no la hizo antes)
   const preguntaArea = document.getElementById('joinPreguntaArea');
   if (preguntaArea) {
     const yaP = yaHizoPreguntaDetalle(mateadaSeleccionada.id);
-    if (!yaP && usuarioActual) {
+    if (!yaP) {
       preguntaArea.innerHTML = `
         <div class="form-group">
           <label class="form-label">💬 ¿Querés preguntar algo al organizador? <span style="color:var(--subtexto);font-weight:400;">(opcional, una sola vez)</span></label>
@@ -1120,6 +1216,11 @@ function mostrarUnirse() {
 async function enviarSolicitud() {
   if (!mateadaSeleccionada) return;
   if (!usuarioActual) { iniciarSesionGoogle(); return; }
+
+  // Doble-check de validaciones
+  if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('No podés sumarte a tu propia mateada'); return; }
+  if (yaSeUnio(mateadaSeleccionada.id, usuarioActual.email)) { mostrarToast('Ya te sumaste a esta mateada'); return; }
+  if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 3 mateadas por día'); return; }
 
   // Si hay pregunta nueva en el join, guardarla
   const joinPreguntaTxt = document.getElementById('joinPreguntaText')?.value.trim();
@@ -1154,6 +1255,8 @@ async function enviarSolicitud() {
     const r = await fetch(`${SCRIPT_URL}?${params}`);
     const resultado = await r.json();
     if (resultado.success) {
+      registrarUnion(mateadaSeleccionada.id, usuarioActual.email);
+      registrarSumada(usuarioActual.email);
       document.getElementById('tiempoEnviado').innerText = tiempoLlegadaTexto;
       mostrarScreen('screen-sent');
     } else {
@@ -1179,6 +1282,16 @@ function irInicio() {
 function irACrear() {
   if (!usuarioActual) {
     document.getElementById('createLoginGate').style.display = 'block';
+    document.getElementById('createForm').style.cssText = 'opacity:0.4;pointer-events:none;user-select:none;';
+  } else if (!puedeCrear(usuarioActual.email)) {
+    // Mostrar aviso de límite pero dejar ver el form bloqueado
+    document.getElementById('createLoginGate').style.display = 'block';
+    document.getElementById('createLoginGate').innerHTML = `
+      <div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">⏳</div>
+        <strong>Límite diario alcanzado</strong><br>
+        <span style="font-size:13px;">Ya creaste 2 mateadas hoy. Volvé mañana para crear más.</span>
+      </div>`;
     document.getElementById('createForm').style.cssText = 'opacity:0.4;pointer-events:none;user-select:none;';
   } else {
     document.getElementById('createLoginGate').style.display = 'none';
