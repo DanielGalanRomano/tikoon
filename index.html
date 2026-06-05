@@ -644,7 +644,9 @@ function registrarUnion(mateadaId, email) {
 // --- Es organizador de esta mateada ---
 function esOrganizadorDe(mateada) {
   if (!usuarioActual) return false;
-  return usuarioActual.email === mateada.organizador_email || usuarioActual.sub === mateada.organizador_sub;
+  // Verificar por email O por sub (para mayor compatibilidad)
+  return (mateada.organizador_email && usuarioActual.email === mateada.organizador_email) ||
+         (mateada.organizador_sub && usuarioActual.sub === mateada.organizador_sub);
 }
 
 function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
@@ -1025,19 +1027,25 @@ async function verDetalle(mateada) {
     }
   }, 150);
 
+  // CORRECCIÓN 1: Recalcular esOrganizadorDe dentro de renderizarChat
   renderizarChat(mateada, esOrg);
 }
 
 // ============================================
-// CHAT / Q&A
+// CHAT / Q&A - VERSIÓN CORREGIDA
 // ============================================
-function renderizarChat(mateada) {
+function renderizarChat(mateada, esOrganizadorParam) {
   const chatDiv = document.getElementById('chatContainer');
   if (!chatDiv) return;
 
-  // Siempre recalcular desde cero — nunca confiar en parámetro externo
-  const esOrg = esOrganizadorDe(mateada);
+  // CORRECCIÓN: Recalcular esOrganizador directamente usando la mateada actual
+  // Esto resuelve el caso donde el parámetro llega mal porque backend no incluye organizador_email
+  const esOrganizador = esOrganizadorDe(mateada);
+  
+  // También verificar si la mateada ya terminó
+  const terminada = estaTerminada(mateada);
 
+  // Cargar Q&As del localStorage (en producción esto vendría del backend)
   const qas = cargarQAs(mateada.id);
 
   let html = `<div class="chat-section"><div class="chat-title">💬 Preguntas al organizador</div>`;
@@ -1057,26 +1065,20 @@ function renderizarChat(mateada) {
             <div class="qa-bubble-text">${escapeHtml(qa.respuesta)}</div>
             <div class="qa-meta">🧑 ${escapeHtml(mateada.organizador)} (organizador) · ${formatFecha(qa.fecha_respuesta)}</div>
           </div>`;
-      } else if (esOrg) {
+      } else if (esOrganizador && !terminada) {
         html += `
           <div class="chat-input-area" id="respArea-${qa.id}">
             <textarea rows="2" placeholder="Escribí tu respuesta..." id="respText-${qa.id}"></textarea>
             <button class="chat-send-btn" onclick="responderPregunta('${mateada.id}','${qa.id}')">Responder ↩</button>
           </div>`;
-      } else {
+      } else if (!qa.respuesta && !terminada) {
         html += `<div class="chat-info-msg" style="margin-left:16px;margin-bottom:10px;">⏳ Esperando respuesta del organizador</div>`;
       }
     });
   }
 
-  // Área para nueva pregunta — SOLO si no es el organizador
-  if (esOrg) {
-    // Organizador: solo puede responder, nunca preguntar
-    const sinResponder = qas.filter(q => !q.respuesta).length;
-    if (qas.length > 0 && sinResponder === 0) {
-      html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Respondiste todas las preguntas</div>`;
-    }
-  } else if (!estaTerminada(mateada)) {
+  // Área para hacer nueva pregunta — SOLO si NO es organizador, NO está terminada, y hay usuario logueado
+  if (!esOrganizador && !terminada) {
     if (!usuarioActual) {
       html += `<div class="chat-info-msg" style="margin-top:8px;">🔑 <a href="#" onclick="iniciarSesionGoogle();return false;" style="color:var(--verde);font-weight:600;">Iniciá sesión</a> para hacer una pregunta</div>`;
     } else {
@@ -1091,6 +1093,18 @@ function renderizarChat(mateada) {
           </div>`;
       }
     }
+  } else if (esOrganizador && !terminada) {
+    // El organizador solo ve el estado de sus respuestas, no puede preguntar
+    const sinResponder = qas.filter(q => !q.respuesta).length;
+    if (qas.length === 0) {
+      // no mostrar nada extra
+    } else if (sinResponder === 0) {
+      html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Respondiste todas las preguntas</div>`;
+    } else {
+      html += `<div class="chat-info-msg" style="margin-top:8px;">📝 Tenés ${sinResponder} pregunta${sinResponder !== 1 ? 's' : ''} sin responder</div>`;
+    }
+  } else if (terminada) {
+    html += `<div class="chat-info-msg" style="margin-top:8px;">⏰ Esta mateada ya terminó, no se pueden hacer nuevas preguntas</div>`;
   }
 
   html += `</div>`;
@@ -1107,12 +1121,48 @@ function guardarQAs(mateadaId, qas) {
 
 // Clave separada para rastrear si el usuario ya preguntó (independiente del join)
 function yaHizoPreguntaDetalle(mateadaId) {
-  return !!localStorage.getItem(`pregunta_detalle_${mateadaId}_${usuarioActual?.sub}`);
+  if (!usuarioActual) return false;
+  return !!localStorage.getItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`);
 }
 
+// CORRECCIÓN 2: Agregar segunda barrera en enviarPreguntaDetalle
 function enviarPreguntaDetalle(mateadaId) {
+  // BARRERA 1: Verificar que el usuario esté logueado
+  if (!usuarioActual) {
+    mostrarToast('🔑 Iniciá sesión para hacer una pregunta');
+    iniciarSesionGoogle();
+    return;
+  }
+  
+  // BARRERA 2: Verificar que la mateada aún existe y no está terminada
+  if (!mateadaSeleccionada || estaTerminada(mateadaSeleccionada)) {
+    mostrarToast('⏰ Esta mateada ya terminó, no se pueden hacer preguntas');
+    return;
+  }
+  
+  // BARRERA 3: Verificar que el usuario NO sea el organizador
+  if (esOrganizadorDe(mateadaSeleccionada)) {
+    mostrarToast('🌟 El organizador no puede hacer preguntas en su propia mateada');
+    return;
+  }
+  
+  // BARRERA 4: Verificar que no haya preguntado antes
+  if (yaHizoPreguntaDetalle(mateadaId)) {
+    mostrarToast('✅ Ya hiciste tu pregunta en esta mateada');
+    return;
+  }
+  
   const txt = document.getElementById('nuevaPreguntaText')?.value.trim();
-  if (!txt) { mostrarToast('Escribí tu pregunta primero'); return; }
+  if (!txt) { 
+    mostrarToast('📝 Escribí tu pregunta primero'); 
+    return; 
+  }
+  
+  if (txt.length > 280) {
+    mostrarToast('📝 La pregunta es muy larga (máximo 280 caracteres)');
+    return;
+  }
+  
   const qas = cargarQAs(mateadaId);
   const qa = {
     id: Date.now().toString(),
@@ -1126,22 +1176,50 @@ function enviarPreguntaDetalle(mateadaId) {
   qas.push(qa);
   guardarQAs(mateadaId, qas);
   localStorage.setItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`, '1');
-  mostrarToast('✅ Pregunta enviada');
-  renderizarChat(mateadaSeleccionada, false);
+  
+  // Opcional: agregar notificación al organizador
+  agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${txt.substring(0, 50)}${txt.length > 50 ? '...' : ''}"`, mateadaId);
+  
+  mostrarToast('✅ ¡Pregunta enviada! El organizador te responderá pronto');
+  
+  // Limpiar el textarea
+  const textarea = document.getElementById('nuevaPreguntaText');
+  if (textarea) textarea.value = '';
+  
+  // Recalcular esOrganizador y refrescar el chat
+  renderizarChat(mateadaSeleccionada, esOrganizadorDe(mateadaSeleccionada));
 }
 
 function responderPregunta(mateadaId, qaId) {
+  // Verificar que el usuario sea el organizador
+  if (!esOrganizadorDe(mateadaSeleccionada)) {
+    mostrarToast('Solo el organizador puede responder preguntas');
+    return;
+  }
+  
   const txt = document.getElementById(`respText-${qaId}`)?.value.trim();
-  if (!txt) { mostrarToast('Escribí la respuesta primero'); return; }
+  if (!txt) { 
+    mostrarToast('📝 Escribí la respuesta primero'); 
+    return; 
+  }
+  
+  if (txt.length > 500) {
+    mostrarToast('📝 La respuesta es muy larga (máximo 500 caracteres)');
+    return;
+  }
+  
   const qas = cargarQAs(mateadaId);
   const qa = qas.find(q => q.id === qaId);
   if (!qa) return;
+  
   qa.respuesta = txt;
   qa.fecha_respuesta = new Date().toISOString();
   guardarQAs(mateadaId, qas);
+  
   mostrarToast('✅ Respuesta publicada');
-  const esOrganizador = true;
-  renderizarChat(mateadaSeleccionada, esOrganizador);
+  
+  // Refrescar el chat
+  renderizarChat(mateadaSeleccionada, true);
 }
 
 function escapeHtml(t) {
@@ -1173,6 +1251,12 @@ function mostrarUnirse() {
   // Bloquear si es el organizador
   if (esOrganizadorDe(mateadaSeleccionada)) {
     mostrarToast('🌟 No podés sumarte a tu propia mateada');
+    return;
+  }
+
+  // Bloquear si la mateada terminó
+  if (estaTerminada(mateadaSeleccionada)) {
+    mostrarToast('⏰ Esta mateada ya terminó');
     return;
   }
 
@@ -1219,6 +1303,7 @@ async function enviarSolicitud() {
 
   // Doble-check de validaciones
   if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('No podés sumarte a tu propia mateada'); return; }
+  if (estaTerminada(mateadaSeleccionada)) { mostrarToast('Esta mateada ya terminó'); return; }
   if (yaSeUnio(mateadaSeleccionada.id, usuarioActual.email)) { mostrarToast('Ya te sumaste a esta mateada'); return; }
   if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 3 mateadas por día'); return; }
 
@@ -1237,6 +1322,9 @@ async function enviarSolicitud() {
     });
     guardarQAs(mateadaSeleccionada.id, qas);
     localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
+    
+    // Notificar al organizador
+    agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0, 50)}${joinPreguntaTxt.length > 50 ? '...' : ''}"`, mateadaSeleccionada.id);
   }
 
   const btn = document.getElementById('btnUnirse');
