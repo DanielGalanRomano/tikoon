@@ -448,7 +448,8 @@ let markerSelector = null;
 let dispositivoInfo = {};
 let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
 let unreadCount = notificaciones.filter(n => !n.leida).length;
-let preguntasCache = {}; // Cache de preguntas por mateada
+let preguntasCache = {};
+let enviandoPregunta = false;
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -465,6 +466,35 @@ function mostrarToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 function getFechaHoy() { return new Date().toISOString().slice(0, 10); }
+
+// Limpiar preguntas duplicadas del localStorage
+function limpiarPreguntasDuplicadas() {
+  if (!usuarioActual) return;
+  
+  const keys = Object.keys(localStorage);
+  const preguntasKeys = keys.filter(k => k.startsWith('pregunta_detalle_'));
+  const preguntasUnicas = new Set();
+  let eliminadas = 0;
+  
+  preguntasKeys.forEach(key => {
+    const match = key.match(/pregunta_detalle_(.+)_(.+)$/);
+    if (match) {
+      const mateadaId = match[1];
+      const uniqueKey = `${mateadaId}_${usuarioActual.sub}`;
+      
+      if (preguntasUnicas.has(uniqueKey)) {
+        localStorage.removeItem(key);
+        eliminadas++;
+      } else {
+        preguntasUnicas.add(uniqueKey);
+      }
+    }
+  });
+  
+  if (eliminadas > 0) {
+    console.log(`Se eliminaron ${eliminadas} preguntas duplicadas del localStorage`);
+  }
+}
 
 // ---- CARGAR PREGUNTAS DESDE EL SERVIDOR ----
 async function cargarPreguntas(mateadaId) {
@@ -483,9 +513,15 @@ async function cargarPreguntas(mateadaId) {
   }
 }
 
-// ---- GUARDAR PREGUNTA EN EL SERVIDOR ----
+// ---- GUARDAR PREGUNTA EN EL SERVIDOR (con prevención de duplicados) ----
 async function guardarPregunta(mateadaId, pregunta, nombrePreguntante, subPreguntante, emailPreguntante) {
   try {
+    const yaPregunto = localStorage.getItem(`pregunta_detalle_${mateadaId}_${subPreguntante}`);
+    if (yaPregunto) {
+      console.log('Ya se hizo pregunta previamente, cancelando...');
+      return false;
+    }
+    
     const params = new URLSearchParams({
       accion: 'crearPregunta',
       mateada_id: mateadaId,
@@ -495,9 +531,12 @@ async function guardarPregunta(mateadaId, pregunta, nombrePreguntante, subPregun
       email_preguntante: emailPreguntante,
       fecha_pregunta: new Date().toISOString()
     });
+    
     const r = await fetch(`${SCRIPT_URL}?${params}`);
     const data = await r.json();
+    
     if (data.success) {
+      localStorage.setItem(`pregunta_detalle_${mateadaId}_${subPreguntante}`, '1');
       delete preguntasCache[mateadaId];
       return true;
     }
@@ -531,7 +570,7 @@ async function guardarRespuesta(mateadaId, preguntaId, respuesta) {
   }
 }
 
-// ---- LÍMITES (MODIFICADO: 1 por día cada uno) ----
+// ---- LÍMITES (1 por día cada uno) ----
 function getCreacionesHoy(email) {
   if (!email) return 0;
   try { const d = JSON.parse(localStorage.getItem(`creaciones_${email}`) || '{}'); return d.fecha === getFechaHoy() ? (d.count||0) : 0; } catch(e) { return 0; }
@@ -540,7 +579,7 @@ function registrarCreacion(email) {
   if (!email) return; const hoy = getFechaHoy();
   localStorage.setItem(`creaciones_${email}`, JSON.stringify({ fecha: hoy, count: getCreacionesHoy(email)+1 }));
 }
-function puedeCrear(email) { return !!email && getCreacionesHoy(email) < 1; } // CAMBIADO: 1 por día
+function puedeCrear(email) { return !!email && getCreacionesHoy(email) < 1; }
 
 function getSumadasHoy(email) {
   if (!email) return 0;
@@ -550,7 +589,7 @@ function registrarSumada(email) {
   if (!email) return; const hoy = getFechaHoy();
   localStorage.setItem(`sumadas_${email}`, JSON.stringify({ fecha: hoy, count: getSumadasHoy(email)+1 }));
 }
-function puedeSumarse(email) { return !!email && getSumadasHoy(email) < 1; } // CAMBIADO: 1 por día
+function puedeSumarse(email) { return !!email && getSumadasHoy(email) < 1; }
 
 function yaSeUnio(mateadaId, email) { return !!email && !!localStorage.getItem(`unido_${mateadaId}_${email}`); }
 function registrarUnion(mateadaId, email) { if (email) localStorage.setItem(`unido_${mateadaId}_${email}`, '1'); }
@@ -586,12 +625,13 @@ function actualizarBellBadge() {
 
 // ---- AUTH ----
 const sesionGuardada = localStorage.getItem('usuario_cebate_google');
-if (sesionGuardada) { try { usuarioActual = JSON.parse(sesionGuardada); } catch(e) {} }
+if (sesionGuardada) { try { usuarioActual = JSON.parse(sesionGuardada); limpiarPreguntasDuplicadas(); } catch(e) {} }
 
 function handleCredentialResponse(response) {
   const data = JSON.parse(atob(response.credential.split('.')[1]));
   usuarioActual = { sub: data.sub, nombre: data.name, email: data.email, avatar: data.picture, googleId: data.sub };
   localStorage.setItem('usuario_cebate_google', JSON.stringify(usuarioActual));
+  limpiarPreguntasDuplicadas();
   actualizarInterfazUsuario();
   mostrarToast(`✅ ¡Bienvenido/a, ${usuarioActual.nombre.split(' ')[0]}!`);
   const c = document.getElementById('nombreOrganizador');
@@ -702,7 +742,6 @@ function renderizarMateadas(container) {
     const fillId=`fill-${m.id}`, labelId=`label-${m.id}`, esMia=usuarioActual&&esOrganizadorDe(m);
     const card=document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${i*60}ms`; card.onclick=()=>verDetalle(m);
     
-    // Nuevo badge de participantes
     const participantesText = `${ocupados} de ${totalLugares}`;
     const participantesClass = libres === 0 ? 'participantes-badge lleno' : 'participantes-badge';
     
@@ -828,7 +867,7 @@ async function crearMateada() {
   finally { btn.classList.remove('loading'); btn.innerText='🌿 Publicar mateada'; }
 }
 
-// ---- CHAT CON PREGUNTAS PÚBLICAS ----
+// ---- CHAT CON PREGUNTAS PÚBLICAS (con prevención de duplicados) ----
 async function renderizarChat(mateada) {
   const chatDiv=document.getElementById('chatContainer'); if (!chatDiv) return;
   const esOrg=esOrganizadorDe(mateada), terminada=estaTerminada(mateada);
@@ -869,31 +908,89 @@ async function renderizarChat(mateada) {
   html+=`</div>`; chatDiv.innerHTML=html;
 }
 
+// Función mejorada con prevención de doble envío
 async function enviarPreguntaDetalle(mateadaId) {
-  if (!usuarioActual) { mostrarToast('🔑 Iniciá sesión'); iniciarSesionGoogle(); return; }
-  if (!mateadaSeleccionada) { mostrarToast('❌ No se encontró la mateada'); return; }
-  if (estaTerminada(mateadaSeleccionada)) { mostrarToast('⏰ Esta mateada ya terminó'); return; }
-  if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('🌟 Sos el organizador — esperá las preguntas'); return; }
-  if (yaHizoPreguntaDetalle(mateadaId)) { mostrarToast('✅ Ya hiciste tu pregunta'); return; }
-  const txt=document.getElementById('nuevaPreguntaText')?.value.trim();
-  if (!txt) { mostrarToast('📝 Escribí tu pregunta primero'); return; }
-  if (txt.length>280) { mostrarToast('📝 Máximo 280 caracteres'); return; }
+  if (enviandoPregunta) {
+    mostrarToast('⏳ Ya estamos enviando tu pregunta, esperá un momento...');
+    return;
+  }
   
-  const success = await guardarPregunta(
-    mateadaId, 
-    txt, 
-    usuarioActual.nombre.split(' ')[0], 
-    usuarioActual.sub, 
-    usuarioActual.email
-  );
+  if (!usuarioActual) { 
+    mostrarToast('🔑 Iniciá sesión'); 
+    iniciarSesionGoogle(); 
+    return; 
+  }
+  if (!mateadaSeleccionada) { 
+    mostrarToast('❌ No se encontró la mateada'); 
+    return; 
+  }
+  if (estaTerminada(mateadaSeleccionada)) { 
+    mostrarToast('⏰ Esta mateada ya terminó'); 
+    return; 
+  }
+  if (esOrganizadorDe(mateadaSeleccionada)) { 
+    mostrarToast('🌟 Sos el organizador — esperá las preguntas'); 
+    return; 
+  }
   
-  if (success) {
-    localStorage.setItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`, '1');
-    agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${txt.substring(0,50)}"`, mateadaId);
-    mostrarToast('✅ ¡Pregunta enviada!');
-    await renderizarChat(mateadaSeleccionada);
-  } else {
-    mostrarToast('❌ Error al enviar la pregunta');
+  const yaPregunto = yaHizoPreguntaDetalle(mateadaId);
+  if (yaPregunto) { 
+    mostrarToast('✅ Ya hiciste tu pregunta en esta mateada'); 
+    return; 
+  }
+  
+  const txt = document.getElementById('nuevaPreguntaText')?.value.trim();
+  if (!txt) { 
+    mostrarToast('📝 Escribí tu pregunta primero'); 
+    return; 
+  }
+  if (txt.length > 280) { 
+    mostrarToast('📝 Máximo 280 caracteres'); 
+    return; 
+  }
+  
+  enviandoPregunta = true;
+  const btn = document.querySelector('#nuevaPreguntaArea .chat-send-btn');
+  const textarea = document.getElementById('nuevaPreguntaText');
+  
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+  }
+  if (textarea) {
+    textarea.disabled = true;
+  }
+  
+  try {
+    const success = await guardarPregunta(
+      mateadaId, 
+      txt, 
+      usuarioActual.nombre.split(' ')[0], 
+      usuarioActual.sub, 
+      usuarioActual.email
+    );
+    
+    if (success) {
+      agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${txt.substring(0,50)}"`, mateadaId);
+      mostrarToast('✅ ¡Pregunta enviada!');
+      if (textarea) textarea.value = '';
+      await renderizarChat(mateadaSeleccionada);
+    } else {
+      mostrarToast('❌ Error al enviar la pregunta');
+    }
+  } catch(e) {
+    console.error('Error:', e);
+    mostrarToast('❌ Error de conexión al enviar la pregunta');
+  } finally {
+    enviandoPregunta = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Preguntar ✉';
+    }
+    if (textarea) {
+      textarea.disabled = false;
+      textarea.focus();
+    }
   }
 }
 
@@ -942,18 +1039,25 @@ async function enviarSolicitud() {
   if (yaSeUnio(mateadaSeleccionada.id,usuarioActual.email)) { mostrarToast('✅ Ya te sumaste'); return; }
   if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 1 mateada por día'); return; }
 
-  const joinPreguntaTxt=document.getElementById('joinPreguntaText')?.value.trim();
+  const joinPreguntaTxt = document.getElementById('joinPreguntaText')?.value.trim();
+  const yaPregunto = yaHizoPreguntaDetalle(mateadaSeleccionada.id);
   
-  if (joinPreguntaTxt && !yaHizoPreguntaDetalle(mateadaSeleccionada.id) && !esOrganizadorDe(mateadaSeleccionada)) {
-    await guardarPregunta(
+  if (joinPreguntaTxt && !yaPregunto && !esOrganizadorDe(mateadaSeleccionada)) {
+    localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
+    
+    const success = await guardarPregunta(
       mateadaSeleccionada.id,
       joinPreguntaTxt,
       usuarioActual.nombre.split(' ')[0],
       usuarioActual.sub,
       usuarioActual.email
     );
-    localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
-    agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0,50)}"`, mateadaSeleccionada.id);
+    
+    if (success) {
+      agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0,50)}"`, mateadaSeleccionada.id);
+    } else {
+      localStorage.removeItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`);
+    }
   }
 
   const btn=document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText='Enviando...';
