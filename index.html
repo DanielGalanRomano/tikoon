@@ -74,7 +74,6 @@
 
     .header { padding: calc(14px + var(--safe-top)) 16px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .logo-wrap { text-align: center; flex: 1; min-width: 0; }
-    /* FIX 4: Logo siempre en una línea */
     .logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; color: var(--verde); letter-spacing: -0.5px; white-space: nowrap; }
     .sub { font-size: 10px; color: var(--subtexto); margin-top: 2px; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -162,7 +161,6 @@
     .form-group { margin-bottom: 16px; }
     .form-input, .form-select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--borde); border-radius: 16px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--texto); transition: border-color 0.2s; }
     .form-input:focus, .form-select:focus { outline: none; border-color: var(--verde); }
-    /* FIX 3: Campo nombre readonly */
     .form-input[readonly] { background: var(--crema-dark); color: var(--subtexto); cursor: default; border-color: var(--borde); }
     .form-label { font-size: 13px; font-weight: 600; color: var(--subtexto); margin-bottom: 7px; display: block; }
     .option-grid { display: flex; gap: 8px; }
@@ -224,7 +222,6 @@
     .map-modal-header button { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
     .map-modal-content { flex: 1; }
     .map-modal-footer { padding: 16px; background: white; }
-    /* FIX 5: hint para el mapa selector */
     .map-modal-hint { background: rgba(15,123,94,0.92); color: white; text-align: center; padding: 9px 16px; font-size: 13px; font-weight: 600; }
 
     .install-banner { display: none; align-items: center; gap: 10px; background: linear-gradient(135deg, #0F7B5E, #0a6650); color: white; padding: 12px 16px; font-size: 13px; }
@@ -449,6 +446,7 @@ let markerSelector = null;
 let dispositivoInfo = {};
 let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
 let unreadCount = notificaciones.filter(n => !n.leida).length;
+let preguntasCache = {}; // Cache de preguntas por mateada
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -465,6 +463,72 @@ function mostrarToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 function getFechaHoy() { return new Date().toISOString().slice(0, 10); }
+
+// ---- CARGAR PREGUNTAS DESDE EL SERVIDOR ----
+async function cargarPreguntas(mateadaId) {
+  if (!mateadaId) return [];
+  try {
+    const r = await fetch(`${SCRIPT_URL}?accion=obtenerPreguntas&mateada_id=${encodeURIComponent(mateadaId)}&_t=${Date.now()}`, { cache: 'no-store' });
+    const data = await r.json();
+    if (data.success && data.preguntas) {
+      preguntasCache[mateadaId] = data.preguntas;
+      return data.preguntas;
+    }
+    return [];
+  } catch(e) {
+    console.error('Error cargando preguntas:', e);
+    return preguntasCache[mateadaId] || [];
+  }
+}
+
+// ---- GUARDAR PREGUNTA EN EL SERVIDOR ----
+async function guardarPregunta(mateadaId, pregunta, nombrePreguntante, subPreguntante, emailPreguntante) {
+  try {
+    const params = new URLSearchParams({
+      accion: 'crearPregunta',
+      mateada_id: mateadaId,
+      pregunta: pregunta,
+      nombre_preguntante: nombrePreguntante,
+      sub_preguntante: subPreguntante,
+      email_preguntante: emailPreguntante,
+      fecha_pregunta: new Date().toISOString()
+    });
+    const r = await fetch(`${SCRIPT_URL}?${params}`);
+    const data = await r.json();
+    if (data.success) {
+      // Limpiar cache para recargar
+      delete preguntasCache[mateadaId];
+      return true;
+    }
+    return false;
+  } catch(e) {
+    console.error('Error guardando pregunta:', e);
+    return false;
+  }
+}
+
+// ---- GUARDAR RESPUESTA EN EL SERVIDOR ----
+async function guardarRespuesta(mateadaId, preguntaId, respuesta) {
+  try {
+    const params = new URLSearchParams({
+      accion: 'responderPregunta',
+      mateada_id: mateadaId,
+      pregunta_id: preguntaId,
+      respuesta: respuesta,
+      fecha_respuesta: new Date().toISOString()
+    });
+    const r = await fetch(`${SCRIPT_URL}?${params}`);
+    const data = await r.json();
+    if (data.success) {
+      delete preguntasCache[mateadaId];
+      return true;
+    }
+    return false;
+  } catch(e) {
+    console.error('Error guardando respuesta:', e);
+    return false;
+  }
+}
 
 // ---- LÍMITES ----
 function getCreacionesHoy(email) {
@@ -488,12 +552,10 @@ function puedeSumarse(email) { return !!email && getSumadasHoy(email) < 3; }
 function yaSeUnio(mateadaId, email) { return !!email && !!localStorage.getItem(`unido_${mateadaId}_${email}`); }
 function registrarUnion(mateadaId, email) { if (email) localStorage.setItem(`unido_${mateadaId}_${email}`, '1'); }
 
-// ---- FIX 1+2: VERIFICAR ORGANIZADOR — triple check, sin fallback a nombre si hay sub/email ----
 function esOrganizadorDe(mateada) {
   if (!usuarioActual || !mateada) return false;
   if (mateada.organizador_sub && usuarioActual.sub && mateada.organizador_sub === usuarioActual.sub) return true;
   if (mateada.organizador_email && usuarioActual.email && mateada.organizador_email === usuarioActual.email) return true;
-  // fallback solo si no hay sub ni email en la mateada (mateadas viejas)
   if (!mateada.organizador_sub && !mateada.organizador_email && mateada.organizador && usuarioActual.nombre) {
     const nom = mateada.organizador.toLowerCase();
     if (nom === usuarioActual.nombre.toLowerCase()) return true;
@@ -507,9 +569,6 @@ function yaHizoPreguntaDetalle(mateadaId) {
   return !!localStorage.getItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`);
 }
 
-// ---- CHAT ----
-function cargarQAs(id) { try { return JSON.parse(localStorage.getItem(`qas_${id}`) || '[]'); } catch(e) { return []; } }
-function guardarQAs(id, qas) { localStorage.setItem(`qas_${id}`, JSON.stringify(qas)); }
 function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
   const notif = { id: Date.now(), tipo, titulo, cuerpo, mateadaId, leida: false, fecha: new Date().toISOString() };
   notificaciones.unshift(notif); if (notificaciones.length > 50) notificaciones = notificaciones.slice(0,50);
@@ -532,7 +591,6 @@ function handleCredentialResponse(response) {
   localStorage.setItem('usuario_cebate_google', JSON.stringify(usuarioActual));
   actualizarInterfazUsuario();
   mostrarToast(`✅ ¡Bienvenido/a, ${usuarioActual.nombre.split(' ')[0]}!`);
-  // FIX 3: poner nombre readonly
   const c = document.getElementById('nombreOrganizador');
   if (c) { c.value = usuarioActual.nombre.split(' ')[0]; c.readOnly = true; }
   cargarMateadas();
@@ -656,7 +714,6 @@ async function geocodificarUbicacion(direccion) {
   } catch(e) { return null; }
 }
 
-// ---- FIX 5: SELECTOR DE UBICACIÓN — pin en GPS del usuario, draggable, ícono mate ----
 function abrirSelectorUbicacion() {
   const modal=document.createElement('div'); modal.className='map-modal';
   modal.innerHTML=`
@@ -677,7 +734,6 @@ function abrirSelectorUbicacion() {
     mapaSelector=L.map(c).setView([initLat,initLng],initZoom);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaSelector);
 
-    // Ícono mate personalizado — forma de pin con 🧉
     const mateIcon=L.divIcon({
       html:`<div style="position:relative;width:44px;height:54px;">
         <div style="background:#0F7B5E;width:44px;height:44px;border-radius:22px 22px 22px 0;transform:rotate(-45deg);box-shadow:0 4px 16px rgba(15,123,94,0.5);border:3px solid white;position:absolute;top:0;left:0;"></div>
@@ -686,11 +742,9 @@ function abrirSelectorUbicacion() {
       iconSize:[44,54], iconAnchor:[10,54], className:''
     });
 
-    // Pin draggable iniciando en GPS del usuario
     markerSelector=L.marker([initLat,initLng],{icon:mateIcon,draggable:true}).addTo(mapaSelector);
     ubicacionSeleccionadaMapa={lat:initLat,lng:initLng};
 
-    // Reverse geocode inicial si hay GPS real
     if (userLat&&userLng) {
       fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${initLat}&lon=${initLng}&zoom=18`)
         .then(r=>r.json()).then(d=>{
@@ -699,7 +753,6 @@ function abrirSelectorUbicacion() {
         }).catch(()=>{});
     }
 
-    // Al terminar de arrastrar el pin
     markerSelector.on('dragend',(e)=>{
       const pos=e.target.getLatLng();
       ubicacionSeleccionadaMapa={lat:pos.lat,lng:pos.lng};
@@ -707,7 +760,6 @@ function abrirSelectorUbicacion() {
         .then(r=>r.json()).then(d=>{ document.getElementById('ubicacionMateada').value=d.display_name?.split(',')[0]||'Ubicación seleccionada'; }).catch(()=>{ document.getElementById('ubicacionMateada').value='Ubicación seleccionada'; });
     });
 
-    // También tocar el mapa mueve el pin
     mapaSelector.on('click',(e)=>{
       markerSelector.setLatLng([e.latlng.lat,e.latlng.lng]);
       ubicacionSeleccionadaMapa={lat:e.latlng.lat,lng:e.latlng.lng};
@@ -746,10 +798,14 @@ async function crearMateada() {
   finally { btn.classList.remove('loading'); btn.innerText='🌿 Publicar mateada'; }
 }
 
-// ---- FIX 1+2: CHAT — organizador SOLO responde, NO puede preguntar ----
-function renderizarChat(mateada) {
+// ---- CHAT CON PREGUNTAS PÚBLICAS ----
+async function renderizarChat(mateada) {
   const chatDiv=document.getElementById('chatContainer'); if (!chatDiv) return;
-  const esOrg=esOrganizadorDe(mateada), terminada=estaTerminada(mateada), qas=cargarQAs(mateada.id);
+  const esOrg=esOrganizadorDe(mateada), terminada=estaTerminada(mateada);
+  
+  // Cargar preguntas desde el servidor
+  const qas = await cargarPreguntas(mateada.id);
+  
   let html=`<div class="chat-section"><div class="chat-title">💬 Preguntas al organizador</div>`;
   if (qas.length===0) html+=`<div class="no-qa">Todavía no hay preguntas</div>`;
   else {
@@ -757,24 +813,24 @@ function renderizarChat(mateada) {
       html+=`<div class="qa-bubble qa-bubble-question"><div class="qa-bubble-text">${escapeHtml(qa.pregunta)}</div><div class="qa-meta">🙋 ${escapeHtml(qa.nombre_preguntante)} · ${formatFecha(qa.fecha_pregunta)}</div></div>`;
       if (qa.respuesta) {
         html+=`<div class="qa-bubble qa-bubble-answer"><div class="qa-bubble-text">${escapeHtml(qa.respuesta)}</div><div class="qa-meta">🧑 ${escapeHtml(mateada.organizador)} (organizador) · ${formatFecha(qa.fecha_respuesta)}</div></div>`;
-      } else if (esOrg&&!terminada) {
+      } else if (esOrg && !terminada) {
         html+=`<div class="chat-input-area" id="respArea-${qa.id}"><textarea rows="2" placeholder="Escribí tu respuesta..." id="respText-${qa.id}"></textarea><button class="chat-send-btn" onclick="responderPregunta('${mateada.id}','${qa.id}')">Responder ↩</button></div>`;
-      } else if (!qa.respuesta&&!terminada) {
+      } else if (!qa.respuesta && !terminada) {
         html+=`<div class="chat-info-msg" style="margin-left:16px;margin-bottom:10px;">⏳ Esperando respuesta del organizador</div>`;
       }
     });
   }
-  // FIX 1: Organizador NO ve formulario de pregunta — solo info
-  if (esOrg&&!terminada) {
-    const sin=qas.filter(q=>!q.respuesta).length;
+  
+  if (esOrg && !terminada) {
+    const sin = qas.filter(q=>!q.respuesta).length;
     if (qas.length===0) html+=`<div class="chat-info-msg" style="margin-top:8px;">📝 Como organizador, los participantes te harán preguntas aquí</div>`;
     else if (sin===0) html+=`<div class="chat-info-msg" style="margin-top:8px;">✅ Respondiste todas las preguntas</div>`;
     else html+=`<div class="chat-info-msg" style="margin-top:8px;">📝 Tenés ${sin} pregunta${sin!==1?'s':''} sin responder</div>`;
-  } else if (!esOrg&&!terminada) {
+  } else if (!esOrg && !terminada) {
     if (!usuarioActual) {
       html+=`<div class="chat-info-msg" style="margin-top:8px;">🔑 <a href="#" onclick="iniciarSesionGoogle();return false;" style="color:var(--verde);font-weight:600;">Iniciá sesión</a> para hacer una pregunta</div>`;
     } else {
-      const yaP=yaHizoPreguntaDetalle(mateada.id);
+      const yaP = yaHizoPreguntaDetalle(mateada.id);
       if (yaP) html+=`<div class="chat-info-msg" style="margin-top:8px;">✅ Ya enviaste tu pregunta</div>`;
       else html+=`<div class="chat-input-area" id="nuevaPreguntaArea"><textarea rows="2" placeholder="¿Querés preguntar algo al organizador?" id="nuevaPreguntaText" maxlength="280"></textarea><button class="chat-send-btn" onclick="enviarPreguntaDetalle('${mateada.id}')">Preguntar ✉</button></div>`;
     }
@@ -784,8 +840,7 @@ function renderizarChat(mateada) {
   html+=`</div>`; chatDiv.innerHTML=html;
 }
 
-// FIX 2: bloquear organizador en enviarPreguntaDetalle
-function enviarPreguntaDetalle(mateadaId) {
+async function enviarPreguntaDetalle(mateadaId) {
   if (!usuarioActual) { mostrarToast('🔑 Iniciá sesión'); iniciarSesionGoogle(); return; }
   if (!mateadaSeleccionada) { mostrarToast('❌ No se encontró la mateada'); return; }
   if (estaTerminada(mateadaSeleccionada)) { mostrarToast('⏰ Esta mateada ya terminó'); return; }
@@ -794,25 +849,41 @@ function enviarPreguntaDetalle(mateadaId) {
   const txt=document.getElementById('nuevaPreguntaText')?.value.trim();
   if (!txt) { mostrarToast('📝 Escribí tu pregunta primero'); return; }
   if (txt.length>280) { mostrarToast('📝 Máximo 280 caracteres'); return; }
-  const qas=cargarQAs(mateadaId);
-  qas.push({id:Date.now().toString(),pregunta:txt,nombre_preguntante:usuarioActual.nombre.split(' ')[0],sub_preguntante:usuarioActual.sub,email_preguntante:usuarioActual.email,fecha_pregunta:new Date().toISOString(),respuesta:null,fecha_respuesta:null});
-  guardarQAs(mateadaId,qas);
-  localStorage.setItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`,'1');
-  agregarNotificacion('pregunta','📝 Nueva pregunta',`${usuarioActual.nombre} preguntó: "${txt.substring(0,50)}"`,mateadaId);
-  mostrarToast('✅ ¡Pregunta enviada!');
-  renderizarChat(mateadaSeleccionada);
+  
+  const success = await guardarPregunta(
+    mateadaId, 
+    txt, 
+    usuarioActual.nombre.split(' ')[0], 
+    usuarioActual.sub, 
+    usuarioActual.email
+  );
+  
+  if (success) {
+    localStorage.setItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`, '1');
+    agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${txt.substring(0,50)}"`, mateadaId);
+    mostrarToast('✅ ¡Pregunta enviada!');
+    await renderizarChat(mateadaSeleccionada);
+  } else {
+    mostrarToast('❌ Error al enviar la pregunta');
+  }
 }
-function responderPregunta(mateadaId, qaId) {
+
+async function responderPregunta(mateadaId, qaId) {
   if (!esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('Solo el organizador puede responder'); return; }
   const txt=document.getElementById(`respText-${qaId}`)?.value.trim();
   if (!txt) { mostrarToast('📝 Escribí la respuesta primero'); return; }
   if (txt.length>500) { mostrarToast('📝 Máximo 500 caracteres'); return; }
-  const qas=cargarQAs(mateadaId), qa=qas.find(q=>q.id===qaId); if (!qa) return;
-  qa.respuesta=txt; qa.fecha_respuesta=new Date().toISOString();
-  guardarQAs(mateadaId,qas); mostrarToast('✅ Respuesta publicada'); renderizarChat(mateadaSeleccionada);
+  
+  const success = await guardarRespuesta(mateadaId, qaId, txt);
+  
+  if (success) {
+    mostrarToast('✅ Respuesta publicada');
+    await renderizarChat(mateadaSeleccionada);
+  } else {
+    mostrarToast('❌ Error al publicar la respuesta');
+  }
 }
 
-// FIX 1: UNIRSE — bloquea organizador en todas las capas
 function seleccionarTiempo(btn, mins) {
   document.querySelectorAll('.tiempo-tab').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');
   tiempoLlegadaSeleccionado=mins; tiempoLlegadaTexto=mins===60?'1 hora':`${mins} minutos`;
@@ -837,20 +908,24 @@ function mostrarUnirse() {
 async function enviarSolicitud() {
   if (!mateadaSeleccionada) { mostrarToast('❌ Error: mateada no encontrada'); return; }
   if (!usuarioActual) { iniciarSesionGoogle(); return; }
-  // FIX 1: triple bloqueo organizador
   if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('🌟 No podés sumarte a tu propia mateada'); return; }
   if (estaTerminada(mateadaSeleccionada)) { mostrarToast('⏰ Esta mateada ya terminó'); return; }
   if (yaSeUnio(mateadaSeleccionada.id,usuarioActual.email)) { mostrarToast('✅ Ya te sumaste'); return; }
   if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 3 mateadas por día'); return; }
 
   const joinPreguntaTxt=document.getElementById('joinPreguntaText')?.value.trim();
-  // FIX 2: pregunta solo si NO es organizador
-  if (joinPreguntaTxt&&!yaHizoPreguntaDetalle(mateadaSeleccionada.id)&&!esOrganizadorDe(mateadaSeleccionada)) {
-    const qas=cargarQAs(mateadaSeleccionada.id);
-    qas.push({id:Date.now().toString(),pregunta:joinPreguntaTxt,nombre_preguntante:usuarioActual.nombre.split(' ')[0],sub_preguntante:usuarioActual.sub,email_preguntante:usuarioActual.email,fecha_pregunta:new Date().toISOString(),respuesta:null,fecha_respuesta:null});
-    guardarQAs(mateadaSeleccionada.id,qas);
-    localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`,'1');
-    agregarNotificacion('pregunta','📝 Nueva pregunta',`${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0,50)}"`,mateadaSeleccionada.id);
+  
+  // Guardar pregunta si existe
+  if (joinPreguntaTxt && !yaHizoPreguntaDetalle(mateadaSeleccionada.id) && !esOrganizadorDe(mateadaSeleccionada)) {
+    await guardarPregunta(
+      mateadaSeleccionada.id,
+      joinPreguntaTxt,
+      usuarioActual.nombre.split(' ')[0],
+      usuarioActual.sub,
+      usuarioActual.email
+    );
+    localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
+    agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0,50)}"`, mateadaSeleccionada.id);
   }
 
   const btn=document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText='Enviando...';
@@ -889,7 +964,7 @@ async function verDetalle(mateada) {
       L.marker([mateada.latitud,mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
     }
   },150);
-  renderizarChat(mateada);
+  await renderizarChat(mateada);
 }
 
 function mateadaTerminada(id) {
@@ -950,7 +1025,6 @@ function irACrear() {
   } else {
     document.getElementById('createLoginGate').style.display='none';
     document.getElementById('createForm').style.cssText='';
-    // FIX 3: nombre readonly desde Google
     if (campoNombre) { campoNombre.value=usuarioActual.nombre.split(' ')[0]; campoNombre.readOnly=true; }
     const help=document.getElementById('nombreHelp'); if(help) help.style.display='block';
   }
