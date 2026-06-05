@@ -88,7 +88,6 @@
     .refresh-btn.spinning { animation: spin 0.6s linear; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* Login banner prominente cuando no hay sesión */
     .login-banner {
       display: none;
       align-items: center;
@@ -141,7 +140,6 @@
     .gps-btn { position: absolute; top: 10px; right: 10px; background: white; border: none; width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10; }
     .map-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--subtexto); gap: 8px; font-size: 14px; }
 
-    /* Limpiar bordes de los iconos Leaflet */
     .leaflet-div-icon { background: none !important; border: none !important; }
     .leaflet-marker-icon { border: none !important; background: none !important; }
     .leaflet-container { font-family: inherit; }
@@ -185,7 +183,6 @@
     .duracion-btn { flex: 1; padding: 10px 6px; border-radius: 40px; border: 1.5px solid var(--borde); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; text-align: center; transition: all 0.15s; }
     .duracion-btn.selected { background: var(--verde-light); border-color: var(--verde); color: var(--verde); }
 
-    /* Tabs de tiempo de llegada — reemplaza el slider */
     .tiempo-tabs { display: flex; gap: 10px; margin: 8px 0 4px; }
     .tiempo-tab {
       flex: 1; padding: 14px 8px; border-radius: 16px;
@@ -212,7 +209,6 @@
     .bar-track { height: 8px; background: var(--crema-dark); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background-color 2s ease; }
 
-    /* Chat / Q&A */
     .chat-section { background: white; border-radius: 20px; padding: 16px; border: 1px solid var(--borde); margin-bottom: 12px; }
     .chat-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px; color: var(--texto); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
     .qa-bubble { border-radius: 16px; padding: 13px 15px; margin-bottom: 10px; }
@@ -255,7 +251,6 @@
     .toast { position: fixed; bottom: calc(90px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: #1C1C1E; color: white; padding: 12px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; max-width: calc(100vw - 40px); pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* iOS Sheet */
     .ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9100; align-items: flex-end; justify-content: center; padding-bottom: var(--safe-bottom); }
     .ios-sheet-overlay.visible { display: flex; }
     .ios-sheet { background: #F2F2F7; border-radius: 24px 24px 0 0; padding: 20px 24px calc(28px + var(--safe-bottom)); width: 100%; max-width: 480px; animation: sheetUp 0.35s cubic-bezier(0.32,0.72,0,1); }
@@ -271,7 +266,6 @@
     .ios-step-icon { font-size: 22px; flex-shrink: 0; }
     .ios-sheet-close { width: 100%; padding: 14px; background: white; border: 1px solid var(--borde); border-radius: 60px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); cursor: pointer; }
 
-    /* Espaciado bottom en pantallas con scroll */
     .screen-bottom-spacer { height: calc(100px + var(--safe-bottom)); flex-shrink: 0; }
   </style>
 </head>
@@ -279,7 +273,6 @@
 
 <div id="toast" class="toast"></div>
 
-<!-- iOS Install Sheet -->
 <div class="ios-sheet-overlay" id="iosSheetOverlay" onclick="cerrarIosSheet(event)">
   <div class="ios-sheet">
     <div class="ios-sheet-handle"></div>
@@ -297,7 +290,6 @@
 <div class="app">
   <div class="sticky-top" id="stickyTop">
 
-    <!-- Banner instalar PWA -->
     <div class="install-banner" id="installBanner">
       <span style="font-size:26px;">🧉</span>
       <div class="install-banner-text"><strong>Instalá Cebate Uno</strong>Usala sin internet, como app nativa</div>
@@ -305,7 +297,6 @@
       <button class="install-dismiss" id="installDismiss">✕</button>
     </div>
 
-    <!-- Banner login prominente — visible cuando NO hay sesión -->
     <div class="login-banner" id="loginBanner" onclick="iniciarSesionGoogle()">
       <span style="font-size:24px;">🔑</span>
       <div class="login-banner-text">
@@ -338,7 +329,6 @@
 
   <div id="headerSpacer" style="flex-shrink:0;"></div>
 
-  <!-- HOME -->
   <div id="screen-home" class="screen active">
     <div class="home-map-section" id="homeMapSection">
       <div id="nearbyMap"></div>
@@ -352,10 +342,8 @@
     </div>
   </div>
 
-  <!-- DETAIL -->
   <div id="screen-detail" class="screen"><div class="content" id="detailContent"></div></div>
 
-  <!-- CREATE -->
   <div id="screen-create" class="screen">
     <div class="content">
       <div id="createLoginGate" style="display:none;">
@@ -410,14 +398,10 @@
     </div>
   </div>
 
-  <!-- JOIN -->
   <div id="screen-join" class="screen">
     <div class="content">
       <div id="joinInfo"></div>
-
-      <!-- Campo de pregunta (solo una vez, solo no-organizadores) -->
       <div id="joinPreguntaArea" style="margin-bottom:16px;"></div>
-
       <div class="form-group">
         <label class="form-label">⏱️ ¿En cuántos minutos llegás?</label>
         <div class="tiempo-tabs" id="tiempoTabs">
@@ -441,7 +425,6 @@
     </div>
   </div>
 
-  <!-- SENT -->
   <div id="screen-sent" class="screen">
     <div class="sent-screen">
       <div class="sent-icon">🧉✨</div>
@@ -454,7 +437,6 @@
   <button class="fab" id="fabBtn" onclick="irACrear()"><span style="font-size:20px;">+</span> Agregar mateada</button>
 </div>
 
-<!-- User Menu Sheet -->
 <div class="sheet-overlay" id="userSheetOverlay" onclick="cerrarUserSheet(event)">
   <div class="bottom-sheet" id="userSheet">
     <div class="sheet-handle"></div>
@@ -480,7 +462,7 @@ let mapaDetalle = null;
 let mapaNearby = null;
 let nearbyMarkers = [];
 let duracionSeleccionada = 60;
-let tiempoLlegadaSeleccionado = 20; // default
+let tiempoLlegadaSeleccionado = 20;
 let tiempoLlegadaTexto = '20 minutos';
 let countdownIntervals = {};
 let userLat = null, userLng = null;
@@ -491,13 +473,137 @@ let dispositivoInfo = {};
 let notificaciones = JSON.parse(localStorage.getItem('notif_lista') || '[]');
 let unreadCount = notificaciones.filter(n => !n.leida).length;
 
-// Pregunta del que se une (solo una por usuario por mateada)
-function getPreguntaKey(mateadaId) { return `pregunta_${mateadaId}_${usuarioActual?.sub||'anon'}`; }
-function yaHizoPregunta(mateadaId) { return !!localStorage.getItem(getPreguntaKey(mateadaId)); }
-function guardarPregunta(mateadaId, texto) { localStorage.setItem(getPreguntaKey(mateadaId), texto); }
+// ============================================
+// FUNCIONES DE UTILIDAD
+// ============================================
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+function formatFecha(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    const h = d.getHours().toString().padStart(2,'0'), m = d.getMinutes().toString().padStart(2,'0');
+    return `${h}:${m}`;
+  } catch(e) { return ''; }
+}
+
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function getFechaHoy() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 // ============================================
-// AUTENTICACIÓN CON GOOGLE
+// LÍMITES POR EMAIL (CORREGIDO)
+// ============================================
+function getCreacionesHoy(email) {
+  if (!email) return 0;
+  try {
+    const data = JSON.parse(localStorage.getItem(`creaciones_${email}`) || '{}');
+    return data.fecha === getFechaHoy() ? (data.count || 0) : 0;
+  } catch(e) { return 0; }
+}
+
+function registrarCreacion(email) {
+  if (!email) return;
+  const hoy = getFechaHoy();
+  const count = getCreacionesHoy(email) + 1;
+  localStorage.setItem(`creaciones_${email}`, JSON.stringify({ fecha: hoy, count }));
+}
+
+function puedeCrear(email) { 
+  if (!email) return false;
+  return getCreacionesHoy(email) < 2; 
+}
+
+function getSumadasHoy(email) {
+  if (!email) return 0;
+  try {
+    const data = JSON.parse(localStorage.getItem(`sumadas_${email}`) || '{}');
+    return data.fecha === getFechaHoy() ? (data.count || 0) : 0;
+  } catch(e) { return 0; }
+}
+
+function registrarSumada(email) {
+  if (!email) return;
+  const hoy = getFechaHoy();
+  const count = getSumadasHoy(email) + 1;
+  localStorage.setItem(`sumadas_${email}`, JSON.stringify({ fecha: hoy, count }));
+}
+
+function puedeSumarse(email) { 
+  if (!email) return false;
+  return getSumadasHoy(email) < 3; 
+}
+
+function yaSeUnio(mateadaId, email) {
+  if (!email) return false;
+  return !!localStorage.getItem(`unido_${mateadaId}_${email}`);
+}
+
+function registrarUnion(mateadaId, email) {
+  if (!email) return;
+  localStorage.setItem(`unido_${mateadaId}_${email}`, '1');
+}
+
+// ============================================
+// VERIFICAR ORGANIZADOR (CORREGIDO)
+// ============================================
+function esOrganizadorDe(mateada) {
+  if (!usuarioActual || !mateada) return false;
+  const porEmail = mateada.organizador_email && usuarioActual.email === mateada.organizador_email;
+  const porSub = mateada.organizador_sub && usuarioActual.sub === mateada.organizador_sub;
+  const porNombre = mateada.organizador && usuarioActual.nombre && 
+                    mateada.organizador.toLowerCase() === usuarioActual.nombre.toLowerCase();
+  return porEmail || porSub || porNombre;
+}
+
+function yaHizoPreguntaDetalle(mateadaId) {
+  if (!usuarioActual) return false;
+  return !!localStorage.getItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`);
+}
+
+// ============================================
+// CHAT / Q&A FUNCTIONS
+// ============================================
+function cargarQAs(mateadaId) {
+  try { return JSON.parse(localStorage.getItem(`qas_${mateadaId}`) || '[]'); } catch(e) { return []; }
+}
+
+function guardarQAs(mateadaId, qas) {
+  localStorage.setItem(`qas_${mateadaId}`, JSON.stringify(qas));
+}
+
+function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
+  const notif = { id: Date.now(), tipo, titulo, cuerpo, mateadaId, leida: false, fecha: new Date().toISOString() };
+  notificaciones.unshift(notif);
+  if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
+  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+  actualizarBellBadge();
+}
+
+function actualizarBellBadge() {
+  unreadCount = notificaciones.filter(n => !n.leida).length;
+  const badge = document.getElementById('bellBadge');
+  if (!badge) return;
+  if (unreadCount > 0) { badge.style.display = 'flex'; badge.textContent = unreadCount > 9 ? '9+' : unreadCount; }
+  else { badge.style.display = 'none'; }
+}
+
+// ============================================
+// AUTENTICACIÓN
 // ============================================
 const sesionGuardada = localStorage.getItem('usuario_cebate_google');
 if (sesionGuardada) {
@@ -525,7 +631,7 @@ function iniciarSesionGoogle() {
   if (window.google && google.accounts) {
     google.accounts.id.prompt();
   } else {
-    mostrarToast("⏳ Cargando autenticación de Google...");
+    mostrarToast("⏳ Cargando autenticación...");
     setTimeout(() => {
       if (window.google && google.accounts) google.accounts.id.prompt();
     }, 1500);
@@ -547,9 +653,7 @@ function actualizarInterfazUsuario() {
   if (!area) return;
 
   if (!usuarioActual) {
-    // Mostrar banner de login prominente
     if (loginBanner) loginBanner.classList.add('visible');
-    // Botón pequeño en header para usuarios que lo ignoran
     area.innerHTML = `<div id="googleButtonContainer" style="transform:scale(0.85);transform-origin:right center;"></div>`;
     if (window.google && google.accounts) {
       google.accounts.id.renderButton(
@@ -576,7 +680,7 @@ function abrirUserSheet() {
   const avatarHtml = usuarioActual.avatar
     ? `<img src="${usuarioActual.avatar}" class="user-sheet-avatar" crossorigin="anonymous" referrerpolicy="no-referrer">`
     : `<div class="user-sheet-avatar-placeholder">${(usuarioActual.nombre||'U')[0].toUpperCase()}</div>`;
-  profile.innerHTML = `${avatarHtml}<div><div class="user-sheet-name">${usuarioActual.nombre}</div><div class="user-sheet-email">${usuarioActual.email}</div></div>`;
+  profile.innerHTML = `${avatarHtml}<div><div class="user-sheet-name">${escapeHtml(usuarioActual.nombre)}</div><div class="user-sheet-email">${escapeHtml(usuarioActual.email)}</div></div>`;
   document.getElementById('userSheetOverlay')?.classList.add('visible');
 }
 
@@ -587,91 +691,8 @@ function cerrarUserSheet(e) {
 }
 
 // ============================================
-// HELPERS
+// MATEADAS - FUNCIONES PRINCIPALES
 // ============================================
-function capturarDatosDispositivo() {
-  const ua = navigator.userAgent;
-  let nav = 'Otro', so = 'Otro', disp = /Mobi|Android|iPhone|iPad|iPod/i.test(ua) ? 'Móvil/Tablet' : 'Desktop';
-  if (ua.includes('Chrome')) nav = 'Chrome'; else if (ua.includes('Safari')) nav = 'Safari'; else if (ua.includes('Firefox')) nav = 'Firefox';
-  if (ua.includes('Windows')) so = 'Windows'; else if (ua.includes('Mac')) so = 'macOS'; else if (ua.includes('Android')) so = 'Android'; else if (/iPhone|iPad|iPod/.test(ua)) so = 'iOS';
-  dispositivoInfo = { nav, so, disp, idioma: navigator.language, zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone, resolucion: `${screen.width}x${screen.height}`, fecha: new Date().toISOString() };
-}
-capturarDatosDispositivo();
-
-// ============================================
-// LÍMITES DIARIOS Y VALIDACIONES
-// ============================================
-function getFechaHoy() {
-  return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-}
-
-// --- Límite creaciones (2/día por email) ---
-function getCreacionesHoy(email) {
-  try {
-    const data = JSON.parse(localStorage.getItem(`creaciones_${email}`) || '{}');
-    return data.fecha === getFechaHoy() ? (data.count || 0) : 0;
-  } catch(e) { return 0; }
-}
-function registrarCreacion(email) {
-  const hoy = getFechaHoy();
-  const count = getCreacionesHoy(email) + 1;
-  localStorage.setItem(`creaciones_${email}`, JSON.stringify({ fecha: hoy, count }));
-}
-function puedeCrear(email) { return getCreacionesHoy(email) < 2; }
-
-// --- Límite sumadas (3/día por email) ---
-function getSumadasHoy(email) {
-  try {
-    const data = JSON.parse(localStorage.getItem(`sumadas_${email}`) || '{}');
-    return data.fecha === getFechaHoy() ? (data.count || 0) : 0;
-  } catch(e) { return 0; }
-}
-function registrarSumada(email) {
-  const hoy = getFechaHoy();
-  const count = getSumadasHoy(email) + 1;
-  localStorage.setItem(`sumadas_${email}`, JSON.stringify({ fecha: hoy, count }));
-}
-function puedeSumarse(email) { return getSumadasHoy(email) < 3; }
-
-// --- Rastrear si ya se sumó a una mateada concreta ---
-function yaSeUnio(mateadaId, email) {
-  return !!localStorage.getItem(`unido_${mateadaId}_${email}`);
-}
-function registrarUnion(mateadaId, email) {
-  localStorage.setItem(`unido_${mateadaId}_${email}`, '1');
-}
-
-// --- Es organizador de esta mateada ---
-function esOrganizadorDe(mateada) {
-  if (!usuarioActual) return false;
-  // Verificar por email O por sub (para mayor compatibilidad)
-  return (mateada.organizador_email && usuarioActual.email === mateada.organizador_email) ||
-         (mateada.organizador_sub && usuarioActual.sub === mateada.organizador_sub);
-}
-
-function agregarNotificacion(tipo, titulo, cuerpo, mateadaId) {
-  const notif = { id: Date.now(), tipo, titulo, cuerpo, mateadaId, leida: false, fecha: new Date().toISOString() };
-  notificaciones.unshift(notif);
-  if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
-  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
-  actualizarBellBadge();
-}
-
-function actualizarBellBadge() {
-  unreadCount = notificaciones.filter(n => !n.leida).length;
-  const badge = document.getElementById('bellBadge');
-  if (!badge) return;
-  if (unreadCount > 0) { badge.style.display = 'flex'; badge.textContent = unreadCount > 9 ? '9+' : unreadCount; }
-  else { badge.style.display = 'none'; }
-}
-
-function abrirNotifPanel() {
-  mostrarToast(`🔔 ${unreadCount > 0 ? `${unreadCount} notificación${unreadCount !== 1 ? 'es' : ''}` : 'Sin notificaciones nuevas'}`);
-  notificaciones.forEach(n => n.leida = true);
-  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
-  actualizarBellBadge();
-}
-
 function duracionTexto(mins) {
   if (mins == 30) return '30 min';
   if (mins == 60) return '1 hora';
@@ -685,12 +706,6 @@ function formatTiempoRestante(ms) {
   if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
   if (m > 0) return `${m}m ${sec.toString().padStart(2,'0')}s`;
   return `${sec}s`;
-}
-
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180,
-    a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
 function getInicioMs(m) {
@@ -730,6 +745,89 @@ function iniciarCountdown(m, fillId, labelId, onTerminada) {
   clearInterval(countdownIntervals[m.id]); tick(); countdownIntervals[m.id] = setInterval(tick, 1000);
 }
 
+async function cargarMateadas() {
+  Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals = {};
+  const container = document.getElementById('homeContent');
+  container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    const r = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas&_t=${Date.now()}`, { signal: controller.signal, cache: 'no-store' });
+    clearTimeout(timeout);
+    const data = await r.json();
+    let todas = (data.success && data.mateadas) ? data.mateadas : [];
+    if (todas.length > 0) localStorage.setItem('cache_mateadas', JSON.stringify(todas));
+    mateadasActuales = todas.filter(m => !estaTerminada(m));
+    renderizarMateadas(container);
+  } catch(e) {
+    const cached = localStorage.getItem('cache_mateadas');
+    if (cached) {
+      try {
+        const todas = JSON.parse(cached);
+        mateadasActuales = todas.filter(m => !estaTerminada(m));
+        renderizarMateadas(container);
+        mostrarToast('📵 Mostrando datos en caché');
+        return;
+      } catch(_) {}
+    }
+    container.innerHTML = navigator.onLine
+      ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión.<br><small>Tocá ↻ para reintentar</small></div>'
+      : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>';
+  }
+}
+
+function renderizarMateadas(container) {
+  document.getElementById('contadorMateadas').textContent = mateadasActuales.length
+    ? `${mateadasActuales.length} activa${mateadasActuales.length !== 1 ? 's' : ''}`
+    : '';
+  if (mateadasActuales.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+    actualizarMapaCercano(); return;
+  }
+  container.innerHTML = '';
+  mateadasActuales.forEach((m, i) => {
+    const libres = parseInt(m.lugares_libres)||0, durMins = parseInt(m.duracion_minutos)||60;
+    const fillId = `fill-${m.id}`, labelId = `label-${m.id}`;
+    const esMia = usuarioActual && esOrganizadorDe(m);
+    const card = document.createElement('div');
+    card.className = 'card'; card.id = `card-${m.id}`; card.style.animationDelay = `${i*60}ms`;
+    card.onclick = () => verDetalle(m);
+    card.innerHTML = `
+      <div class="card-title">${escapeHtml(m.titulo)}</div>
+      <div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${m.hora||'Ahora'}</span></div>
+      <div class="card-footer">
+        <span class="badge ${libres===0?'lleno':esMia?'tuya':''}">${libres===0?'🔴 Sin lugares':esMia?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span>
+        <span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a>
+      <div class="countdown-wrap">
+        <div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div>
+        <div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div>
+      </div>`;
+    container.appendChild(card);
+    setTimeout(() => iniciarCountdown(m, fillId, labelId, mateadaTerminada), 50);
+  });
+  actualizarMapaCercano();
+}
+
+function recargar() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  setTimeout(() => btn.classList.remove('spinning'), 600);
+  cargarMateadas();
+}
+
+function seleccionarMate(btn) {
+  btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function seleccionarDuracion(btn, mins) {
+  document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  duracionSeleccionada = mins;
+}
+
 async function geocodificarUbicacion(direccion) {
   try {
     const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1`, { headers: {'User-Agent':'CebateUno/1.0'} });
@@ -763,156 +861,6 @@ function abrirSelectorUbicacion() {
   }, 100);
 }
 
-function pedirUbicacion() {
-  if (!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(
-    (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); },
-    () => { userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
-    { timeout: 8000 }
-  );
-}
-
-function actualizarMapaCercano() {
-  const ph = document.getElementById('mapPlaceholder'), pill = document.getElementById('nearbyPill');
-  const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
-  if (vigentes.length === 0) {
-    ph.style.display = 'flex'; pill.style.display = 'none';
-    if (mapaNearby) { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; }
-    return;
-  }
-  ph.style.display = 'none';
-  let ordenadas = (userLat&&userLng) ? [...vigentes].sort((a,b)=>haversineKm(userLat,userLng,a.latitud,a.longitud)-haversineKm(userLat,userLng,b.latitud,b.longitud)) : vigentes;
-  const cercana = ordenadas[0];
-  if (!mapaNearby) {
-    mapaNearby = L.map('nearbyMap', {zoomControl:false, attributionControl:false}).setView([-34.6,-64.0], 4);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
-  } else {
-    nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[];
-  }
-  const bounds = [];
-  ordenadas.forEach((m,i) => {
-    const esCercana = (i === 0);
-    const sz = esCercana ? 38 : 26, emojiSz = esCercana ? '18px' : '13px';
-    const icon = L.divIcon({
-      html: `<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.6)'};color:white;width:${sz}px;height:${sz}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${emojiSz};box-shadow:0 3px 10px rgba(15,123,94,0.45);">🧉</div>`,
-      iconSize: [sz, sz], iconAnchor: [sz/2, sz/2],
-      className: '' // ← crucial: sin clase = sin borde/fondo del leaflet
-    });
-    const mk = L.marker([m.latitud, m.longitud], {icon}).addTo(mapaNearby);
-    mk.on('click', () => verDetalle(m));
-    nearbyMarkers.push(mk); bounds.push([m.latitud, m.longitud]);
-  });
-  if (userLat && userLng) {
-    const mkU = L.marker([userLat, userLng], {icon: L.divIcon({
-      html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`,
-      iconSize: [14,14], iconAnchor: [7,7], className: ''
-    })}).addTo(mapaNearby);
-    nearbyMarkers.push(mkU); bounds.push([userLat, userLng]);
-  }
-  if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
-  else if (bounds.length > 1) mapaNearby.fitBounds(bounds, {padding:[24,24], maxZoom:14});
-  const dist = (userLat&&userLng) ? ` · ${haversineKm(userLat,userLng,cercana.latitud,cercana.longitud).toFixed(1)} km` : '';
-  pill.style.display = 'block'; pill.textContent = `📍 ${cercana.titulo}${dist}`;
-  setTimeout(() => mapaNearby?.invalidateSize(), 220);
-}
-
-// ============================================
-// CARGAR MATEADAS
-// ============================================
-async function cargarMateadas() {
-  Object.values(countdownIntervals).forEach(clearInterval); countdownIntervals = {};
-  const container = document.getElementById('homeContent');
-  container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
-    const r = await fetch(`${SCRIPT_URL}?accion=obtenerMateadas&_t=${Date.now()}`, {
-      signal: controller.signal,
-      cache: 'no-store'
-    });
-    clearTimeout(timeout);
-    const data = await r.json();
-    let todas = (data.success && data.mateadas) ? data.mateadas : [];
-    // Guardar cache
-    if (todas.length > 0) localStorage.setItem('cache_mateadas', JSON.stringify(todas));
-    mateadasActuales = todas.filter(m => !estaTerminada(m));
-    renderizarMateadas(container);
-  } catch(e) {
-    // Intentar desde cache
-    const cached = localStorage.getItem('cache_mateadas');
-    if (cached) {
-      try {
-        const todas = JSON.parse(cached);
-        mateadasActuales = todas.filter(m => !estaTerminada(m));
-        renderizarMateadas(container);
-        mostrarToast('📵 Mostrando datos en caché');
-        return;
-      } catch(_) {}
-    }
-    container.innerHTML = navigator.onLine
-      ? '<div class="empty"><div class="empty-icon">❌</div>Error de conexión.<br><small>Tocá ↻ para reintentar</small></div>'
-      : '<div class="empty"><div class="empty-icon">📵</div>Sin conexión</div>';
-  }
-}
-
-function renderizarMateadas(container) {
-  document.getElementById('contadorMateadas').textContent = mateadasActuales.length
-    ? `${mateadasActuales.length} activa${mateadasActuales.length !== 1 ? 's' : ''}`
-    : '';
-  if (mateadasActuales.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
-    actualizarMapaCercano(); return;
-  }
-  container.innerHTML = '';
-  mateadasActuales.forEach((m, i) => {
-    const libres = parseInt(m.lugares_libres)||0, durMins = parseInt(m.duracion_minutos)||60;
-    const fillId = `fill-${m.id}`, labelId = `label-${m.id}`;
-    const esMia = usuarioActual && (usuarioActual.sub === m.organizador_sub || usuarioActual.email === m.organizador_email);
-    const card = document.createElement('div');
-    card.className = 'card'; card.id = `card-${m.id}`; card.style.animationDelay = `${i*60}ms`;
-    card.onclick = () => verDetalle(m);
-    card.innerHTML = `
-      <div class="card-title">${m.titulo}</div>
-      <div class="card-info"><span>📍 ${m.ubicacion}</span><span>⏰ ${m.hora||'Ahora'}</span></div>
-      <div class="card-footer">
-        <span class="badge ${libres===0?'lleno':esMia?'tuya':''}">${libres===0?'🔴 Sin lugares':esMia?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span>
-        <span class="organizador-chip">🧑 ${m.organizador}</span>
-      </div>
-      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a>
-      <div class="countdown-wrap">
-        <div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div>
-        <div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div>
-      </div>`;
-    container.appendChild(card);
-    setTimeout(() => iniciarCountdown(m, fillId, labelId, mateadaTerminada), 50);
-  });
-  actualizarMapaCercano();
-}
-
-function mateadaTerminada(id) {
-  const card = document.getElementById(`card-${id}`);
-  if (card) {
-    card.classList.add('expiring');
-    setTimeout(() => {
-      card.remove();
-      mateadasActuales = mateadasActuales.filter(m => m.id != id);
-      if (mateadasActuales.filter(m=>!estaTerminada(m)).length === 0)
-        document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
-      actualizarMapaCercano();
-    }, 700);
-  }
-}
-
-function recargar() {
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spinning');
-  setTimeout(() => btn.classList.remove('spinning'), 600);
-  cargarMateadas();
-}
-
-// ============================================
-// CREAR MATEADA
-// ============================================
 async function crearMateada() {
   if (!usuarioActual) { iniciarSesionGoogle(); return; }
   const organizador = document.getElementById('nombreOrganizador').value.trim();
@@ -962,90 +910,14 @@ async function crearMateada() {
 }
 
 // ============================================
-// VER DETALLE
+// RENDERIZAR CHAT (CORREGIDO - No permite preguntar al organizador)
 // ============================================
-async function verDetalle(mateada) {
-  mateadaSeleccionada = mateada;
-  const container = document.getElementById('detailContent');
-  const libres = parseInt(mateada.lugares_libres)||0;
-  const ocupados = (parseInt(mateada.lugares_totales)||0) - libres;
-  const durMins = parseInt(mateada.duracion_minutos)||60;
-  const fillId = `detail-fill-${mateada.id}`, labelId = `detail-label-${mateada.id}`;
-  const esOrg = esOrganizadorDe(mateada);
-  const yaUnido = usuarioActual && !esOrg && yaSeUnio(mateada.id, usuarioActual.email);
-
-  // Botón de acción según estado
-  let accionBtn = '';
-  if (esOrg) {
-    accionBtn = `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div>`;
-  } else if (yaUnido) {
-    accionBtn = `<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`;
-  } else if (libres === 0) {
-    accionBtn = `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
-  } else {
-    accionBtn = `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
-  }
-
-  container.innerHTML = `
-    <div class="detail-header">
-      <div class="detail-title">${mateada.titulo}</div>
-      <span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span>
-    </div>
-    <div class="detail-countdown">
-      <div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div>
-      <div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div>
-    </div>
-    <div class="map" id="detailMap"></div>
-    <div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;">
-      <div class="detail-row">📍 <strong>${mateada.ubicacion}</strong>
-        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a>
-      </div>
-      <div class="detail-row">📋 ${mateada.descripcion||'Compartir mates y buenas charlas'}</div>
-      <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
-      <div class="detail-row">🧑 Anfitrión: <strong>${mateada.organizador}</strong></div>
-      <div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div>
-    </div>
-    <div id="chatContainer"></div>
-    ${accionBtn}
-    <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>
-    <div class="screen-bottom-spacer"></div>`;
-
-  setNavTitle(mateada.titulo);
-  mostrarScreen('screen-detail');
-
-  setTimeout(() => {
-    iniciarCountdown(mateada, fillId, labelId, (id) => {
-      const l = document.getElementById(labelId);
-      if (l) { l.textContent = '⏰ Terminada'; l.style.color = '#DC2626'; }
-    });
-    const mapEl = document.getElementById('detailMap');
-    if (mapEl && mateada.latitud && mateada.longitud) {
-      if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
-      mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
-      L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
-    }
-  }, 150);
-
-  // CORRECCIÓN 1: Recalcular esOrganizadorDe dentro de renderizarChat
-  renderizarChat(mateada, esOrg);
-}
-
-// ============================================
-// CHAT / Q&A - VERSIÓN CORREGIDA
-// ============================================
-function renderizarChat(mateada, esOrganizadorParam) {
+function renderizarChat(mateada) {
   const chatDiv = document.getElementById('chatContainer');
   if (!chatDiv) return;
 
-  // CORRECCIÓN: Recalcular esOrganizador directamente usando la mateada actual
-  // Esto resuelve el caso donde el parámetro llega mal porque backend no incluye organizador_email
   const esOrganizador = esOrganizadorDe(mateada);
-  
-  // También verificar si la mateada ya terminó
   const terminada = estaTerminada(mateada);
-
-  // Cargar Q&As del localStorage (en producción esto vendría del backend)
   const qas = cargarQAs(mateada.id);
 
   let html = `<div class="chat-section"><div class="chat-title">💬 Preguntas al organizador</div>`;
@@ -1077,7 +949,7 @@ function renderizarChat(mateada, esOrganizadorParam) {
     });
   }
 
-  // Área para hacer nueva pregunta — SOLO si NO es organizador, NO está terminada, y hay usuario logueado
+  // SOLO si NO es organizador, NO está terminada, y hay usuario logueado
   if (!esOrganizador && !terminada) {
     if (!usuarioActual) {
       html += `<div class="chat-info-msg" style="margin-top:8px;">🔑 <a href="#" onclick="iniciarSesionGoogle();return false;" style="color:var(--verde);font-weight:600;">Iniciá sesión</a> para hacer una pregunta</div>`;
@@ -1094,10 +966,9 @@ function renderizarChat(mateada, esOrganizadorParam) {
       }
     }
   } else if (esOrganizador && !terminada) {
-    // El organizador solo ve el estado de sus respuestas, no puede preguntar
     const sinResponder = qas.filter(q => !q.respuesta).length;
     if (qas.length === 0) {
-      // no mostrar nada extra
+      html += `<div class="chat-info-msg" style="margin-top:8px;">📝 Como organizador, los participantes te harán preguntas aquí</div>`;
     } else if (sinResponder === 0) {
       html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Respondiste todas las preguntas</div>`;
     } else {
@@ -1111,42 +982,31 @@ function renderizarChat(mateada, esOrganizadorParam) {
   chatDiv.innerHTML = html;
 }
 
-function cargarQAs(mateadaId) {
-  try { return JSON.parse(localStorage.getItem(`qas_${mateadaId}`) || '[]'); } catch(e) { return []; }
-}
-
-function guardarQAs(mateadaId, qas) {
-  localStorage.setItem(`qas_${mateadaId}`, JSON.stringify(qas));
-}
-
-// Clave separada para rastrear si el usuario ya preguntó (independiente del join)
-function yaHizoPreguntaDetalle(mateadaId) {
-  if (!usuarioActual) return false;
-  return !!localStorage.getItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`);
-}
-
-// CORRECCIÓN 2: Agregar segunda barrera en enviarPreguntaDetalle
+// ============================================
+// ENVIAR PREGUNTA (CORREGIDO - múltiples barreras)
+// ============================================
 function enviarPreguntaDetalle(mateadaId) {
-  // BARRERA 1: Verificar que el usuario esté logueado
   if (!usuarioActual) {
     mostrarToast('🔑 Iniciá sesión para hacer una pregunta');
     iniciarSesionGoogle();
     return;
   }
   
-  // BARRERA 2: Verificar que la mateada aún existe y no está terminada
-  if (!mateadaSeleccionada || estaTerminada(mateadaSeleccionada)) {
+  if (!mateadaSeleccionada) {
+    mostrarToast('❌ No se encontró la mateada');
+    return;
+  }
+  
+  if (estaTerminada(mateadaSeleccionada)) {
     mostrarToast('⏰ Esta mateada ya terminó, no se pueden hacer preguntas');
     return;
   }
   
-  // BARRERA 3: Verificar que el usuario NO sea el organizador
   if (esOrganizadorDe(mateadaSeleccionada)) {
     mostrarToast('🌟 El organizador no puede hacer preguntas en su propia mateada');
     return;
   }
   
-  // BARRERA 4: Verificar que no haya preguntado antes
   if (yaHizoPreguntaDetalle(mateadaId)) {
     mostrarToast('✅ Ya hiciste tu pregunta en esta mateada');
     return;
@@ -1169,6 +1029,7 @@ function enviarPreguntaDetalle(mateadaId) {
     pregunta: txt,
     nombre_preguntante: usuarioActual.nombre.split(' ')[0],
     sub_preguntante: usuarioActual.sub,
+    email_preguntante: usuarioActual.email,
     fecha_pregunta: new Date().toISOString(),
     respuesta: null,
     fecha_respuesta: null
@@ -1177,21 +1038,17 @@ function enviarPreguntaDetalle(mateadaId) {
   guardarQAs(mateadaId, qas);
   localStorage.setItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`, '1');
   
-  // Opcional: agregar notificación al organizador
   agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${txt.substring(0, 50)}${txt.length > 50 ? '...' : ''}"`, mateadaId);
   
   mostrarToast('✅ ¡Pregunta enviada! El organizador te responderá pronto');
   
-  // Limpiar el textarea
   const textarea = document.getElementById('nuevaPreguntaText');
   if (textarea) textarea.value = '';
   
-  // Recalcular esOrganizador y refrescar el chat
-  renderizarChat(mateadaSeleccionada, esOrganizadorDe(mateadaSeleccionada));
+  renderizarChat(mateadaSeleccionada);
 }
 
 function responderPregunta(mateadaId, qaId) {
-  // Verificar que el usuario sea el organizador
   if (!esOrganizadorDe(mateadaSeleccionada)) {
     mostrarToast('Solo el organizador puede responder preguntas');
     return;
@@ -1217,26 +1074,11 @@ function responderPregunta(mateadaId, qaId) {
   guardarQAs(mateadaId, qas);
   
   mostrarToast('✅ Respuesta publicada');
-  
-  // Refrescar el chat
-  renderizarChat(mateadaSeleccionada, true);
-}
-
-function escapeHtml(t) {
-  return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function formatFecha(iso) {
-  if (!iso) return '';
-  try {
-    const d = new Date(iso);
-    const h = d.getHours().toString().padStart(2,'0'), m = d.getMinutes().toString().padStart(2,'0');
-    return `${h}:${m}`;
-  } catch(e) { return ''; }
+  renderizarChat(mateadaSeleccionada);
 }
 
 // ============================================
-// UNIRSE A MATEADA
+// UNIRSE A MATEADA (CORREGIDO)
 // ============================================
 function seleccionarTiempo(btn, mins) {
   document.querySelectorAll('.tiempo-tab').forEach(b => b.classList.remove('selected'));
@@ -1246,27 +1088,31 @@ function seleccionarTiempo(btn, mins) {
 }
 
 function mostrarUnirse() {
-  if (!usuarioActual) { iniciarSesionGoogle(); return; }
+  if (!usuarioActual) { 
+    iniciarSesionGoogle(); 
+    return; 
+  }
 
-  // Bloquear si es el organizador
+  if (!mateadaSeleccionada) {
+    mostrarToast('❌ No se encontró la mateada');
+    return;
+  }
+
   if (esOrganizadorDe(mateadaSeleccionada)) {
     mostrarToast('🌟 No podés sumarte a tu propia mateada');
     return;
   }
 
-  // Bloquear si la mateada terminó
   if (estaTerminada(mateadaSeleccionada)) {
     mostrarToast('⏰ Esta mateada ya terminó');
     return;
   }
 
-  // Bloquear si ya se sumó
   if (yaSeUnio(mateadaSeleccionada.id, usuarioActual.email)) {
     mostrarToast('✅ Ya te sumaste a esta mateada');
     return;
   }
 
-  // Límite diario de sumas
   if (!puedeSumarse(usuarioActual.email)) {
     mostrarToast('⏳ Límite alcanzado: solo podés sumarte a 3 mateadas por día');
     return;
@@ -1274,11 +1120,10 @@ function mostrarUnirse() {
 
   document.getElementById('joinInfo').innerHTML = `
     <div class="join-card">
-      <div class="join-card-title">📍 ${mateadaSeleccionada.ubicacion}</div>
-      <div style="font-size:14px;color:var(--subtexto);">${mateadaSeleccionada.titulo} · con ${mateadaSeleccionada.organizador}</div>
+      <div class="join-card-title">📍 ${escapeHtml(mateadaSeleccionada.ubicacion)}</div>
+      <div style="font-size:14px;color:var(--subtexto);">${escapeHtml(mateadaSeleccionada.titulo)} · con ${escapeHtml(mateadaSeleccionada.organizador)}</div>
     </div>`;
 
-  // Área de pregunta en el join (si no la hizo antes)
   const preguntaArea = document.getElementById('joinPreguntaArea');
   if (preguntaArea) {
     const yaP = yaHizoPreguntaDetalle(mateadaSeleccionada.id);
@@ -1298,37 +1143,60 @@ function mostrarUnirse() {
 }
 
 async function enviarSolicitud() {
-  if (!mateadaSeleccionada) return;
-  if (!usuarioActual) { iniciarSesionGoogle(); return; }
+  if (!mateadaSeleccionada) {
+    mostrarToast('❌ Error: mateada no encontrada');
+    return;
+  }
+  
+  if (!usuarioActual) { 
+    iniciarSesionGoogle(); 
+    return; 
+  }
 
-  // Doble-check de validaciones
-  if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('No podés sumarte a tu propia mateada'); return; }
-  if (estaTerminada(mateadaSeleccionada)) { mostrarToast('Esta mateada ya terminó'); return; }
-  if (yaSeUnio(mateadaSeleccionada.id, usuarioActual.email)) { mostrarToast('Ya te sumaste a esta mateada'); return; }
-  if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 3 mateadas por día'); return; }
+  if (esOrganizadorDe(mateadaSeleccionada)) { 
+    mostrarToast('🌟 No podés sumarte a tu propia mateada'); 
+    return; 
+  }
+  
+  if (estaTerminada(mateadaSeleccionada)) { 
+    mostrarToast('⏰ Esta mateada ya terminó'); 
+    return; 
+  }
+  
+  if (yaSeUnio(mateadaSeleccionada.id, usuarioActual.email)) { 
+    mostrarToast('✅ Ya te sumaste a esta mateada'); 
+    return; 
+  }
+  
+  if (!puedeSumarse(usuarioActual.email)) { 
+    mostrarToast('⏳ Límite: solo 3 mateadas por día'); 
+    return; 
+  }
 
-  // Si hay pregunta nueva en el join, guardarla
   const joinPreguntaTxt = document.getElementById('joinPreguntaText')?.value.trim();
   if (joinPreguntaTxt && !yaHizoPreguntaDetalle(mateadaSeleccionada.id)) {
-    const qas = cargarQAs(mateadaSeleccionada.id);
-    qas.push({
-      id: Date.now().toString(),
-      pregunta: joinPreguntaTxt,
-      nombre_preguntante: usuarioActual.nombre.split(' ')[0],
-      sub_preguntante: usuarioActual.sub,
-      fecha_pregunta: new Date().toISOString(),
-      respuesta: null,
-      fecha_respuesta: null
-    });
-    guardarQAs(mateadaSeleccionada.id, qas);
-    localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
-    
-    // Notificar al organizador
-    agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0, 50)}${joinPreguntaTxt.length > 50 ? '...' : ''}"`, mateadaSeleccionada.id);
+    if (!esOrganizadorDe(mateadaSeleccionada)) {
+      const qas = cargarQAs(mateadaSeleccionada.id);
+      qas.push({
+        id: Date.now().toString(),
+        pregunta: joinPreguntaTxt,
+        nombre_preguntante: usuarioActual.nombre.split(' ')[0],
+        sub_preguntante: usuarioActual.sub,
+        email_preguntante: usuarioActual.email,
+        fecha_pregunta: new Date().toISOString(),
+        respuesta: null,
+        fecha_respuesta: null
+      });
+      guardarQAs(mateadaSeleccionada.id, qas);
+      localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
+      agregarNotificacion('pregunta', '📝 Nueva pregunta', `${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0, 50)}${joinPreguntaTxt.length > 50 ? '...' : ''}"`, mateadaSeleccionada.id);
+    }
   }
 
   const btn = document.getElementById('btnUnirse');
-  btn.classList.add('loading'); btn.innerText = 'Enviando...';
+  btn.classList.add('loading'); 
+  btn.innerText = 'Enviando...';
+  
   try {
     const params = new URLSearchParams({
       accion: 'enviarSolicitud',
@@ -1350,12 +1218,161 @@ async function enviarSolicitud() {
     } else {
       mostrarToast('❌ ' + (resultado.error||'Error al enviar'));
     }
-  } catch(e) { mostrarToast('❌ Error de conexión'); }
-  finally { btn.classList.remove('loading'); btn.innerText = '🧉 Quiero sumarme'; }
+  } catch(e) { 
+    mostrarToast('❌ Error de conexión'); 
+  }
+  finally { 
+    btn.classList.remove('loading'); 
+    btn.innerText = '🧉 Quiero sumarme'; 
+  }
 }
 
 // ============================================
-// NAVEGACIÓN
+// VER DETALLE
+// ============================================
+async function verDetalle(mateada) {
+  mateadaSeleccionada = mateada;
+  const container = document.getElementById('detailContent');
+  const libres = parseInt(mateada.lugares_libres)||0;
+  const ocupados = (parseInt(mateada.lugares_totales)||0) - libres;
+  const durMins = parseInt(mateada.duracion_minutos)||60;
+  const fillId = `detail-fill-${mateada.id}`, labelId = `detail-label-${mateada.id}`;
+  const esOrg = esOrganizadorDe(mateada);
+  const yaUnido = usuarioActual && !esOrg && yaSeUnio(mateada.id, usuarioActual.email);
+
+  let accionBtn = '';
+  if (esOrg) {
+    accionBtn = `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div>`;
+  } else if (yaUnido) {
+    accionBtn = `<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`;
+  } else if (libres === 0) {
+    accionBtn = `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
+  } else {
+    accionBtn = `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
+  }
+
+  container.innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title">${escapeHtml(mateada.titulo)}</div>
+      <span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span>
+    </div>
+    <div class="detail-countdown">
+      <div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div>
+      <div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div>
+    </div>
+    <div class="map" id="detailMap"></div>
+    <div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;">
+      <div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong>
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a>
+      </div>
+      <div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div>
+      <div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div>
+      <div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div>
+      <div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div>
+    </div>
+    <div id="chatContainer"></div>
+    ${accionBtn}
+    <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button>
+    <div class="screen-bottom-spacer"></div>`;
+
+  setNavTitle(mateada.titulo);
+  mostrarScreen('screen-detail');
+
+  setTimeout(() => {
+    iniciarCountdown(mateada, fillId, labelId, (id) => {
+      const l = document.getElementById(labelId);
+      if (l) { l.textContent = '⏰ Terminada'; l.style.color = '#DC2626'; }
+    });
+    const mapEl = document.getElementById('detailMap');
+    if (mapEl && mateada.latitud && mateada.longitud) {
+      if (mapaDetalle) { mapaDetalle.remove(); mapaDetalle = null; }
+      mapaDetalle = L.map('detailMap').setView([mateada.latitud, mateada.longitud], 15);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaDetalle);
+      L.marker([mateada.latitud, mateada.longitud]).bindPopup(mateada.titulo).addTo(mapaDetalle);
+    }
+  }, 150);
+
+  renderizarChat(mateada);
+}
+
+function mateadaTerminada(id) {
+  const card = document.getElementById(`card-${id}`);
+  if (card) {
+    card.classList.add('expiring');
+    setTimeout(() => {
+      card.remove();
+      mateadasActuales = mateadasActuales.filter(m => m.id != id);
+      if (mateadasActuales.filter(m=>!estaTerminada(m)).length === 0)
+        document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+      actualizarMapaCercano();
+    }, 700);
+  }
+}
+
+// ============================================
+// MAPA Y UBICACIÓN
+// ============================================
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180,
+    a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function pedirUbicacion() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); },
+    () => { userLat = -34.5842; userLng = -58.4073; actualizarMapaCercano(); },
+    { timeout: 8000 }
+  );
+}
+
+function actualizarMapaCercano() {
+  const ph = document.getElementById('mapPlaceholder'), pill = document.getElementById('nearbyPill');
+  const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
+  if (vigentes.length === 0) {
+    ph.style.display = 'flex'; pill.style.display = 'none';
+    if (mapaNearby) { nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[]; }
+    return;
+  }
+  ph.style.display = 'none';
+  let ordenadas = (userLat&&userLng) ? [...vigentes].sort((a,b)=>haversineKm(userLat,userLng,a.latitud,a.longitud)-haversineKm(userLat,userLng,b.latitud,b.longitud)) : vigentes;
+  const cercana = ordenadas[0];
+  if (!mapaNearby) {
+    mapaNearby = L.map('nearbyMap', {zoomControl:false, attributionControl:false}).setView([-34.6,-64.0], 4);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
+  } else {
+    nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[];
+  }
+  const bounds = [];
+  ordenadas.forEach((m,i) => {
+    const esCercana = (i === 0);
+    const sz = esCercana ? 38 : 26, emojiSz = esCercana ? '18px' : '13px';
+    const icon = L.divIcon({
+      html: `<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.6)'};color:white;width:${sz}px;height:${sz}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${emojiSz};box-shadow:0 3px 10px rgba(15,123,94,0.45);">🧉</div>`,
+      iconSize: [sz, sz], iconAnchor: [sz/2, sz/2],
+      className: ''
+    });
+    const mk = L.marker([m.latitud, m.longitud], {icon}).addTo(mapaNearby);
+    mk.on('click', () => verDetalle(m));
+    nearbyMarkers.push(mk); bounds.push([m.latitud, m.longitud]);
+  });
+  if (userLat && userLng) {
+    const mkU = L.marker([userLat, userLng], {icon: L.divIcon({
+      html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`,
+      iconSize: [14,14], iconAnchor: [7,7], className: ''
+    })}).addTo(mapaNearby);
+    nearbyMarkers.push(mkU); bounds.push([userLat, userLng]);
+  }
+  if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
+  else if (bounds.length > 1) mapaNearby.fitBounds(bounds, {padding:[24,24], maxZoom:14});
+  const dist = (userLat&&userLng) ? ` · ${haversineKm(userLat,userLng,cercana.latitud,cercana.longitud).toFixed(1)} km` : '';
+  pill.style.display = 'block'; pill.textContent = `📍 ${cercana.titulo}${dist}`;
+  setTimeout(() => mapaNearby?.invalidateSize(), 220);
+}
+
+// ============================================
+// NAVEGACIÓN Y UTILIDADES
 // ============================================
 function volverADetalle() { verDetalle(mateadaSeleccionada); }
 
@@ -1372,7 +1389,6 @@ function irACrear() {
     document.getElementById('createLoginGate').style.display = 'block';
     document.getElementById('createForm').style.cssText = 'opacity:0.4;pointer-events:none;user-select:none;';
   } else if (!puedeCrear(usuarioActual.email)) {
-    // Mostrar aviso de límite pero dejar ver el form bloqueado
     document.getElementById('createLoginGate').style.display = 'block';
     document.getElementById('createLoginGate').innerHTML = `
       <div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;">
@@ -1408,27 +1424,9 @@ function mostrarScreen(id) {
   document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
   document.getElementById('mainHeader').style.display = isHome ? '' : 'none';
   document.getElementById('navBar').classList.toggle('visible', !isHome);
-  // Scroll to top
   window.scrollTo(0, 0);
   const content = document.getElementById(id)?.querySelector('.content');
   if (content) content.scrollTop = 0;
-}
-
-function seleccionarMate(btn) {
-  btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-}
-
-function seleccionarDuracion(btn, mins) {
-  document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  duracionSeleccionada = mins;
-}
-
-function mostrarToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 function ajustarSpacer() {
@@ -1440,13 +1438,29 @@ function actualizarEstadoRed() {
   document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine);
 }
 
+function capturarDatosDispositivo() {
+  const ua = navigator.userAgent;
+  let nav = 'Otro', so = 'Otro', disp = /Mobi|Android|iPhone|iPad|iPod/i.test(ua) ? 'Móvil/Tablet' : 'Desktop';
+  if (ua.includes('Chrome')) nav = 'Chrome'; else if (ua.includes('Safari')) nav = 'Safari'; else if (ua.includes('Firefox')) nav = 'Firefox';
+  if (ua.includes('Windows')) so = 'Windows'; else if (ua.includes('Mac')) so = 'macOS'; else if (ua.includes('Android')) so = 'Android'; else if (/iPhone|iPad|iPod/.test(ua)) so = 'iOS';
+  dispositivoInfo = { nav, so, disp, idioma: navigator.language, zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone, resolucion: `${screen.width}x${screen.height}`, fecha: new Date().toISOString() };
+}
+capturarDatosDispositivo();
+
+function abrirNotifPanel() {
+  mostrarToast(`🔔 ${unreadCount > 0 ? `${unreadCount} notificación${unreadCount !== 1 ? 'es' : ''}` : 'Sin notificaciones nuevas'}`);
+  notificaciones.forEach(n => n.leida = true);
+  localStorage.setItem('notif_lista', JSON.stringify(notificaciones));
+  actualizarBellBadge();
+}
+
+// ============================================
+// EVENTOS E INIT
+// ============================================
 window.addEventListener('online', actualizarEstadoRed);
 window.addEventListener('offline', actualizarEstadoRed);
 window.addEventListener('resize', ajustarSpacer);
 
-// ============================================
-// INIT
-// ============================================
 window.onload = function() {
   if (window.google && google.accounts) {
     google.accounts.id.initialize({
@@ -1460,7 +1474,6 @@ window.onload = function() {
   ajustarSpacer();
   cargarMateadas();
 
-  // GPS automático
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); },
@@ -1472,7 +1485,6 @@ window.onload = function() {
   actualizarBellBadge();
 };
 
-// Google GIS puede cargarse después del onload
 document.addEventListener('DOMContentLoaded', () => {
   const script = document.querySelector('script[src*="accounts.google.com"]');
   if (script) {
@@ -1490,12 +1502,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 
-// iOS install
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 function abrirIosSheet() { document.getElementById('iosSheetOverlay').classList.add('visible'); }
@@ -1504,7 +1514,6 @@ if (isIOS && !isInStandaloneMode && !sessionStorage.getItem('iosSheetShown')) {
   setTimeout(() => { document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown','1'); }, 2500);
 }
 
-// Install banner PWA
 let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault(); deferredInstallPrompt = e;
