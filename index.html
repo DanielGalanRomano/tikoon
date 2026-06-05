@@ -138,6 +138,8 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--texto); margin-bottom: 8px; }
     .card-info { display: flex; gap: 12px; font-size: 13px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
+    .participantes-badge { background: var(--verde-light); color: var(--verde); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+    .participantes-badge.lleno { background: #FEE2E2; color: var(--rojo); }
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; gap: 8px; }
     .badge { background: var(--verde-light); color: var(--verde); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
     .badge.lleno { background: #FEE2E2; color: var(--rojo); }
@@ -496,7 +498,6 @@ async function guardarPregunta(mateadaId, pregunta, nombrePreguntante, subPregun
     const r = await fetch(`${SCRIPT_URL}?${params}`);
     const data = await r.json();
     if (data.success) {
-      // Limpiar cache para recargar
       delete preguntasCache[mateadaId];
       return true;
     }
@@ -530,7 +531,7 @@ async function guardarRespuesta(mateadaId, preguntaId, respuesta) {
   }
 }
 
-// ---- LÍMITES ----
+// ---- LÍMITES (MODIFICADO: 1 por día cada uno) ----
 function getCreacionesHoy(email) {
   if (!email) return 0;
   try { const d = JSON.parse(localStorage.getItem(`creaciones_${email}`) || '{}'); return d.fecha === getFechaHoy() ? (d.count||0) : 0; } catch(e) { return 0; }
@@ -539,7 +540,8 @@ function registrarCreacion(email) {
   if (!email) return; const hoy = getFechaHoy();
   localStorage.setItem(`creaciones_${email}`, JSON.stringify({ fecha: hoy, count: getCreacionesHoy(email)+1 }));
 }
-function puedeCrear(email) { return !!email && getCreacionesHoy(email) < 2; }
+function puedeCrear(email) { return !!email && getCreacionesHoy(email) < 1; } // CAMBIADO: 1 por día
+
 function getSumadasHoy(email) {
   if (!email) return 0;
   try { const d = JSON.parse(localStorage.getItem(`sumadas_${email}`) || '{}'); return d.fecha === getFechaHoy() ? (d.count||0) : 0; } catch(e) { return 0; }
@@ -548,7 +550,8 @@ function registrarSumada(email) {
   if (!email) return; const hoy = getFechaHoy();
   localStorage.setItem(`sumadas_${email}`, JSON.stringify({ fecha: hoy, count: getSumadasHoy(email)+1 }));
 }
-function puedeSumarse(email) { return !!email && getSumadasHoy(email) < 3; }
+function puedeSumarse(email) { return !!email && getSumadasHoy(email) < 1; } // CAMBIADO: 1 por día
+
 function yaSeUnio(mateadaId, email) { return !!email && !!localStorage.getItem(`unido_${mateadaId}_${email}`); }
 function registrarUnion(mateadaId, email) { if (email) localStorage.setItem(`unido_${mateadaId}_${email}`, '1'); }
 
@@ -692,10 +695,37 @@ function renderizarMateadas(container) {
   if (mateadasActuales.length===0) { container.innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); return; }
   container.innerHTML='';
   mateadasActuales.forEach((m,i) => {
-    const libres=parseInt(m.lugares_libres)||0, durMins=parseInt(m.duracion_minutos)||60;
+    const libres=parseInt(m.lugares_libres)||0;
+    const totalLugares=parseInt(m.lugares_totales)||0;
+    const ocupados=totalLugares-libres;
+    const durMins=parseInt(m.duracion_minutos)||60;
     const fillId=`fill-${m.id}`, labelId=`label-${m.id}`, esMia=usuarioActual&&esOrganizadorDe(m);
     const card=document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${i*60}ms`; card.onclick=()=>verDetalle(m);
-    card.innerHTML=`<div class="card-title">${escapeHtml(m.titulo)}</div><div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${m.hora||'Ahora'}</span></div><div class="card-footer"><span class="badge ${libres===0?'lleno':esMia?'tuya':''}">${libres===0?'🔴 Sin lugares':esMia?'🌟 Tu mateada':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span><span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span></div><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a><div class="countdown-wrap"><div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div><div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div></div>`;
+    
+    // Nuevo badge de participantes
+    const participantesText = `${ocupados} de ${totalLugares}`;
+    const participantesClass = libres === 0 ? 'participantes-badge lleno' : 'participantes-badge';
+    
+    card.innerHTML=`
+      <div class="card-title">${escapeHtml(m.titulo)}</div>
+      <div class="card-info">
+        <span>📍 ${escapeHtml(m.ubicacion)}</span>
+        <span>⏰ ${m.hora||'Ahora'}</span>
+      </div>
+      <div class="card-footer">
+        <span class="${participantesClass}">👥 ${participantesText}</span>
+        <span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a>
+      <div class="countdown-wrap">
+        <div class="countdown-label">
+          <span>⏳ ${duracionTexto(durMins)}</span>
+          <span id="${labelId}">—</span>
+        </div>
+        <div class="countdown-bar-track">
+          <div class="countdown-bar-fill" id="${fillId}"></div>
+        </div>
+      </div>`;
     container.appendChild(card);
     setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada),50);
   });
@@ -782,7 +812,7 @@ async function crearMateada() {
   const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
   if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
-  if (!puedeCrear(usuarioActual.email)) { mostrarToast('⏳ Límite: solo podés crear 2 mateadas por día'); return; }
+  if (!puedeCrear(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 1 mateada por día'); return; }
 
   const btn=document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText='Buscando ubicación...';
   let latitud=userLat||-34.5842, longitud=userLng||-58.4073;
@@ -803,7 +833,6 @@ async function renderizarChat(mateada) {
   const chatDiv=document.getElementById('chatContainer'); if (!chatDiv) return;
   const esOrg=esOrganizadorDe(mateada), terminada=estaTerminada(mateada);
   
-  // Cargar preguntas desde el servidor
   const qas = await cargarPreguntas(mateada.id);
   
   let html=`<div class="chat-section"><div class="chat-title">💬 Preguntas al organizador</div>`;
@@ -894,7 +923,7 @@ function mostrarUnirse() {
   if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('🌟 No podés sumarte a tu propia mateada'); return; }
   if (estaTerminada(mateadaSeleccionada)) { mostrarToast('⏰ Esta mateada ya terminó'); return; }
   if (yaSeUnio(mateadaSeleccionada.id,usuarioActual.email)) { mostrarToast('✅ Ya te sumaste'); return; }
-  if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 3 mateadas por día'); return; }
+  if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 1 mateada por día'); return; }
   document.getElementById('joinInfo').innerHTML=`<div class="join-card"><div class="join-card-title">📍 ${escapeHtml(mateadaSeleccionada.ubicacion)}</div><div style="font-size:14px;color:var(--subtexto);">${escapeHtml(mateadaSeleccionada.titulo)} · con ${escapeHtml(mateadaSeleccionada.organizador)}</div></div>`;
   const pa=document.getElementById('joinPreguntaArea');
   if (pa) {
@@ -911,11 +940,10 @@ async function enviarSolicitud() {
   if (esOrganizadorDe(mateadaSeleccionada)) { mostrarToast('🌟 No podés sumarte a tu propia mateada'); return; }
   if (estaTerminada(mateadaSeleccionada)) { mostrarToast('⏰ Esta mateada ya terminó'); return; }
   if (yaSeUnio(mateadaSeleccionada.id,usuarioActual.email)) { mostrarToast('✅ Ya te sumaste'); return; }
-  if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 3 mateadas por día'); return; }
+  if (!puedeSumarse(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 1 mateada por día'); return; }
 
   const joinPreguntaTxt=document.getElementById('joinPreguntaText')?.value.trim();
   
-  // Guardar pregunta si existe
   if (joinPreguntaTxt && !yaHizoPreguntaDetalle(mateadaSeleccionada.id) && !esOrganizadorDe(mateadaSeleccionada)) {
     await guardarPregunta(
       mateadaSeleccionada.id,
@@ -942,7 +970,7 @@ async function enviarSolicitud() {
 async function verDetalle(mateada) {
   mateadaSeleccionada=mateada;
   const container=document.getElementById('detailContent');
-  const libres=parseInt(mateada.lugares_libres)||0, ocupados=(parseInt(mateada.lugares_totales)||0)-libres;
+  const libres=parseInt(mateada.lugares_libres)||0, totalLugares=parseInt(mateada.lugares_totales)||0, ocupados=totalLugares-libres;
   const durMins=parseInt(mateada.duracion_minutos)||60, fillId=`detail-fill-${mateada.id}`, labelId=`detail-label-${mateada.id}`;
   const esOrg=esOrganizadorDe(mateada), yaUnido=usuarioActual&&!esOrg&&yaSeUnio(mateada.id,usuarioActual.email);
   let accionBtn='';
@@ -951,7 +979,7 @@ async function verDetalle(mateada) {
   else if (libres===0) accionBtn=`<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
   else accionBtn=`<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
 
-  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div><div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${mateada.lugares_totales}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
+  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div><div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
 
   setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
   setTimeout(()=>{
@@ -1020,7 +1048,7 @@ function irACrear() {
     if (campoNombre) campoNombre.readOnly=false;
   } else if (!puedeCrear(usuarioActual.email)) {
     document.getElementById('createLoginGate').style.display='block';
-    document.getElementById('createLoginGate').innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 2 mateadas hoy.</span></div>`;
+    document.getElementById('createLoginGate').innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 1 mateada hoy. Volvé mañana.</span></div>`;
     document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
   } else {
     document.getElementById('createLoginGate').style.display='none';
