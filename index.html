@@ -84,7 +84,6 @@
     .screen { display: none; flex-direction: column; flex: 1; }
     .screen.active { display: flex; }
 
-    /* ===================== MAPA HOME — TAMAÑO DINÁMICO ===================== */
     .home-map-section {
       position: relative;
       height: var(--map-height);
@@ -95,13 +94,11 @@
       flex-shrink: 0;
       transition: height 0.5s cubic-bezier(0.4,0,0.2,1), max-height 0.5s cubic-bezier(0.4,0,0.2,1), min-height 0.5s cubic-bezier(0.4,0,0.2,1);
     }
-    /* Cuando no hay mateadas activas, el mapa ocupa más espacio */
     .home-map-section.expanded {
       height: 58dvh;
       min-height: 320px;
       max-height: 520px;
     }
-    /* Label flotante "mapa expandido" */
     .map-empty-overlay {
       position: absolute;
       top: 14px;
@@ -124,7 +121,6 @@
     .home-map-section.expanded .map-empty-overlay {
       opacity: 1;
     }
-    /* ===================================================================== */
 
     #nearbyMap { width: 100%; height: 100%; }
     .nearby-pill { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(15,123,94,0.92); backdrop-filter: blur(8px); color: white; padding: 8px 18px; border-radius: 40px; font-size: 13px; font-weight: 600; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 10; pointer-events: none; }
@@ -148,7 +144,6 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--texto); margin-bottom: 8px; }
     .card-info { display: flex; gap: 12px; font-size: 13px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
-    /* Badge programada */
     .badge-programada { background: #FEF3C7; color: #92400E; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; border: 1px solid #FDE68A; }
     .participantes-badge { background: var(--verde-light); color: var(--verde); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .participantes-badge.lleno { background: #FEE2E2; color: var(--rojo); }
@@ -161,7 +156,6 @@
     .countdown-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtexto); margin-bottom: 5px; }
     .countdown-bar-track { height: 6px; background: var(--crema-dark); border-radius: 3px; overflow: hidden; }
     .countdown-bar-fill { height: 100%; border-radius: 3px; transition: width 1s linear, background-color 1.5s ease; }
-    /* Cuenta regresiva para programadas (para cuando arrancan) */
     .countdown-programada { margin-top: 10px; background: #FFF8EC; border-radius: 10px; padding: 8px 12px; font-size: 12px; color: #92400E; font-weight: 600; display: flex; align-items: center; gap: 6px; }
     .btn { background: var(--verde); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; }
     .btn:active { transform: scale(0.98); }
@@ -251,7 +245,6 @@
     .ios-sheet-close { width: 100%; padding: 14px; background: white; border: 1px solid var(--borde); border-radius: 60px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); cursor: pointer; }
     .screen-bottom-spacer { height: calc(100px + var(--safe-bottom)); flex-shrink: 0; }
 
-    /* ===================== TABS AHORA / PROGRAMADA ===================== */
     .tipo-tabs { display: flex; gap: 6px; background: var(--crema-dark); border-radius: 20px; padding: 4px; margin-bottom: 16px; }
     .tipo-tab { flex: 1; padding: 9px 8px; border-radius: 16px; border: none; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--subtexto); transition: all 0.2s; text-align: center; }
     .tipo-tab.selected { background: white; color: var(--verde); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
@@ -260,7 +253,6 @@
     .hora-input-row { display: flex; align-items: center; gap: 12px; }
     .hora-input-row .form-input[type="time"] { flex: 1; font-size: 20px; font-weight: 700; text-align: center; color: var(--verde); border-color: var(--verde); letter-spacing: 1px; }
     .hora-hint { font-size: 12px; color: var(--subtexto); margin-top: 6px; line-height: 1.4; }
-    /* En las cards: badge hora programada */
     .hora-prog-badge { display: inline-flex; align-items: center; gap: 4px; background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
   </style>
 </head>
@@ -362,7 +354,6 @@
           </select>
         </div>
 
-        <!-- ============ NUEVO: TABS AHORA / PROGRAMADA ============ -->
         <div class="form-group">
           <label class="form-label">🕐 ¿Cuándo empieza?</label>
           <div class="tipo-tabs" id="tipoTabs">
@@ -376,7 +367,6 @@
             <div class="hora-hint">⏰ La mateada aparecerá en el listado y arrancará a esa hora hoy</div>
           </div>
         </div>
-        <!-- ========================================================= -->
 
         <div class="form-group">
           <label class="form-label">📍 Ubicación</label>
@@ -464,10 +454,8 @@ let unreadCount = notificaciones.filter(n => !n.leida).length;
 let preguntasCache = {};
 let enviandoPregunta = false;
 
-// Tipo de mateada: 'ahora' | 'programada'
 let tipoMateadaSeleccionado = 'ahora';
 
-// ---- MATEADAS HISTÓRICAS ----
 const NOMBRES_HIST = ['Sofía','Mateo','Valentina','Lucas','Camila','Nicolás','Martina','Tomás','Julieta','Agustín','Lucía','Franco','Florencia','Santiago','Pilar','Joaquín'];
 const TEMAS_HIST = ['📖 Filosofía','💻 Tecnología','🎨 Arte','🤝 Emprendedurismo','🌱 Sustentabilidad','🎬 Cine','📚 Literatura','🧘 Bienestar'];
 const RATINGS_HIST = [5.0, 4.9, 4.8, 4.7, 4.5, 4.3, 4.0, 3.8, 3.7, 3.5];
@@ -501,7 +489,6 @@ function renderEstrellas(rating) {
   return html;
 }
 
-// ---- UTILIDADES ----
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
 function formatFecha(iso) { if (!iso) return ''; try { const d = new Date(iso); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; } catch(e) { return ''; } }
 function mostrarToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
@@ -580,7 +567,6 @@ function actualizarBellBadge() {
   else { badge.style.display = 'none'; }
 }
 
-// ---- AUTH ----
 const sesionGuardada = localStorage.getItem('usuario_cebate_google');
 if (sesionGuardada) { try { usuarioActual = JSON.parse(sesionGuardada); limpiarPreguntasDuplicadas(); } catch(e) {} }
 
@@ -627,7 +613,6 @@ function abrirUserSheet() {
 }
 function cerrarUserSheet(e) { if (!e || e.target === document.getElementById('userSheetOverlay')) document.getElementById('userSheetOverlay')?.classList.remove('visible'); }
 
-// ---- MATEADAS ----
 function duracionTexto(mins) { if (mins==30) return '30 min'; if (mins==60) return '1 hora'; if (mins==120) return '2 horas'; return mins+' min'; }
 function formatTiempoRestante(ms) {
   if (ms<=0) return 'Terminada';
@@ -637,7 +622,6 @@ function formatTiempoRestante(ms) {
   return `${sec}s`;
 }
 
-// Formatea ms hasta inicio de mateada programada
 function formatTiempoHastaInicio(ms) {
   if (ms<=0) return 'Ahora';
   const s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
@@ -660,7 +644,6 @@ function getInicioMs(m) {
 
 function esProgramada(m) { return !!m.programada || !!m.hora_programada; }
 function getMsHastaInicio(m) {
-  // Si tiene hora_programada, calcula ms hasta que empiece
   if (!m.hora_programada) return 0;
   const [h,min] = m.hora_programada.split(':').map(Number);
   if (isNaN(h)||isNaN(min)) return 0;
@@ -670,10 +653,8 @@ function getMsHastaInicio(m) {
 }
 
 function estaTerminada(m) {
-  // Programada que todavía no empezó: nunca terminada
   if (esProgramada(m) && getMsHastaInicio(m) > 0) return false;
   const i=getInicioMs(m); if (!i) return false;
-  // Para programadas, el inicio real es hora_programada
   if (m.hora_programada) {
     const [h,min] = m.hora_programada.split(':').map(Number);
     if (!isNaN(h)&&!isNaN(min)) {
@@ -691,7 +672,7 @@ function getMsRestante(m) {
     if (!isNaN(h)&&!isNaN(min)) {
       const n = new Date();
       const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
-      if (Date.now() < inicio) return null; // no empezó aún
+      if (Date.now() < inicio) return null;
       return (inicio + (parseInt(m.duracion_minutos)||60)*60000) - Date.now();
     }
   }
@@ -706,7 +687,6 @@ function iniciarCountdown(m, fillId, labelId, onTerminada) {
     if (!fill||!label) { clearInterval(countdownIntervals[m.id]); return; }
     const ms=getMsRestante(m);
     if (ms===null) {
-      // Mateada programada que no empezó todavía
       fill.style.width='100%'; fill.style.background='#FBBF24';
       const msHasta = getMsHastaInicio(m);
       label.textContent=`Empieza en ${formatTiempoHastaInicio(msHasta)}`;
@@ -744,7 +724,6 @@ function renderizarMateadas(container) {
   const vigentes = mateadasActuales.filter(m=>!estaTerminada(m));
   document.getElementById('contadorMateadas').textContent=vigentes.length?`${vigentes.length} activa${vigentes.length!==1?'s':''}` : '';
 
-  // Expandir/contraer mapa
   const mapSection = document.getElementById('homeMapSection');
   if (vigentes.length === 0) {
     mapSection.classList.add('expanded');
@@ -759,11 +738,9 @@ function renderizarMateadas(container) {
   }
   container.innerHTML='';
 
-  // Separar activas ya iniciadas y programadas (no iniciadas aún)
   const iniciadas = vigentes.filter(m => !esProgramada(m) || getMsHastaInicio(m) <= 0);
   const programadas = vigentes.filter(m => esProgramada(m) && getMsHastaInicio(m) > 0);
 
-  // Ordenar programadas por hora
   programadas.sort((a,b) => getMsHastaInicio(a) - getMsHastaInicio(b));
 
   const renderCard = (m, i, offset=0) => {
@@ -772,16 +749,26 @@ function renderizarMateadas(container) {
     const card=document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${(i+offset)*60}ms`; card.onclick=()=>verDetalle(m);
     const participantesClass=libres===0?'participantes-badge lleno':'participantes-badge';
     const esProg = esProgramada(m) && getMsHastaInicio(m) > 0;
-    const horaBadge = esProg ? `<span class="hora-prog-badge">📅 ${m.hora_programada}</span>` : '';
+    
+    let horaMostrada = '';
+    if (esProg) {
+      horaMostrada = m.hora_programada || m.hora || '--:--';
+    } else {
+      horaMostrada = m.hora || 'Ahora';
+    }
+    
+    const horaBadge = esProg ? `<span class="hora-prog-badge">📅 ${horaMostrada}</span>` : '';
+    
     const countdownExtra = esProg
       ? `<div class="countdown-programada" id="cdprog-${m.id}">⏳ Empieza en ${formatTiempoHastaInicio(getMsHastaInicio(m))}</div>`
       : '';
+    
     card.innerHTML=`
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;">
         <div class="card-title" style="margin-bottom:0;">${escapeHtml(m.titulo)}</div>
         ${horaBadge}
       </div>
-      <div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${m.hora||'Ahora'}</span></div>
+      <div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${horaMostrada}</span></div>
       <div class="card-footer">
         <span class="${participantesClass}">👥 ${ocupados} de ${totalLugares}</span>
         <span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span>
@@ -795,7 +782,6 @@ function renderizarMateadas(container) {
     container.appendChild(card);
     setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada), 50);
 
-    // Actualizar badge "empieza en" cada segundo para programadas
     if (esProg) {
       const itv = setInterval(()=>{
         const el = document.getElementById(`cdprog-${m.id}`);
@@ -825,7 +811,6 @@ function recargar() { const btn=document.getElementById('refreshBtn'); btn.class
 function seleccionarMate(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
 function seleccionarDuracion(btn, mins) { document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada=mins; }
 
-// ---- TABS AHORA / PROGRAMADA ----
 function seleccionarTipoMateada(btn, tipo) {
   document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -833,7 +818,6 @@ function seleccionarTipoMateada(btn, tipo) {
   const wrap = document.getElementById('horaProgramadaWrap');
   if (tipo === 'programada') {
     wrap.classList.add('visible');
-    // Pre-llenar con hora actual + 30 min
     const ahora = new Date(Date.now() + 30*60000);
     document.getElementById('horaProgramada').value =
       `${ahora.getHours().toString().padStart(2,'0')}:${ahora.getMinutes().toString().padStart(2,'0')}`;
@@ -880,12 +864,10 @@ async function crearMateada() {
   const mateOption=document.querySelector('.option-btn.selected');
   const tipoMate=mateOption?mateOption.innerText:'Dulce';
 
-  // Hora: si es programada, usar la seleccionada; si no, hora actual
   let hora, horaProgramadaVal='', esProg=false;
   if (tipoMateadaSeleccionado === 'programada') {
     horaProgramadaVal = document.getElementById('horaProgramada').value;
     if (!horaProgramadaVal) { mostrarToast('⏰ Elegí la hora de inicio'); return; }
-    // Validar que no sea en el pasado
     const [h,min] = horaProgramadaVal.split(':').map(Number);
     const ahora = new Date();
     const horaElegida = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), h, min, 0);
@@ -1025,19 +1007,25 @@ async function verDetalle(mateada) {
   const esOrg=esOrganizadorDe(mateada), yaUnido=usuarioActual&&!esOrg&&yaSeUnio(mateada.id,usuarioActual.email);
   const esProg = esProgramada(mateada) && getMsHastaInicio(mateada) > 0;
 
+  let horaTexto = '';
+  if (esProg) {
+    horaTexto = `<strong>${mateada.hora_programada || mateada.hora}</strong> (programada)`;
+  } else {
+    horaTexto = mateada.hora || 'Ahora';
+  }
+
   let accionBtn='';
   if (esOrg) accionBtn=`<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div>`;
   else if (yaUnido) accionBtn=`<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`;
   else if (libres===0) accionBtn=`<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
   else accionBtn=`<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
 
-  const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${mateada.hora_programada}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
+  const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${mateada.hora_programada || mateada.hora}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
 
-  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+mateada.hora_programada+'</strong>':'Empezó: '+mateada.hora}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
+  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+ (mateada.hora_programada || mateada.hora) +'</strong>':'Empezó: '+ horaTexto}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
 
   setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
 
-  // Countdown "empieza en" para programadas en detalle
   if (esProg) {
     const itv = setInterval(()=>{
       const el = document.getElementById('detailProgCountdown');
@@ -1074,7 +1062,6 @@ function mateadaTerminada(id) {
   },700);
 }
 
-// ---- MAPA CERCANO (con históricos) ----
 function haversineKm(lat1,lng1,lat2,lng2){const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 
 function pedirUbicacion() {
@@ -1133,11 +1120,9 @@ function actualizarMapaCercano() {
   setTimeout(()=>mapaNearby?.invalidateSize(),220);
 }
 
-// ---- NAVEGACIÓN ----
 function volverADetalle(){verDetalle(mateadaSeleccionada);}
 function irInicio(){mostrarScreen('screen-home');document.getElementById('navBar').classList.remove('visible');document.getElementById('mainHeader').style.display='';cargarMateadas();setTimeout(()=>{if(mapaNearby){mapaNearby.invalidateSize();actualizarMapaCercano();}},500);}
 function irACrear() {
-  // Reset tipo tabs al abrir
   tipoMateadaSeleccionado = 'ahora';
   document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach((b,i)=>b.classList.toggle('selected',i===0));
   document.getElementById('horaProgramadaWrap').classList.remove('visible');
