@@ -926,17 +926,23 @@ async function crearMateada() {
   const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
 
   let hora, horaProgramadaVal = '', esProg = false;
+  const ahora = new Date();
+  
   if (tipoMateadaSeleccionado === 'programada') {
     horaProgramadaVal = document.getElementById('horaProgramada').value;
     if (!horaProgramadaVal) { mostrarToast('⏰ Elegí la hora de inicio'); return; }
     const [h, min] = horaProgramadaVal.split(':').map(Number);
-    const ahora = new Date();
     const horaElegida = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), h, min, 0);
-    if (horaElegida <= ahora) { mostrarToast('⏰ La hora tiene que ser en el futuro'); return; }
+    if (horaElegida <= ahora) { 
+      mostrarToast('⏰ La hora tiene que ser en el futuro'); 
+      return; 
+    }
+    // Guardar hora en formato HH:MM simple
     hora = horaProgramadaVal;
     esProg = true;
   } else {
-    hora = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    // Para mateadas "ahora", usar hora actual en formato HH:MM
+    hora = `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
   }
 
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
@@ -966,6 +972,18 @@ async function crearMateada() {
   }
   
   try {
+    // Crear timestamp en segundos para la fecha/hora correcta
+    let fechaHoraObj;
+    if (esProg && horaProgramadaVal) {
+      const [h, min] = horaProgramadaVal.split(':').map(Number);
+      fechaHoraObj = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), h, min, 0);
+    } else {
+      fechaHoraObj = new Date();
+    }
+    
+    const timestampUnix = Math.floor(fechaHoraObj.getTime() / 1000);
+    const fechaHoraISO = fechaHoraObj.toISOString();
+    
     const params = new URLSearchParams({
       accion: 'crearMateada',
       titulo: titulo,
@@ -983,6 +1001,8 @@ async function crearMateada() {
       hora: hora,
       programada: esProg ? '1' : '',
       hora_programada: horaProgramadaVal,
+      timestamp_unix: timestampUnix,
+      fecha_hora_iso: fechaHoraISO,
       dispositivo: JSON.stringify(dispositivoInfo)
     });
     
