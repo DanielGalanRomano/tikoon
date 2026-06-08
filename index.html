@@ -162,6 +162,8 @@
     .btn-secondary { background: white; border: 1.5px solid var(--borde); color: var(--texto); }
     .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
     .btn-back:active { transform: scale(0.98); background: #D1D5DB; }
+    .btn-danger { background: var(--rojo); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; }
+    .btn-danger:active { transform: scale(0.98); background: #B91C1C; }
     .btn.loading { opacity: 0.7; pointer-events: none; }
     .fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--verde); color: white; border: none; height: 52px; padding: 0 22px; border-radius: 26px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 300; }
     .fab:active { transform: scale(0.96); }
@@ -387,6 +389,12 @@
           <select id="cupoMateada" class="form-select"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>15</option><option>20</option></select>
         </div>
         <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
+        
+        <!-- Botón Volver al inicio cuando hay límite -->
+        <div id="limiteVolverContainer" style="display:none; margin-top:16px;">
+          <button class="btn-back" onclick="irInicio()">← Volver al inicio</button>
+        </div>
+        
         <div class="screen-bottom-spacer"></div>
       </div>
     </div>
@@ -855,6 +863,36 @@ function abrirSelectorUbicacion() {
   },100);
 }
 
+// FUNCIÓN PARA ELIMINAR MATEADA
+async function eliminarMateada(mateadaId) {
+  if (!confirm('¿Estás seguro de que querés eliminar esta mateada?')) return;
+  
+  const btn = document.getElementById('btnEliminarMateada');
+  if (btn) { btn.disabled = true; btn.textContent = 'Eliminando...'; }
+  
+  try {
+    const params = new URLSearchParams({
+      accion: 'eliminarMateada',
+      mateada_id: mateadaId,
+      organizador_sub: usuarioActual.sub
+    });
+    const r = await fetch(`${SCRIPT_URL}?${params}`);
+    const resultado = await r.json();
+    
+    if (resultado.success) {
+      mostrarToast('✅ Mateada eliminada correctamente');
+      irInicio();
+      cargarMateadas();
+    } else {
+      mostrarToast('❌ ' + (resultado.error || 'No se pudo eliminar'));
+    }
+  } catch(e) {
+    mostrarToast('❌ Error de conexión');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🗑️ Eliminar mateada'; }
+  }
+}
+
 async function crearMateada() {
   if (!usuarioActual) { iniciarSesionGoogle(); return; }
   const organizador=document.getElementById('nombreOrganizador').value.trim();
@@ -880,7 +918,12 @@ async function crearMateada() {
 
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
   if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
-  if (!puedeCrear(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 1 mateada por día'); return; }
+  if (!puedeCrear(usuarioActual.email)) { 
+    mostrarToast('⏳ Límite: solo 1 mateada por día');
+    // Mostrar botón volver al inicio
+    document.getElementById('limiteVolverContainer').style.display = 'block';
+    return; 
+  }
 
   const btn=document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText='Buscando ubicación...';
   let latitud=userLat||-34.5842, longitud=userLng||-58.4073;
@@ -1022,7 +1065,10 @@ async function verDetalle(mateada) {
 
   const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${mateada.hora_programada || mateada.hora}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
 
-  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+ (mateada.hora_programada || mateada.hora) +'</strong>':'Empezó: '+ horaTexto}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
+  // Botón eliminar solo para organizador
+  const btnEliminar = esOrg ? `<button class="btn-danger" id="btnEliminarMateada" onclick="eliminarMateada('${mateada.id}')">🗑️ Eliminar mateada</button>` : '';
+
+  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+ (mateada.hora_programada || mateada.hora) +'</strong>':'Empezó: '+ horaTexto}</div></div><div id="chatContainer"></div>${accionBtn}${btnEliminar}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
 
   setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
 
@@ -1121,11 +1167,19 @@ function actualizarMapaCercano() {
 }
 
 function volverADetalle(){verDetalle(mateadaSeleccionada);}
-function irInicio(){mostrarScreen('screen-home');document.getElementById('navBar').classList.remove('visible');document.getElementById('mainHeader').style.display='';cargarMateadas();setTimeout(()=>{if(mapaNearby){mapaNearby.invalidateSize();actualizarMapaCercano();}},500);}
+function irInicio(){
+  mostrarScreen('screen-home');
+  document.getElementById('navBar').classList.remove('visible');
+  document.getElementById('mainHeader').style.display='';
+  cargarMateadas();
+  setTimeout(()=>{if(mapaNearby){mapaNearby.invalidateSize();actualizarMapaCercano();}},500);
+}
 function irACrear() {
   tipoMateadaSeleccionado = 'ahora';
   document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach((b,i)=>b.classList.toggle('selected',i===0));
   document.getElementById('horaProgramadaWrap').classList.remove('visible');
+  // Ocultar botón volver al inicio al entrar de nuevo
+  document.getElementById('limiteVolverContainer').style.display = 'none';
 
   const campoNombre=document.getElementById('nombreOrganizador');
   if (!usuarioActual) {
@@ -1137,6 +1191,8 @@ function irACrear() {
     document.getElementById('createLoginGate').style.display='block';
     document.getElementById('createLoginGate').innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 1 mateada hoy. Volvé mañana.</span></div>`;
     document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
+    // Mostrar botón volver al inicio
+    document.getElementById('limiteVolverContainer').style.display = 'block';
   } else {
     document.getElementById('createLoginGate').style.display='none';
     document.getElementById('createForm').style.cssText='';
