@@ -467,38 +467,20 @@ window.seleccionarMate = seleccionarMate;
 window.seleccionarDuracion = seleccionarDuracion;
 window.seleccionarTipoMateada = seleccionarTipoMateada;
 
-// Función para formatear hora a HH:MM
-function formatearHoraHHMM(fecha) {
-    if (!fecha) return '--:--';
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return '--:--';
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-}
-
-// Función para limpiar y formatear hora mostrada
 function formatearHoraMostrar(valor) {
     if (!valor) return 'Ahora';
     const str = String(valor);
-    
-    // Si es "Ahora" literal
     if (str === 'Ahora') return 'Ahora';
-    
-    // Si es formato HH:MM
-    if (str.match(/^\d{1,2}:\d{2}$/)) {
-        return str;
-    }
-    
-    // Si es una fecha ISO
+    if (str.match(/^\d{1,2}:\d{2}$/)) return str;
     if (str.includes('T') || str.includes('Z')) {
         try {
             const fecha = new Date(str);
             if (!isNaN(fecha.getTime()) && fecha.getFullYear() > 2000) {
-                return formatearHoraHHMM(fecha);
+                return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
             }
         } catch(e) {}
         return 'Ahora';
     }
-    
     return 'Ahora';
 }
 
@@ -593,11 +575,6 @@ function esOrganizadorDe(mateada) {
   if (!usuarioActual || !mateada) return false;
   if (mateada.organizador_sub && usuarioActual.sub && mateada.organizador_sub === usuarioActual.sub) return true;
   if (mateada.organizador_email && usuarioActual.email && mateada.organizador_email === usuarioActual.email) return true;
-  if (!mateada.organizador_sub && !mateada.organizador_email && mateada.organizador && usuarioActual.nombre) {
-    const nom = mateada.organizador.toLowerCase();
-    if (nom === usuarioActual.nombre.toLowerCase()) return true;
-    if (nom === usuarioActual.nombre.split(' ')[0].toLowerCase()) return true;
-  }
   return false;
 }
 function yaHizoPreguntaDetalle(mateadaId) { if (!usuarioActual) return false; return !!localStorage.getItem(`pregunta_detalle_${mateadaId}_${usuarioActual.sub}`); }
@@ -678,7 +655,6 @@ function formatTiempoHastaInicio(ms) {
 
 function getInicioMs(m) {
   if (m.timestamp_unix) return parseInt(m.timestamp_unix)*1000;
-  if (m.timestamp_ms) return parseInt(m.timestamp_ms);
   return null;
 }
 
@@ -903,10 +879,19 @@ function abrirSelectorUbicacion() {
 }
 
 async function eliminarMateada(mateadaId) {
-  if (!confirm('¿Estás seguro de que querés eliminar esta mateada?')) return;
+  if (!usuarioActual) {
+    mostrarToast('🔑 Iniciá sesión para eliminar');
+    return;
+  }
+  
+  if (!confirm('⚠️ ¿Estás seguro de que querés eliminar esta mateada?\n\nEsta acción no se puede deshacer.')) return;
   
   const btn = document.getElementById('btnEliminarMateada');
-  if (btn) { btn.disabled = true; btn.textContent = 'Eliminando...'; }
+  const textoOriginal = btn ? btn.textContent : '';
+  if (btn) { 
+    btn.disabled = true; 
+    btn.textContent = '⏳ Eliminando...'; 
+  }
   
   try {
     const params = new URLSearchParams({
@@ -914,20 +899,29 @@ async function eliminarMateada(mateadaId) {
       mateada_id: mateadaId,
       organizador_sub: usuarioActual.sub
     });
-    const r = await fetch(`${SCRIPT_URL}?${params}`);
+    
+    const r = await fetch(`${SCRIPT_URL}?${params.toString()}`, { 
+      method: 'GET',
+      cache: 'no-store'
+    });
     const resultado = await r.json();
     
     if (resultado.success) {
       mostrarToast('✅ Mateada eliminada correctamente');
+      localStorage.removeItem('cache_mateadas');
       irInicio();
-      cargarMateadas();
+      setTimeout(() => cargarMateadas(), 500);
     } else {
       mostrarToast('❌ ' + (resultado.error || 'No se pudo eliminar'));
     }
   } catch(e) {
-    mostrarToast('❌ Error de conexión');
+    console.error('Error al eliminar:', e);
+    mostrarToast('❌ Error de conexión: ' + e.message);
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '🗑️ Eliminar mateada'; }
+    if (btn) { 
+      btn.disabled = false; 
+      btn.textContent = textoOriginal || '🗑️ Eliminar mateada';
+    }
   }
 }
 
