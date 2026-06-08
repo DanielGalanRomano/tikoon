@@ -1230,9 +1230,14 @@ function renderizarMateadas(container) {
     container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
     actualizarMapaCercano();
     return;
+    
   }
 
-  container.innerHTML = '';
+  container.innerHTML = `
+<div id="mateadasCarousel" class="mateadas-carousel"></div>
+`;
+
+const carousel = document.getElementById('mateadasCarousel');
   const iniciadas = vigentes.filter(m => !esProgramada(m) || getMsHastaInicio(m) <= 0);
   const programadas = vigentes.filter(m => esProgramada(m) && getMsHastaInicio(m) > 0).sort((a,b) => getMsHastaInicio(a) - getMsHastaInicio(b));
 
@@ -1765,9 +1770,7 @@ document.getElementById('installDismiss')?.addEventListener('click', () => {
   document.getElementById('installBanner').classList.remove('visible'); sessionStorage.setItem('installDismissed', '1');
 });
 
-  container.innerHTML = `
-<div id="mateadasCarousel" class="mateadas-carousel"></div>
-`;
+
 
 const carousel = document.getElementById('mateadasCarousel');
 
