@@ -388,7 +388,6 @@
         </div>
         <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
         
-        <!-- Botón Volver al inicio -->
         <div id="limiteVolverContainer" style="display:none; margin-top:16px;">
           <button class="btn-back" onclick="irInicio()">← Volver al inicio</button>
         </div>
@@ -464,10 +463,30 @@ let enviandoPregunta = false;
 
 let tipoMateadaSeleccionado = 'ahora';
 
-// Funciones globales expuestas
 window.seleccionarMate = seleccionarMate;
 window.seleccionarDuracion = seleccionarDuracion;
 window.seleccionarTipoMateada = seleccionarTipoMateada;
+
+// Función auxiliar para formatear hora correctamente
+function formatearHoraMostrar(valor) {
+    if (!valor) return 'Ahora';
+    const str = String(valor);
+    // Si es una fecha ISO o contiene T
+    if (str.includes('T') || str.includes('Z') || str.match(/\d{4}-\d{2}-\d{2}/)) {
+        try {
+            const fecha = new Date(str);
+            if (!isNaN(fecha.getTime()) && fecha.getFullYear() > 2000) {
+                return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
+            }
+        } catch(e) {}
+        return 'Ahora';
+    }
+    // Si ya es formato HH:MM
+    if (str.match(/^\d{1,2}:\d{2}$/)) {
+        return str;
+    }
+    return 'Ahora';
+}
 
 const NOMBRES_HIST = ['Sofía','Mateo','Valentina','Lucas','Camila','Nicolás','Martina','Tomás','Julieta','Agustín','Lucía','Franco','Florencia','Santiago','Pilar','Joaquín'];
 const TEMAS_HIST = ['📖 Filosofía','💻 Tecnología','🎨 Arte','🤝 Emprendedurismo','🌱 Sustentabilidad','🎬 Cine','📚 Literatura','🧘 Bienestar'];
@@ -503,7 +522,7 @@ function renderEstrellas(rating) {
 }
 
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
-function formatFecha(iso) { if (!iso) return ''; try { const d = new Date(iso); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; } catch(e) { return ''; } }
+function formatFecha(iso) { if (!iso) return ''; try { const d = new Date(iso); if (!isNaN(d.getTime()) && d.getFullYear() > 2000) { return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; } return ''; } catch(e) { return ''; } }
 function mostrarToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 function getFechaHoy() { return new Date().toISOString().slice(0, 10); }
 
@@ -649,8 +668,11 @@ function getInicioMs(m) {
   if (m.fecha_hora) { const d=new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
   if (m.fecha && m.hora) { const d=new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
   if (m.hora) {
-    const [h,min]=m.hora.split(':').map(Number);
-    if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); }
+    const horaStr = formatearHoraMostrar(m.hora);
+    if (horaStr !== 'Ahora') {
+      const [h,min] = horaStr.split(':').map(Number);
+      if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); }
+    }
   }
   return null;
 }
@@ -658,7 +680,9 @@ function getInicioMs(m) {
 function esProgramada(m) { return !!m.programada || !!m.hora_programada; }
 function getMsHastaInicio(m) {
   if (!m.hora_programada) return 0;
-  const [h,min] = m.hora_programada.split(':').map(Number);
+  const horaStr = formatearHoraMostrar(m.hora_programada);
+  if (horaStr === 'Ahora') return 0;
+  const [h,min] = horaStr.split(':').map(Number);
   if (isNaN(h)||isNaN(min)) return 0;
   const n = new Date();
   const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0);
@@ -669,11 +693,14 @@ function estaTerminada(m) {
   if (esProgramada(m) && getMsHastaInicio(m) > 0) return false;
   const i=getInicioMs(m); if (!i) return false;
   if (m.hora_programada) {
-    const [h,min] = m.hora_programada.split(':').map(Number);
-    if (!isNaN(h)&&!isNaN(min)) {
-      const n = new Date();
-      const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
-      return Date.now() > (inicio + (parseInt(m.duracion_minutos)||60)*60000);
+    const horaStr = formatearHoraMostrar(m.hora_programada);
+    if (horaStr !== 'Ahora') {
+      const [h,min] = horaStr.split(':').map(Number);
+      if (!isNaN(h)&&!isNaN(min)) {
+        const n = new Date();
+        const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
+        return Date.now() > (inicio + (parseInt(m.duracion_minutos)||60)*60000);
+      }
     }
   }
   return Date.now()>(i+(parseInt(m.duracion_minutos)||60)*60000);
@@ -681,12 +708,15 @@ function estaTerminada(m) {
 
 function getMsRestante(m) {
   if (m.hora_programada) {
-    const [h,min] = m.hora_programada.split(':').map(Number);
-    if (!isNaN(h)&&!isNaN(min)) {
-      const n = new Date();
-      const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
-      if (Date.now() < inicio) return null;
-      return (inicio + (parseInt(m.duracion_minutos)||60)*60000) - Date.now();
+    const horaStr = formatearHoraMostrar(m.hora_programada);
+    if (horaStr !== 'Ahora') {
+      const [h,min] = horaStr.split(':').map(Number);
+      if (!isNaN(h)&&!isNaN(min)) {
+        const n = new Date();
+        const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
+        if (Date.now() < inicio) return null;
+        return (inicio + (parseInt(m.duracion_minutos)||60)*60000) - Date.now();
+      }
     }
   }
   const i=getInicioMs(m); if (!i) return null;
@@ -765,9 +795,9 @@ function renderizarMateadas(container) {
     
     let horaMostrada = '';
     if (esProg) {
-      horaMostrada = m.hora_programada || m.hora || '--:--';
+      horaMostrada = formatearHoraMostrar(m.hora_programada || m.hora);
     } else {
-      horaMostrada = m.hora || 'Ahora';
+      horaMostrada = formatearHoraMostrar(m.hora);
     }
     
     const horaBadge = esProg ? `<span class="hora-prog-badge">📅 ${horaMostrada}</span>` : '';
@@ -937,11 +967,9 @@ async function crearMateada() {
       mostrarToast('⏰ La hora tiene que ser en el futuro'); 
       return; 
     }
-    // Guardar hora en formato HH:MM simple
     hora = horaProgramadaVal;
     esProg = true;
   } else {
-    // Para mateadas "ahora", usar hora actual en formato HH:MM
     hora = `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
   }
 
@@ -972,7 +1000,6 @@ async function crearMateada() {
   }
   
   try {
-    // Crear timestamp en segundos para la fecha/hora correcta
     let fechaHoraObj;
     if (esProg && horaProgramadaVal) {
       const [h, min] = horaProgramadaVal.split(':').map(Number);
@@ -1127,9 +1154,9 @@ async function verDetalle(mateada) {
 
   let horaTexto = '';
   if (esProg) {
-    horaTexto = `<strong>${mateada.hora_programada || mateada.hora}</strong> (programada)`;
+    horaTexto = `<strong>${formatearHoraMostrar(mateada.hora_programada || mateada.hora)}</strong> (programada)`;
   } else {
-    horaTexto = mateada.hora || 'Ahora';
+    horaTexto = formatearHoraMostrar(mateada.hora);
   }
 
   let accionBtn='';
@@ -1138,11 +1165,11 @@ async function verDetalle(mateada) {
   else if (libres===0) accionBtn=`<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
   else accionBtn=`<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
 
-  const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${mateada.hora_programada || mateada.hora}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
+  const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${formatearHoraMostrar(mateada.hora_programada || mateada.hora)}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
 
   const btnEliminar = esOrg ? `<button class="btn-danger" id="btnEliminarMateada" onclick="eliminarMateada('${mateada.id}')">🗑️ Eliminar mateada</button>` : '';
 
-  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+ (mateada.hora_programada || mateada.hora) +'</strong>':'Empezó: '+ horaTexto}</div></div><div id="chatContainer"></div>${accionBtn}${btnEliminar}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
+  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+ formatearHoraMostrar(mateada.hora_programada || mateada.hora) +'</strong>':'Empezó: '+ horaTexto}</div></div><div id="chatContainer"></div>${accionBtn}${btnEliminar}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
 
   setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
 
