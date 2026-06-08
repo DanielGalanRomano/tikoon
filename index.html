@@ -11,8 +11,6 @@
   <title>Cebate Uno — Encuentros con mate en el parque</title>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-152.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -390,10 +388,12 @@
         </div>
         <button class="btn" id="btnPublicar" onclick="crearMateada()">🌿 Publicar mateada</button>
         
-        <!-- Botón Volver al inicio cuando hay límite -->
+        <!-- Botón Volver al inicio -->
         <div id="limiteVolverContainer" style="display:none; margin-top:16px;">
           <button class="btn-back" onclick="irInicio()">← Volver al inicio</button>
         </div>
+        
+        <button class="btn-back" onclick="irInicio()" style="margin-top:12px;">← Volver al inicio</button>
         
         <div class="screen-bottom-spacer"></div>
       </div>
@@ -463,6 +463,11 @@ let preguntasCache = {};
 let enviandoPregunta = false;
 
 let tipoMateadaSeleccionado = 'ahora';
+
+// Funciones globales expuestas
+window.seleccionarMate = seleccionarMate;
+window.seleccionarDuracion = seleccionarDuracion;
+window.seleccionarTipoMateada = seleccionarTipoMateada;
 
 const NOMBRES_HIST = ['Sofía','Mateo','Valentina','Lucas','Camila','Nicolás','Martina','Tomás','Julieta','Agustín','Lucía','Franco','Florencia','Santiago','Pilar','Joaquín'];
 const TEMAS_HIST = ['📖 Filosofía','💻 Tecnología','🎨 Arte','🤝 Emprendedurismo','🌱 Sustentabilidad','🎬 Cine','📚 Literatura','🧘 Bienestar'];
@@ -815,9 +820,23 @@ function renderizarMateadas(container) {
   actualizarMapaCercano();
 }
 
-function recargar() { const btn=document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(()=>btn.classList.remove('spinning'),600); cargarMateadas(); }
-function seleccionarMate(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
-function seleccionarDuracion(btn, mins) { document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada=mins; }
+function recargar() { 
+  const btn=document.getElementById('refreshBtn'); 
+  btn.classList.add('spinning'); 
+  setTimeout(()=>btn.classList.remove('spinning'),600); 
+  cargarMateadas(); 
+}
+
+function seleccionarMate(btn) { 
+  btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected')); 
+  btn.classList.add('selected'); 
+}
+
+function seleccionarDuracion(btn, mins) { 
+  document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected')); 
+  btn.classList.add('selected'); 
+  duracionSeleccionada=mins; 
+}
 
 function seleccionarTipoMateada(btn, tipo) {
   document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach(b=>b.classList.remove('selected'));
@@ -863,7 +882,6 @@ function abrirSelectorUbicacion() {
   },100);
 }
 
-// FUNCIÓN PARA ELIMINAR MATEADA
 async function eliminarMateada(mateadaId) {
   if (!confirm('¿Estás seguro de que querés eliminar esta mateada?')) return;
   
@@ -894,65 +912,102 @@ async function eliminarMateada(mateadaId) {
 }
 
 async function crearMateada() {
-  if (!usuarioActual) { iniciarSesionGoogle(); return; }
-  const organizador=document.getElementById('nombreOrganizador').value.trim();
-  const titulo=document.getElementById('temaMateada').value;
-  const ubicacion=document.getElementById('ubicacionMateada').value.trim();
-  const cupo=parseInt(document.getElementById('cupoMateada').value);
-  const mateOption=document.querySelector('.option-btn.selected');
-  const tipoMate=mateOption?mateOption.innerText:'Dulce';
+  if (!usuarioActual) { 
+    mostrarToast('🔑 Iniciá sesión para crear una mateada');
+    iniciarSesionGoogle(); 
+    return; 
+  }
+  
+  const organizador = document.getElementById('nombreOrganizador').value.trim();
+  const titulo = document.getElementById('temaMateada').value;
+  const ubicacion = document.getElementById('ubicacionMateada').value.trim();
+  const cupo = parseInt(document.getElementById('cupoMateada').value);
+  const mateOption = document.querySelector('.option-btn.selected');
+  const tipoMate = mateOption ? mateOption.innerText : 'Dulce';
 
-  let hora, horaProgramadaVal='', esProg=false;
+  let hora, horaProgramadaVal = '', esProg = false;
   if (tipoMateadaSeleccionado === 'programada') {
     horaProgramadaVal = document.getElementById('horaProgramada').value;
     if (!horaProgramadaVal) { mostrarToast('⏰ Elegí la hora de inicio'); return; }
-    const [h,min] = horaProgramadaVal.split(':').map(Number);
+    const [h, min] = horaProgramadaVal.split(':').map(Number);
     const ahora = new Date();
     const horaElegida = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), h, min, 0);
     if (horaElegida <= ahora) { mostrarToast('⏰ La hora tiene que ser en el futuro'); return; }
     hora = horaProgramadaVal;
     esProg = true;
   } else {
-    hora = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    hora = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
   }
 
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
   if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
+  
   if (!puedeCrear(usuarioActual.email)) { 
-    mostrarToast('⏳ Límite: solo 1 mateada por día');
-    // Mostrar botón volver al inicio
+    mostrarToast('⏳ Límite: solo 1 mateada por día. Volvé mañana.');
     document.getElementById('limiteVolverContainer').style.display = 'block';
     return; 
   }
 
-  const btn=document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText='Buscando ubicación...';
-  let latitud=userLat||-34.5842, longitud=userLng||-58.4073;
-  if (ubicacionSeleccionadaMapa) { latitud=ubicacionSeleccionadaMapa.lat; longitud=ubicacionSeleccionadaMapa.lng; }
-  else { const coord=await geocodificarUbicacion(ubicacion); if (coord) { latitud=coord.lat; longitud=coord.lng; } }
-  btn.innerText='Publicando...';
+  const btn = document.getElementById('btnPublicar'); 
+  btn.classList.add('loading'); 
+  btn.innerText = 'Publicando...';
+  
+  let latitud = userLat || -34.5842, longitud = userLng || -58.4073;
+  
+  if (!ubicacionSeleccionadaMapa && ubicacion) {
+    const coord = await geocodificarUbicacion(ubicacion);
+    if (coord) { 
+      latitud = coord.lat; 
+      longitud = coord.lng; 
+    }
+  } else if (ubicacionSeleccionadaMapa) {
+    latitud = ubicacionSeleccionadaMapa.lat;
+    longitud = ubicacionSeleccionadaMapa.lng;
+  }
+  
   try {
-    const params=new URLSearchParams({
-      accion:'crearMateada',titulo,ubicacion,latitud,longitud,
-      lugares_totales:cupo,organizador,
-      organizador_sub:usuarioActual.sub,
-      organizador_email:usuarioActual.email,
-      organizador_avatar:usuarioActual.avatar||organizador.charAt(0).toUpperCase(),
-      descripcion:`Mateada de ${titulo} · Mate ${tipoMate}`,
-      duracion_minutos:duracionSeleccionada,
-      duracion:duracionTexto(duracionSeleccionada),
-      hora,
+    const params = new URLSearchParams({
+      accion: 'crearMateada',
+      titulo: titulo,
+      ubicacion: ubicacion,
+      latitud: latitud,
+      longitud: longitud,
+      lugares_totales: cupo,
+      organizador: organizador,
+      organizador_sub: usuarioActual.sub,
+      organizador_email: usuarioActual.email,
+      organizador_avatar: usuarioActual.avatar || organizador.charAt(0).toUpperCase(),
+      descripcion: `Mateada de ${titulo} · Mate ${tipoMate}`,
+      duracion_minutos: duracionSeleccionada,
+      duracion: duracionTexto(duracionSeleccionada),
+      hora: hora,
       programada: esProg ? '1' : '',
       hora_programada: horaProgramadaVal,
-      dispositivo:JSON.stringify(dispositivoInfo)
+      dispositivo: JSON.stringify(dispositivoInfo)
     });
-    const r=await fetch(`${SCRIPT_URL}?${params}`); const resultado=await r.json();
+    
+    const r = await fetch(`${SCRIPT_URL}?${params.toString()}`, { 
+      method: 'GET',
+      cache: 'no-store'
+    });
+    const resultado = await r.json();
+    
     if (resultado.success) {
       registrarCreacion(usuarioActual.email);
       mostrarToast(esProg ? `✅ ¡Mateada programada para las ${horaProgramadaVal}!` : '✅ ¡Mateada publicada!');
       irInicio();
-    } else { mostrarToast('❌ '+(resultado.error||'No se pudo publicar')); }
-  } catch(e) { mostrarToast('❌ Error de conexión'); }
-  finally { btn.classList.remove('loading'); btn.innerText='🌿 Publicar mateada'; }
+      cargarMateadas();
+    } else { 
+      mostrarToast('❌ ' + (resultado.error || 'No se pudo publicar'));
+    }
+  } catch(e) {
+    console.error('Error al crear:', e);
+    mostrarToast('❌ Error de conexión: ' + e.message);
+  } finally { 
+    btn.classList.remove('loading'); 
+    btn.innerText = '🌿 Publicar mateada';
+    ubicacionSeleccionadaMapa = null;
+  }
 }
 
 async function renderizarChat(mateada) {
@@ -1065,7 +1120,6 @@ async function verDetalle(mateada) {
 
   const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${mateada.hora_programada || mateada.hora}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
 
-  // Botón eliminar solo para organizador
   const btnEliminar = esOrg ? `<button class="btn-danger" id="btnEliminarMateada" onclick="eliminarMateada('${mateada.id}')">🗑️ Eliminar mateada</button>` : '';
 
   container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+ (mateada.hora_programada || mateada.hora) +'</strong>':'Empezó: '+ horaTexto}</div></div><div id="chatContainer"></div>${accionBtn}${btnEliminar}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
@@ -1178,24 +1232,25 @@ function irACrear() {
   tipoMateadaSeleccionado = 'ahora';
   document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach((b,i)=>b.classList.toggle('selected',i===0));
   document.getElementById('horaProgramadaWrap').classList.remove('visible');
-  // Ocultar botón volver al inicio al entrar de nuevo
   document.getElementById('limiteVolverContainer').style.display = 'none';
 
   const campoNombre=document.getElementById('nombreOrganizador');
+  const createLoginGate = document.getElementById('createLoginGate');
+  const createForm = document.getElementById('createForm');
+  
   if (!usuarioActual) {
-    document.getElementById('createLoginGate').style.display='block';
-    document.getElementById('createLoginGate').innerHTML=`<div style="background:var(--azul-claro);border:1px solid #BFDBFE;border-radius:14px;padding:14px;font-size:14px;color:#1D4ED8;margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">🔑</div><strong>Necesitás iniciar sesión</strong><br><span style="font-size:13px;">Para publicar una mateada necesitás una cuenta Google.</span><br><button class="btn" style="max-width:220px;margin-top:12px;" onclick="iniciarSesionGoogle()">Entrar con Google</button></div>`;
-    document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
+    createLoginGate.style.display='block';
+    createLoginGate.innerHTML=`<div style="background:var(--azul-claro);border:1px solid #BFDBFE;border-radius:14px;padding:14px;font-size:14px;color:#1D4ED8;margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">🔑</div><strong>Necesitás iniciar sesión</strong><br><span style="font-size:13px;">Para publicar una mateada necesitás una cuenta Google.</span><br><button class="btn" style="max-width:220px;margin-top:12px;" onclick="iniciarSesionGoogle()">Entrar con Google</button></div>`;
+    createForm.style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
     if (campoNombre) campoNombre.readOnly=false;
   } else if (!puedeCrear(usuarioActual.email)) {
-    document.getElementById('createLoginGate').style.display='block';
-    document.getElementById('createLoginGate').innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 1 mateada hoy. Volvé mañana.</span></div>`;
-    document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
-    // Mostrar botón volver al inicio
+    createLoginGate.style.display='block';
+    createLoginGate.innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 1 mateada hoy. Volvé mañana.</span><button class="btn-back" style="margin-top:12px;" onclick="irInicio()">← Volver al inicio</button></div>`;
+    createForm.style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
     document.getElementById('limiteVolverContainer').style.display = 'block';
   } else {
-    document.getElementById('createLoginGate').style.display='none';
-    document.getElementById('createForm').style.cssText='';
+    createLoginGate.style.display='none';
+    createForm.style.cssText='';
     if (campoNombre) { campoNombre.value=usuarioActual.nombre.split(' ')[0]; campoNombre.readOnly=true; }
     const help=document.getElementById('nombreHelp'); if(help) help.style.display='block';
   }
