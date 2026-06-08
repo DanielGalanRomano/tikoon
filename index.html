@@ -35,6 +35,7 @@
       --header-bg: #F2F2F7;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --map-height: 30dvh;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { background: var(--crema-dark); font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; min-height: 100dvh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; overscroll-behavior: none; }
@@ -82,7 +83,49 @@
     .content { padding: 16px 20px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
     .screen { display: none; flex-direction: column; flex: 1; }
     .screen.active { display: flex; }
-    .home-map-section { position: relative; height: 30dvh; min-height: 180px; max-height: 260px; background: var(--crema-dark); overflow: hidden; flex-shrink: 0; }
+
+    /* ===================== MAPA HOME — TAMAÑO DINÁMICO ===================== */
+    .home-map-section {
+      position: relative;
+      height: var(--map-height);
+      min-height: 180px;
+      max-height: 260px;
+      background: var(--crema-dark);
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: height 0.5s cubic-bezier(0.4,0,0.2,1), max-height 0.5s cubic-bezier(0.4,0,0.2,1), min-height 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    /* Cuando no hay mateadas activas, el mapa ocupa más espacio */
+    .home-map-section.expanded {
+      height: 58dvh;
+      min-height: 320px;
+      max-height: 520px;
+    }
+    /* Label flotante "mapa expandido" */
+    .map-empty-overlay {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--subtexto);
+      white-space: nowrap;
+      z-index: 12;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.3s;
+    }
+    .home-map-section.expanded .map-empty-overlay {
+      opacity: 1;
+    }
+    /* ===================================================================== */
+
     #nearbyMap { width: 100%; height: 100%; }
     .nearby-pill { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(15,123,94,0.92); backdrop-filter: blur(8px); color: white; padding: 8px 18px; border-radius: 40px; font-size: 13px; font-weight: 600; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 10; pointer-events: none; }
     .gps-btn { position: absolute; top: 10px; right: 10px; background: white; border: none; width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10; }
@@ -90,8 +133,6 @@
     .leaflet-div-icon { background: none !important; border: none !important; }
     .leaflet-marker-icon { border: none !important; background: none !important; }
     .leaflet-container { font-family: inherit; }
-
-    /* Popup de mateada histórica en el mapa */
     .leaflet-popup-content-wrapper { border-radius: 14px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important; border: none !important; padding: 0 !important; overflow: hidden; }
     .leaflet-popup-content { margin: 0 !important; }
     .hist-popup { padding: 12px 14px; min-width: 160px; }
@@ -99,7 +140,6 @@
     .hist-popup-stars { font-size: 13px; margin-bottom: 2px; }
     .hist-popup-meta { font-size: 11px; color: var(--subtexto); }
     .leaflet-popup-tip-container { display: none; }
-
     .section-label { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--texto); padding: 14px 20px 8px; display: flex; justify-content: space-between; align-items: center; }
     .card { background: white; border-radius: 20px; padding: 16px; margin: 0 20px 10px; cursor: pointer; border: 1px solid var(--borde); transition: transform 0.15s, box-shadow 0.15s; animation: fadeUp 0.3s ease both; }
     .card:active { transform: scale(0.98); }
@@ -108,6 +148,8 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--texto); margin-bottom: 8px; }
     .card-info { display: flex; gap: 12px; font-size: 13px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
+    /* Badge programada */
+    .badge-programada { background: #FEF3C7; color: #92400E; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; border: 1px solid #FDE68A; }
     .participantes-badge { background: var(--verde-light); color: var(--verde); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .participantes-badge.lleno { background: #FEE2E2; color: var(--rojo); }
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; gap: 8px; }
@@ -119,6 +161,8 @@
     .countdown-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtexto); margin-bottom: 5px; }
     .countdown-bar-track { height: 6px; background: var(--crema-dark); border-radius: 3px; overflow: hidden; }
     .countdown-bar-fill { height: 100%; border-radius: 3px; transition: width 1s linear, background-color 1.5s ease; }
+    /* Cuenta regresiva para programadas (para cuando arrancan) */
+    .countdown-programada { margin-top: 10px; background: #FFF8EC; border-radius: 10px; padding: 8px 12px; font-size: 12px; color: #92400E; font-weight: 600; display: flex; align-items: center; gap: 6px; }
     .btn { background: var(--verde); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; }
     .btn:active { transform: scale(0.98); }
     .btn-secondary { background: white; border: 1.5px solid var(--borde); color: var(--texto); }
@@ -206,6 +250,18 @@
     .ios-step-icon { font-size: 22px; flex-shrink: 0; }
     .ios-sheet-close { width: 100%; padding: 14px; background: white; border: 1px solid var(--borde); border-radius: 60px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); cursor: pointer; }
     .screen-bottom-spacer { height: calc(100px + var(--safe-bottom)); flex-shrink: 0; }
+
+    /* ===================== TABS AHORA / PROGRAMADA ===================== */
+    .tipo-tabs { display: flex; gap: 6px; background: var(--crema-dark); border-radius: 20px; padding: 4px; margin-bottom: 16px; }
+    .tipo-tab { flex: 1; padding: 9px 8px; border-radius: 16px; border: none; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--subtexto); transition: all 0.2s; text-align: center; }
+    .tipo-tab.selected { background: white; color: var(--verde); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .hora-programada-wrap { overflow: hidden; max-height: 0; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease; opacity: 0; }
+    .hora-programada-wrap.visible { max-height: 120px; opacity: 1; }
+    .hora-input-row { display: flex; align-items: center; gap: 12px; }
+    .hora-input-row .form-input[type="time"] { flex: 1; font-size: 20px; font-weight: 700; text-align: center; color: var(--verde); border-color: var(--verde); letter-spacing: 1px; }
+    .hora-hint { font-size: 12px; color: var(--subtexto); margin-top: 6px; line-height: 1.4; }
+    /* En las cards: badge hora programada */
+    .hora-prog-badge { display: inline-flex; align-items: center; gap: 4px; background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -265,6 +321,7 @@
   <div id="screen-home" class="screen active">
     <div class="home-map-section" id="homeMapSection">
       <div id="nearbyMap"></div>
+      <div class="map-empty-overlay" id="mapEmptyOverlay">🕐 Mateadas anteriores en el área</div>
       <div class="nearby-pill" id="nearbyPill" style="display:none;"></div>
       <button class="gps-btn" id="gpsBtn" onclick="pedirUbicacion()" title="Mi ubicación">📍</button>
       <div class="map-placeholder" id="mapPlaceholder"><span>🗺️</span><span>Activá el GPS para ver la mateada más cercana</span></div>
@@ -304,6 +361,23 @@
             <option>🎸 Llevo un instrumento musical</option>
           </select>
         </div>
+
+        <!-- ============ NUEVO: TABS AHORA / PROGRAMADA ============ -->
+        <div class="form-group">
+          <label class="form-label">🕐 ¿Cuándo empieza?</label>
+          <div class="tipo-tabs" id="tipoTabs">
+            <button class="tipo-tab selected" onclick="seleccionarTipoMateada(this,'ahora')">🧉 Ahora</button>
+            <button class="tipo-tab" onclick="seleccionarTipoMateada(this,'programada')">📅 Programada hoy</button>
+          </div>
+          <div class="hora-programada-wrap" id="horaProgramadaWrap">
+            <div class="hora-input-row">
+              <input class="form-input" type="time" id="horaProgramada" min="00:00" max="23:59">
+            </div>
+            <div class="hora-hint">⏰ La mateada aparecerá en el listado y arrancará a esa hora hoy</div>
+          </div>
+        </div>
+        <!-- ========================================================= -->
+
         <div class="form-group">
           <label class="form-label">📍 Ubicación</label>
           <input class="form-input" id="ubicacionMateada" placeholder="Ej: Parque Las Heras, Córdoba" autocomplete="off">
@@ -390,45 +464,36 @@ let unreadCount = notificaciones.filter(n => !n.leida).length;
 let preguntasCache = {};
 let enviandoPregunta = false;
 
-// ---- MATEADAS HISTÓRICAS (simuladas para dar volumen) ----
+// Tipo de mateada: 'ahora' | 'programada'
+let tipoMateadaSeleccionado = 'ahora';
+
+// ---- MATEADAS HISTÓRICAS ----
 const NOMBRES_HIST = ['Sofía','Mateo','Valentina','Lucas','Camila','Nicolás','Martina','Tomás','Julieta','Agustín','Lucía','Franco','Florencia','Santiago','Pilar','Joaquín'];
 const TEMAS_HIST = ['📖 Filosofía','💻 Tecnología','🎨 Arte','🤝 Emprendedurismo','🌱 Sustentabilidad','🎬 Cine','📚 Literatura','🧘 Bienestar'];
 const RATINGS_HIST = [5.0, 4.9, 4.8, 4.7, 4.5, 4.3, 4.0, 3.8, 3.7, 3.5];
 
 function generarMateadasHistoricas(centerLat, centerLng, cantidad) {
   const hist = [];
-  // Semilla fija basada en ubicación para que no cambien al recargar
   const seed = Math.round(centerLat * 100 + centerLng * 100);
-  function pseudoRand(i) {
-    const x = Math.sin(seed + i * 9301 + 49297) * 233280;
-    return x - Math.floor(x);
-  }
+  function pseudoRand(i) { const x = Math.sin(seed + i * 9301 + 49297) * 233280; return x - Math.floor(x); }
   for (let i = 0; i < cantidad; i++) {
-    const r = pseudoRand(i);
     const angle = pseudoRand(i + 100) * 2 * Math.PI;
-    const dist = 0.005 + pseudoRand(i + 200) * 0.025; // 0.5 a 3km aprox
+    const dist = 0.005 + pseudoRand(i + 200) * 0.025;
     const lat = centerLat + dist * Math.cos(angle);
     const lng = centerLng + dist * Math.sin(angle);
-    const nombreIdx = Math.floor(pseudoRand(i + 300) * NOMBRES_HIST.length);
-    const temaIdx = Math.floor(pseudoRand(i + 400) * TEMAS_HIST.length);
-    const ratingIdx = Math.floor(pseudoRand(i + 500) * RATINGS_HIST.length);
-    const participantes = 3 + Math.floor(pseudoRand(i + 600) * 10);
     hist.push({
-      id: `hist_${i}`,
-      lat, lng,
-      organizador: NOMBRES_HIST[nombreIdx],
-      tema: TEMAS_HIST[temaIdx],
-      rating: RATINGS_HIST[ratingIdx],
-      participantes
+      id: `hist_${i}`, lat, lng,
+      organizador: NOMBRES_HIST[Math.floor(pseudoRand(i + 300) * NOMBRES_HIST.length)],
+      tema: TEMAS_HIST[Math.floor(pseudoRand(i + 400) * TEMAS_HIST.length)],
+      rating: RATINGS_HIST[Math.floor(pseudoRand(i + 500) * RATINGS_HIST.length)],
+      participantes: 3 + Math.floor(pseudoRand(i + 600) * 10)
     });
   }
   return hist;
 }
 
 function renderEstrellas(rating) {
-  const llenas = Math.floor(rating);
-  const media = rating - llenas >= 0.5 ? 1 : 0;
-  const vacias = 5 - llenas - media;
+  const llenas = Math.floor(rating), media = rating - llenas >= 0.5 ? 1 : 0, vacias = 5 - llenas - media;
   let html = '';
   for (let i = 0; i < llenas; i++) html += '<span style="color:#FBBF24;">★</span>';
   if (media) html += '<span style="color:#FBBF24;">½</span>';
@@ -436,40 +501,10 @@ function renderEstrellas(rating) {
   return html;
 }
 
-function agregarMarcadoresHistoricos(mapa, históricas) {
-  históricas.forEach(h => {
-    // Icono mate gris (histórico)
-    const icon = L.divIcon({
-      html: `<div style="position:relative;width:34px;height:34px;opacity:0.7;">
-        <div style="background:#9CA3AF;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.18);border:2px solid white;">🧉</div>
-      </div>`,
-      iconSize: [34, 34], iconAnchor: [17, 17], className: ''
-    });
-    const mk = L.marker([h.lat, h.lng], { icon }).addTo(mapa);
-    mk.bindPopup(`
-      <div class="hist-popup">
-        <div class="hist-popup-title">${h.tema}</div>
-        <div class="hist-popup-stars">${renderEstrellas(h.rating)} <strong style="font-size:13px;color:#2A241A;">${h.rating.toFixed(1)}</strong></div>
-        <div class="hist-popup-meta">🧑 ${h.organizador} · 👥 ${h.participantes} personas</div>
-        <div class="hist-popup-meta" style="margin-top:3px;font-style:italic;">Mateada anterior</div>
-      </div>
-    `, { closeButton: false, maxWidth: 200 });
-  });
-}
-
 // ---- UTILIDADES ----
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');
-}
-function formatFecha(iso) {
-  if (!iso) return '';
-  try { const d = new Date(iso); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; } catch(e) { return ''; }
-}
-function mostrarToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+function formatFecha(iso) { if (!iso) return ''; try { const d = new Date(iso); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; } catch(e) { return ''; } }
+function mostrarToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 function getFechaHoy() { return new Date().toISOString().slice(0, 10); }
 
 function limpiarPreguntasDuplicadas() {
@@ -478,11 +513,7 @@ function limpiarPreguntasDuplicadas() {
   const vistas = new Set();
   keys.forEach(key => {
     const match = key.match(/pregunta_detalle_(.+)_(.+)$/);
-    if (match) {
-      const uk = `${match[1]}_${usuarioActual.sub}`;
-      if (vistas.has(uk)) localStorage.removeItem(key);
-      else vistas.add(uk);
-    }
+    if (match) { const uk = `${match[1]}_${usuarioActual.sub}`; if (vistas.has(uk)) localStorage.removeItem(key); else vistas.add(uk); }
   });
 }
 
@@ -605,23 +636,83 @@ function formatTiempoRestante(ms) {
   if (m>0) return `${m}m ${sec.toString().padStart(2,'0')}s`;
   return `${sec}s`;
 }
+
+// Formatea ms hasta inicio de mateada programada
+function formatTiempoHastaInicio(ms) {
+  if (ms<=0) return 'Ahora';
+  const s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  if (h>0) return `${h}h ${m.toString().padStart(2,'0')}m`;
+  if (m>0) return `${m}m ${sec.toString().padStart(2,'0')}s`;
+  return `${sec}s`;
+}
+
 function getInicioMs(m) {
   if (m.timestamp_unix) return parseInt(m.timestamp_unix)*1000;
   if (m.timestamp_ms) return parseInt(m.timestamp_ms);
   if (m.fecha_hora) { const d=new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
   if (m.fecha && m.hora) { const d=new Date(`${m.fecha}T${m.hora}:00`); if (!isNaN(d)) return d.getTime(); }
-  if (m.hora) { const [h,min]=m.hora.split(':').map(Number); if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); } }
+  if (m.hora) {
+    const [h,min]=m.hora.split(':').map(Number);
+    if (!isNaN(h)&&!isNaN(min)) { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,min,0).getTime(); }
+  }
   return null;
 }
-function estaTerminada(m) { const i=getInicioMs(m); if (!i) return false; return Date.now()>(i+(parseInt(m.duracion_minutos)||60)*60000); }
-function getMsRestante(m) { const i=getInicioMs(m); if (!i) return null; return (i+(parseInt(m.duracion_minutos)||60)*60000)-Date.now(); }
+
+function esProgramada(m) { return !!m.programada || !!m.hora_programada; }
+function getMsHastaInicio(m) {
+  // Si tiene hora_programada, calcula ms hasta que empiece
+  if (!m.hora_programada) return 0;
+  const [h,min] = m.hora_programada.split(':').map(Number);
+  if (isNaN(h)||isNaN(min)) return 0;
+  const n = new Date();
+  const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0);
+  return inicio.getTime() - Date.now();
+}
+
+function estaTerminada(m) {
+  // Programada que todavía no empezó: nunca terminada
+  if (esProgramada(m) && getMsHastaInicio(m) > 0) return false;
+  const i=getInicioMs(m); if (!i) return false;
+  // Para programadas, el inicio real es hora_programada
+  if (m.hora_programada) {
+    const [h,min] = m.hora_programada.split(':').map(Number);
+    if (!isNaN(h)&&!isNaN(min)) {
+      const n = new Date();
+      const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
+      return Date.now() > (inicio + (parseInt(m.duracion_minutos)||60)*60000);
+    }
+  }
+  return Date.now()>(i+(parseInt(m.duracion_minutos)||60)*60000);
+}
+
+function getMsRestante(m) {
+  if (m.hora_programada) {
+    const [h,min] = m.hora_programada.split(':').map(Number);
+    if (!isNaN(h)&&!isNaN(min)) {
+      const n = new Date();
+      const inicio = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
+      if (Date.now() < inicio) return null; // no empezó aún
+      return (inicio + (parseInt(m.duracion_minutos)||60)*60000) - Date.now();
+    }
+  }
+  const i=getInicioMs(m); if (!i) return null;
+  return (i+(parseInt(m.duracion_minutos)||60)*60000)-Date.now();
+}
+
 function iniciarCountdown(m, fillId, labelId, onTerminada) {
   const durMs=(parseInt(m.duracion_minutos)||60)*60000;
   function tick() {
     const fill=document.getElementById(fillId), label=document.getElementById(labelId);
     if (!fill||!label) { clearInterval(countdownIntervals[m.id]); return; }
     const ms=getMsRestante(m);
-    if (ms===null) { fill.style.width='100%'; fill.style.background='#0F7B5E'; label.textContent=duracionTexto(parseInt(m.duracion_minutos)||60); label.style.color='#0F7B5E'; return; }
+    if (ms===null) {
+      // Mateada programada que no empezó todavía
+      fill.style.width='100%'; fill.style.background='#FBBF24';
+      const msHasta = getMsHastaInicio(m);
+      label.textContent=`Empieza en ${formatTiempoHastaInicio(msHasta)}`;
+      label.style.color='#B45309';
+      return;
+    }
     const pct=Math.max(0,Math.min(1,ms/durMs)), color=pct>0.5?'#0F7B5E':pct>0.25?'#D97706':'#DC2626';
     fill.style.width=(pct*100)+'%'; fill.style.background=color;
     if (ms<=0) { fill.style.width='0%'; label.textContent='Terminada ✓'; label.style.color='#DC2626'; clearInterval(countdownIntervals[m.id]); if(onTerminada) onTerminada(m.id); }
@@ -650,35 +741,106 @@ async function cargarMateadas() {
 }
 
 function renderizarMateadas(container) {
-  document.getElementById('contadorMateadas').textContent=mateadasActuales.length?`${mateadasActuales.length} activa${mateadasActuales.length!==1?'s':''}` : '';
-  if (mateadasActuales.length===0) { container.innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); return; }
+  const vigentes = mateadasActuales.filter(m=>!estaTerminada(m));
+  document.getElementById('contadorMateadas').textContent=vigentes.length?`${vigentes.length} activa${vigentes.length!==1?'s':''}` : '';
+
+  // Expandir/contraer mapa
+  const mapSection = document.getElementById('homeMapSection');
+  if (vigentes.length === 0) {
+    mapSection.classList.add('expanded');
+  } else {
+    mapSection.classList.remove('expanded');
+  }
+  setTimeout(()=>mapaNearby?.invalidateSize(), 520);
+
+  if (vigentes.length===0) {
+    container.innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+    actualizarMapaCercano(); return;
+  }
   container.innerHTML='';
-  mateadasActuales.forEach((m,i) => {
+
+  // Separar activas ya iniciadas y programadas (no iniciadas aún)
+  const iniciadas = vigentes.filter(m => !esProgramada(m) || getMsHastaInicio(m) <= 0);
+  const programadas = vigentes.filter(m => esProgramada(m) && getMsHastaInicio(m) > 0);
+
+  // Ordenar programadas por hora
+  programadas.sort((a,b) => getMsHastaInicio(a) - getMsHastaInicio(b));
+
+  const renderCard = (m, i, offset=0) => {
     const libres=parseInt(m.lugares_libres)||0, totalLugares=parseInt(m.lugares_totales)||0, ocupados=totalLugares-libres;
-    const durMins=parseInt(m.duracion_minutos)||60, fillId=`fill-${m.id}`, labelId=`label-${m.id}`, esMia=usuarioActual&&esOrganizadorDe(m);
-    const card=document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${i*60}ms`; card.onclick=()=>verDetalle(m);
+    const durMins=parseInt(m.duracion_minutos)||60, fillId=`fill-${m.id}`, labelId=`label-${m.id}`;
+    const card=document.createElement('div'); card.className='card'; card.id=`card-${m.id}`; card.style.animationDelay=`${(i+offset)*60}ms`; card.onclick=()=>verDetalle(m);
     const participantesClass=libres===0?'participantes-badge lleno':'participantes-badge';
+    const esProg = esProgramada(m) && getMsHastaInicio(m) > 0;
+    const horaBadge = esProg ? `<span class="hora-prog-badge">📅 ${m.hora_programada}</span>` : '';
+    const countdownExtra = esProg
+      ? `<div class="countdown-programada" id="cdprog-${m.id}">⏳ Empieza en ${formatTiempoHastaInicio(getMsHastaInicio(m))}</div>`
+      : '';
     card.innerHTML=`
-      <div class="card-title">${escapeHtml(m.titulo)}</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;">
+        <div class="card-title" style="margin-bottom:0;">${escapeHtml(m.titulo)}</div>
+        ${horaBadge}
+      </div>
       <div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${m.hora||'Ahora'}</span></div>
       <div class="card-footer">
         <span class="${participantesClass}">👥 ${ocupados} de ${totalLugares}</span>
         <span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span>
       </div>
       <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a>
+      ${countdownExtra}
       <div class="countdown-wrap">
         <div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div>
         <div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div>
       </div>`;
     container.appendChild(card);
-    setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada),50);
-  });
+    setTimeout(()=>iniciarCountdown(m,fillId,labelId,mateadaTerminada), 50);
+
+    // Actualizar badge "empieza en" cada segundo para programadas
+    if (esProg) {
+      const itv = setInterval(()=>{
+        const el = document.getElementById(`cdprog-${m.id}`);
+        if (!el) { clearInterval(itv); return; }
+        const ms = getMsHastaInicio(m);
+        if (ms <= 0) { el.innerHTML='🟢 ¡Ya empezó!'; el.style.background='var(--verde-light)'; el.style.color='var(--verde)'; clearInterval(itv); }
+        else el.innerHTML=`⏳ Empieza en ${formatTiempoHastaInicio(ms)}`;
+      }, 1000);
+    }
+  };
+
+  iniciadas.forEach((m,i) => renderCard(m,i,0));
+
+  if (programadas.length > 0) {
+    const lbl = document.createElement('div');
+    lbl.className='section-label';
+    lbl.style.paddingTop = iniciadas.length > 0 ? '10px' : '0';
+    lbl.innerHTML=`<span>📅 Programadas hoy</span><span style="font-size:12px;font-weight:400;color:var(--subtexto);">${programadas.length} próxima${programadas.length!==1?'s':''}</span>`;
+    container.appendChild(lbl);
+    programadas.forEach((m,i) => renderCard(m,i,iniciadas.length));
+  }
+
   actualizarMapaCercano();
 }
 
 function recargar() { const btn=document.getElementById('refreshBtn'); btn.classList.add('spinning'); setTimeout(()=>btn.classList.remove('spinning'),600); cargarMateadas(); }
 function seleccionarMate(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
 function seleccionarDuracion(btn, mins) { document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada=mins; }
+
+// ---- TABS AHORA / PROGRAMADA ----
+function seleccionarTipoMateada(btn, tipo) {
+  document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  tipoMateadaSeleccionado = tipo;
+  const wrap = document.getElementById('horaProgramadaWrap');
+  if (tipo === 'programada') {
+    wrap.classList.add('visible');
+    // Pre-llenar con hora actual + 30 min
+    const ahora = new Date(Date.now() + 30*60000);
+    document.getElementById('horaProgramada').value =
+      `${ahora.getHours().toString().padStart(2,'0')}:${ahora.getMinutes().toString().padStart(2,'0')}`;
+  } else {
+    wrap.classList.remove('visible');
+  }
+}
 
 async function geocodificarUbicacion(direccion) {
   try {
@@ -717,20 +879,53 @@ async function crearMateada() {
   const cupo=parseInt(document.getElementById('cupoMateada').value);
   const mateOption=document.querySelector('.option-btn.selected');
   const tipoMate=mateOption?mateOption.innerText:'Dulce';
-  const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+
+  // Hora: si es programada, usar la seleccionada; si no, hora actual
+  let hora, horaProgramadaVal='', esProg=false;
+  if (tipoMateadaSeleccionado === 'programada') {
+    horaProgramadaVal = document.getElementById('horaProgramada').value;
+    if (!horaProgramadaVal) { mostrarToast('⏰ Elegí la hora de inicio'); return; }
+    // Validar que no sea en el pasado
+    const [h,min] = horaProgramadaVal.split(':').map(Number);
+    const ahora = new Date();
+    const horaElegida = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), h, min, 0);
+    if (horaElegida <= ahora) { mostrarToast('⏰ La hora tiene que ser en el futuro'); return; }
+    hora = horaProgramadaVal;
+    esProg = true;
+  } else {
+    hora = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  }
+
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
   if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
   if (!puedeCrear(usuarioActual.email)) { mostrarToast('⏳ Límite: solo 1 mateada por día'); return; }
+
   const btn=document.getElementById('btnPublicar'); btn.classList.add('loading'); btn.innerText='Buscando ubicación...';
   let latitud=userLat||-34.5842, longitud=userLng||-58.4073;
   if (ubicacionSeleccionadaMapa) { latitud=ubicacionSeleccionadaMapa.lat; longitud=ubicacionSeleccionadaMapa.lng; }
   else { const coord=await geocodificarUbicacion(ubicacion); if (coord) { latitud=coord.lat; longitud=coord.lng; } }
   btn.innerText='Publicando...';
   try {
-    const params=new URLSearchParams({accion:'crearMateada',titulo,ubicacion,latitud,longitud,lugares_totales:cupo,organizador,organizador_sub:usuarioActual.sub,organizador_email:usuarioActual.email,organizador_avatar:usuarioActual.avatar||organizador.charAt(0).toUpperCase(),descripcion:`Mateada de ${titulo} · Mate ${tipoMate}`,duracion_minutos:duracionSeleccionada,duracion:duracionTexto(duracionSeleccionada),hora,dispositivo:JSON.stringify(dispositivoInfo)});
+    const params=new URLSearchParams({
+      accion:'crearMateada',titulo,ubicacion,latitud,longitud,
+      lugares_totales:cupo,organizador,
+      organizador_sub:usuarioActual.sub,
+      organizador_email:usuarioActual.email,
+      organizador_avatar:usuarioActual.avatar||organizador.charAt(0).toUpperCase(),
+      descripcion:`Mateada de ${titulo} · Mate ${tipoMate}`,
+      duracion_minutos:duracionSeleccionada,
+      duracion:duracionTexto(duracionSeleccionada),
+      hora,
+      programada: esProg ? '1' : '',
+      hora_programada: horaProgramadaVal,
+      dispositivo:JSON.stringify(dispositivoInfo)
+    });
     const r=await fetch(`${SCRIPT_URL}?${params}`); const resultado=await r.json();
-    if (resultado.success) { registrarCreacion(usuarioActual.email); mostrarToast('✅ ¡Mateada publicada!'); irInicio(); }
-    else { mostrarToast('❌ '+(resultado.error||'No se pudo publicar')); }
+    if (resultado.success) {
+      registrarCreacion(usuarioActual.email);
+      mostrarToast(esProg ? `✅ ¡Mateada programada para las ${horaProgramadaVal}!` : '✅ ¡Mateada publicada!');
+      irInicio();
+    } else { mostrarToast('❌ '+(resultado.error||'No se pudo publicar')); }
   } catch(e) { mostrarToast('❌ Error de conexión'); }
   finally { btn.classList.remove('loading'); btn.innerText='🌿 Publicar mateada'; }
 }
@@ -828,13 +1023,33 @@ async function verDetalle(mateada) {
   const libres=parseInt(mateada.lugares_libres)||0, totalLugares=parseInt(mateada.lugares_totales)||0, ocupados=totalLugares-libres;
   const durMins=parseInt(mateada.duracion_minutos)||60, fillId=`detail-fill-${mateada.id}`, labelId=`detail-label-${mateada.id}`;
   const esOrg=esOrganizadorDe(mateada), yaUnido=usuarioActual&&!esOrg&&yaSeUnio(mateada.id,usuarioActual.email);
+  const esProg = esProgramada(mateada) && getMsHastaInicio(mateada) > 0;
+
   let accionBtn='';
   if (esOrg) accionBtn=`<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div>`;
   else if (yaUnido) accionBtn=`<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`;
   else if (libres===0) accionBtn=`<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
   else accionBtn=`<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
-  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div><div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ Empezó: ${mateada.hora||'Ahora'}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
+
+  const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Mateada programada para las ${mateada.hora_programada}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
+
+  container.innerHTML=`<div class="detail-header"><div class="detail-title">${escapeHtml(mateada.titulo)}</div><span class="badge ${libres===0?'lleno':esOrg?'tuya':yaUnido?'':''}">${libres===0?'🔴 Sin lugares':esOrg?'🌟 Tu mateada':yaUnido?'✅ Ya anotado':`🎟️ ${libres} lugar${libres!==1?'es':''} libre`}</span></div>${progBanner}<div class="detail-countdown"><div class="detail-countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span class="tiempo-restante" id="${labelId}">—</span></div><div class="bar-track"><div class="bar-fill" id="${fillId}"></div></div></div><div class="map" id="detailMap"></div><div style="background:white;border-radius:20px;padding:16px;border:1px solid var(--borde);margin-bottom:12px;"><div class="detail-row">📍 <strong>${escapeHtml(mateada.ubicacion)}</strong><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mateada.ubicacion)}" target="_blank" class="maps-link" style="margin-top:0;margin-left:4px;">🗺️ Maps</a></div><div class="detail-row">📋 ${escapeHtml(mateada.descripcion||'Compartir mates y buenas charlas')}</div><div class="detail-row">👥 <strong>${ocupados} de ${totalLugares}</strong> participantes</div><div class="detail-row">🧑 Anfitrión: <strong>${escapeHtml(mateada.organizador)}</strong></div><div class="detail-row">⏰ ${esProg?'Programada para: <strong>'+mateada.hora_programada+'</strong>':'Empezó: '+mateada.hora}</div></div><div id="chatContainer"></div>${accionBtn}<button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver al inicio</button><div class="screen-bottom-spacer"></div>`;
+
   setNavTitle(mateada.titulo); mostrarScreen('screen-detail');
+
+  // Countdown "empieza en" para programadas en detalle
+  if (esProg) {
+    const itv = setInterval(()=>{
+      const el = document.getElementById('detailProgCountdown');
+      if (!el) { clearInterval(itv); return; }
+      const ms = getMsHastaInicio(mateada);
+      if (ms <= 0) { el.textContent='🟢 ¡Ya empezó!'; clearInterval(itv); }
+      else el.textContent=`Empieza en ${formatTiempoHastaInicio(ms)}`;
+    }, 1000);
+    const el = document.getElementById('detailProgCountdown');
+    if (el) el.textContent=`Empieza en ${formatTiempoHastaInicio(getMsHastaInicio(mateada))}`;
+  }
+
   setTimeout(()=>{
     iniciarCountdown(mateada,fillId,labelId,(id)=>{ const l=document.getElementById(labelId); if(l){l.textContent='⏰ Terminada';l.style.color='#DC2626';} });
     const mapEl=document.getElementById('detailMap');
@@ -846,7 +1061,17 @@ async function verDetalle(mateada) {
 function mateadaTerminada(id) {
   const card=document.getElementById(`card-${id}`); if (!card) return;
   card.classList.add('expiring');
-  setTimeout(()=>{ card.remove(); mateadasActuales=mateadasActuales.filter(m=>m.id!=id); if (mateadasActuales.filter(m=>!estaTerminada(m)).length===0) document.getElementById('homeContent').innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>'; actualizarMapaCercano(); },700);
+  setTimeout(()=>{
+    card.remove();
+    mateadasActuales=mateadasActuales.filter(m=>m.id!=id);
+    const vigentes = mateadasActuales.filter(m=>!estaTerminada(m));
+    if (vigentes.length===0) {
+      document.getElementById('homeContent').innerHTML='<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+      document.getElementById('homeMapSection').classList.add('expanded');
+      setTimeout(()=>mapaNearby?.invalidateSize(), 520);
+    }
+    actualizarMapaCercano();
+  },700);
 }
 
 // ---- MAPA CERCANO (con históricos) ----
@@ -862,48 +1087,30 @@ function pedirUbicacion() {
 function actualizarMapaCercano() {
   const ph=document.getElementById('mapPlaceholder'),pill=document.getElementById('nearbyPill');
   const vigentes=mateadasActuales.filter(m=>!estaTerminada(m)&&m.latitud&&m.longitud);
-  
-  // Centro predeterminado (Buenos Aires) si no hay GPS
   const centerLat = userLat || -34.6037;
   const centerLng = userLng || -58.3816;
-  
-  // Siempre inicializar el mapa (para mostrar históricos aunque no haya vigentes)
   ph.style.display='none';
-  
   if (!mapaNearby) {
     mapaNearby=L.map('nearbyMap',{zoomControl:false,attributionControl:false}).setView([centerLat,centerLng],14);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
   } else {
-    nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk));
-    nearbyMarkers=[];
+    nearbyMarkers.forEach(mk=>mapaNearby.removeLayer(mk)); nearbyMarkers=[];
   }
-
-  // Limpiar capas de históricos previas
   if (mapaNearby._histLayer) { mapaNearby.removeLayer(mapaNearby._histLayer); }
-  
-  // Agregar mateadas históricas (12 aleatorias alrededor del centro)
   const historicas = generarMateadasHistoricas(centerLat, centerLng, 12);
   const histGroup = L.layerGroup();
   historicas.forEach(h => {
-    const icon = L.divIcon({
-      html: `<div style="background:#B0B8C1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.15);border:2px solid white;filter:grayscale(0.3);">🧉</div>`,
-      iconSize:[30,30], iconAnchor:[15,15], className:''
-    });
+    const icon = L.divIcon({ html:`<div style="background:#B0B8C1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.15);border:2px solid white;filter:grayscale(0.3);">🧉</div>`, iconSize:[30,30], iconAnchor:[15,15], className:'' });
     const mk = L.marker([h.lat, h.lng], { icon }).addTo(histGroup);
     mk.bindPopup(`<div class="hist-popup"><div class="hist-popup-title">${h.tema}</div><div class="hist-popup-stars">${renderEstrellas(h.rating)} <strong style="font-size:13px;color:#2A241A;">${h.rating.toFixed(1)}</strong></div><div class="hist-popup-meta">🧑 ${h.organizador} · 👥 ${h.participantes} personas</div><div class="hist-popup-meta" style="margin-top:3px;color:#9CA3AF;font-style:italic;">Mateada finalizada</div></div>`, { closeButton: false, maxWidth: 200 });
   });
   histGroup.addTo(mapaNearby);
   mapaNearby._histLayer = histGroup;
-
   const bounds=[];
-  
-  // Marcador usuario
   if (userLat&&userLng) {
     const mkU=L.marker([userLat,userLng],{icon:L.divIcon({html:`<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`,iconSize:[14,14],iconAnchor:[7,7],className:''})}).addTo(mapaNearby);
     nearbyMarkers.push(mkU); bounds.push([userLat,userLng]);
   }
-
-  // Mateadas activas (iconos verdes grandes)
   let ordenadas=(userLat&&userLng)?[...vigentes].sort((a,b)=>haversineKm(userLat,userLng,a.latitud,a.longitud)-haversineKm(userLat,userLng,b.latitud,b.longitud)):vigentes;
   ordenadas.forEach((m,i)=>{
     const esCercana=(i===0),sz=esCercana?38:26,emojiSz=esCercana?'18px':'13px';
@@ -911,13 +1118,10 @@ function actualizarMapaCercano() {
     const mk=L.marker([m.latitud,m.longitud],{icon}).addTo(mapaNearby);
     mk.on('click',()=>verDetalle(m)); nearbyMarkers.push(mk); bounds.push([m.latitud,m.longitud]);
   });
-
   if (vigentes.length===0 && !userLat) {
-    pill.style.display='none';
-    mapaNearby.setView([centerLat,centerLng],13);
+    pill.style.display='none'; mapaNearby.setView([centerLat,centerLng],13);
   } else if (vigentes.length===0) {
-    pill.style.display='block';
-    pill.textContent='🕐 No hay mateadas activas ahora — mateadas anteriores en el mapa';
+    pill.style.display='block'; pill.textContent='🕐 No hay mateadas activas ahora — mateadas anteriores en el mapa';
     mapaNearby.setView([centerLat,centerLng],14);
   } else {
     const cercana=ordenadas[0];
@@ -926,7 +1130,6 @@ function actualizarMapaCercano() {
     if (bounds.length===1) mapaNearby.setView(bounds[0],15);
     else if (bounds.length>1) mapaNearby.fitBounds(bounds,{padding:[24,24],maxZoom:14});
   }
-
   setTimeout(()=>mapaNearby?.invalidateSize(),220);
 }
 
@@ -934,10 +1137,27 @@ function actualizarMapaCercano() {
 function volverADetalle(){verDetalle(mateadaSeleccionada);}
 function irInicio(){mostrarScreen('screen-home');document.getElementById('navBar').classList.remove('visible');document.getElementById('mainHeader').style.display='';cargarMateadas();setTimeout(()=>{if(mapaNearby){mapaNearby.invalidateSize();actualizarMapaCercano();}},500);}
 function irACrear() {
+  // Reset tipo tabs al abrir
+  tipoMateadaSeleccionado = 'ahora';
+  document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach((b,i)=>b.classList.toggle('selected',i===0));
+  document.getElementById('horaProgramadaWrap').classList.remove('visible');
+
   const campoNombre=document.getElementById('nombreOrganizador');
-  if (!usuarioActual) { document.getElementById('createLoginGate').style.display='block'; document.getElementById('createLoginGate').innerHTML=`<div style="background:var(--azul-claro);border:1px solid #BFDBFE;border-radius:14px;padding:14px;font-size:14px;color:#1D4ED8;margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">🔑</div><strong>Necesitás iniciar sesión</strong><br><span style="font-size:13px;">Para publicar una mateada necesitás una cuenta Google.</span><br><button class="btn" style="max-width:220px;margin-top:12px;" onclick="iniciarSesionGoogle()">Entrar con Google</button></div>`; document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;'; if (campoNombre) campoNombre.readOnly=false; }
-  else if (!puedeCrear(usuarioActual.email)) { document.getElementById('createLoginGate').style.display='block'; document.getElementById('createLoginGate').innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 1 mateada hoy. Volvé mañana.</span></div>`; document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;'; }
-  else { document.getElementById('createLoginGate').style.display='none'; document.getElementById('createForm').style.cssText=''; if (campoNombre) { campoNombre.value=usuarioActual.nombre.split(' ')[0]; campoNombre.readOnly=true; } const help=document.getElementById('nombreHelp'); if(help) help.style.display='block'; }
+  if (!usuarioActual) {
+    document.getElementById('createLoginGate').style.display='block';
+    document.getElementById('createLoginGate').innerHTML=`<div style="background:var(--azul-claro);border:1px solid #BFDBFE;border-radius:14px;padding:14px;font-size:14px;color:#1D4ED8;margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">🔑</div><strong>Necesitás iniciar sesión</strong><br><span style="font-size:13px;">Para publicar una mateada necesitás una cuenta Google.</span><br><button class="btn" style="max-width:220px;margin-top:12px;" onclick="iniciarSesionGoogle()">Entrar con Google</button></div>`;
+    document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
+    if (campoNombre) campoNombre.readOnly=false;
+  } else if (!puedeCrear(usuarioActual.email)) {
+    document.getElementById('createLoginGate').style.display='block';
+    document.getElementById('createLoginGate').innerHTML=`<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px;font-size:14px;color:var(--rojo);margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><strong>Límite diario alcanzado</strong><br><span style="font-size:13px;">Ya creaste 1 mateada hoy. Volvé mañana.</span></div>`;
+    document.getElementById('createForm').style.cssText='opacity:0.4;pointer-events:none;user-select:none;';
+  } else {
+    document.getElementById('createLoginGate').style.display='none';
+    document.getElementById('createForm').style.cssText='';
+    if (campoNombre) { campoNombre.value=usuarioActual.nombre.split(' ')[0]; campoNombre.readOnly=true; }
+    const help=document.getElementById('nombreHelp'); if(help) help.style.display='block';
+  }
   setNavTitle('Nueva mateada'); mostrarScreen('screen-create');
 }
 function goBack(){if(document.getElementById('screen-join').classList.contains('active'))verDetalle(mateadaSeleccionada);else irInicio();}
@@ -965,7 +1185,6 @@ window.addEventListener('resize',ajustarSpacer);
 window.onload=function(){
   if (window.google?.accounts) google.accounts.id.initialize({client_id:'171913559980-sagqbpfmm7r7m5rt3tolkaoej08ngn8j.apps.googleusercontent.com',callback:handleCredentialResponse,auto_select:false,cancel_on_tap_outside:true});
   actualizarInterfazUsuario(); ajustarSpacer(); cargarMateadas();
-  // Inicializar mapa con históricos aunque no haya GPS
   actualizarMapaCercano();
   if (navigator.geolocation) navigator.geolocation.getCurrentPosition((p)=>{userLat=p.coords.latitude;userLng=p.coords.longitude;document.getElementById('gpsBtn').textContent='✅';actualizarMapaCercano();},()=>{},{timeout:5000});
   actualizarEstadoRed(); actualizarBellBadge();
@@ -989,4 +1208,3 @@ document.getElementById('installDismiss')?.addEventListener('click',()=>{documen
 </script>
 </body>
 </html>
-
