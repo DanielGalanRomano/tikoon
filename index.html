@@ -172,28 +172,6 @@
     .section-label { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--texto); padding: 14px 20px 8px; display: flex; justify-content: space-between; align-items: center; }
     .card { background: white; border-radius: 20px; padding: 16px; margin: 0 20px 10px; cursor: pointer; border: 1px solid var(--borde); transition: transform 0.15s, box-shadow 0.15s; animation: fadeUp 0.3s ease both; }
     .card:active { transform: scale(0.98); }
-    .mateadas-carousel{
-  display:flex;
-  overflow-x:auto;
-  gap:12px;
-  padding:0 16px 10px;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-}
-
-.mateadas-carousel::-webkit-scrollbar{
-  display:none;
-}
-
-.mateada-slide{
-  flex:0 0 calc(100% - 32px);
-  scroll-snap-align:center;
-}
-
-.mateada-slide .card{
-  margin:0;
-}
     .card.expiring { animation: fadeOut 0.6s ease forwards; pointer-events: none; }
     @keyframes fadeOut { 0% { opacity: 1; transform: scale(1); max-height: 200px; margin-bottom: 10px; } 60% { opacity: 0; transform: scale(0.95); } 100% { opacity: 0; max-height: 0; margin-bottom: 0; padding: 0; border-width: 0; } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -1172,12 +1150,7 @@ function actualizarMapaCercano() {
     pill.style.display = 'block';
     pill.textContent = `📍 ${cercana.titulo}${dist}`;
     if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
-    else if (ordenadas.length > 0) {
-  mapaNearby.setView(
-    [ordenadas[0].latitud, ordenadas[0].longitud],
-    16
-  );
-}
+    else if (bounds.length > 1) mapaNearby.fitBounds(bounds, { padding:[24,24], maxZoom:14 });
   }
 
   setTimeout(() => mapaNearby?.invalidateSize(), 220);
@@ -1230,14 +1203,9 @@ function renderizarMateadas(container) {
     container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
     actualizarMapaCercano();
     return;
-    
   }
 
-  container.innerHTML = `
-<div id="mateadasCarousel" class="mateadas-carousel"></div>
-`;
-
-const carousel = document.getElementById('mateadasCarousel');
+  container.innerHTML = '';
   const iniciadas = vigentes.filter(m => !esProgramada(m) || getMsHastaInicio(m) <= 0);
   const programadas = vigentes.filter(m => esProgramada(m) && getMsHastaInicio(m) > 0).sort((a,b) => getMsHastaInicio(a) - getMsHastaInicio(b));
 
@@ -1267,14 +1235,7 @@ const carousel = document.getElementById('mateadasCarousel');
         <div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div>
         <div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div>
       </div>`;
-    const slide = document.createElement('div');
-slide.className = 'mateada-slide';
-
-slide.appendChild(card);
-
-carousel.appendChild(slide);
-
-window.mateadasCarouselData.push(m);
+    container.appendChild(card);
     setTimeout(() => iniciarCountdown(m, fillId, labelId, mateadaTerminada), 50);
     if (esProg) {
       const itv = setInterval(() => {
@@ -1769,53 +1730,6 @@ document.getElementById('installBtnBanner')?.addEventListener('click', async () 
 document.getElementById('installDismiss')?.addEventListener('click', () => {
   document.getElementById('installBanner').classList.remove('visible'); sessionStorage.setItem('installDismissed', '1');
 });
-
-
-
-const carousel = document.getElementById('mateadasCarousel');
-
-window.mateadasCarouselData = [];
-  setTimeout(() => {
-
-  if (!carousel) return;
-
-  carousel.addEventListener('scroll', () => {
-
-    clearTimeout(carousel._scrollTimer);
-
-    carousel._scrollTimer = setTimeout(() => {
-
-      const slideWidth =
-        carousel.firstElementChild.offsetWidth + 12;
-
-      const index = Math.round(
-        carousel.scrollLeft / slideWidth
-      );
-
-      const mateada =
-        window.mateadasCarouselData[index];
-
-      if (!mateada || !mapaNearby) return;
-
-      mapaNearby.setView(
-        [mateada.latitud, mateada.longitud],
-        16,
-        { animate:true }
-      );
-
-      const pill =
-        document.getElementById('nearbyPill');
-
-      if (pill) {
-        pill.style.display = 'block';
-        pill.textContent = `📍 ${mateada.titulo}`;
-      }
-
-    }, 80);
-
-  }, { passive:true });
-
-}, 200);
 </script>
 </body>
 </html>
