@@ -35,9 +35,11 @@
       --header-bg: #F2F2F7;
       --dorado: #D97706;
       --dorado-light: #FEF3C7;
+      --violeta: #7C3AED;
+      --violeta-light: #EDE9FE;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --map-height: 30dvh;
+      --map-height: 42dvh;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { background: var(--crema-dark); font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; min-height: 100dvh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; overscroll-behavior: none; }
@@ -47,7 +49,7 @@
       .sticky-top { width: 100vw; border-radius: 0; }
       body { padding: 0; align-items: flex-start; }
       .app { border-radius: 0; max-width: 100%; min-height: 100vh; min-height: 100dvh; }
-      .fab { bottom: calc(20px + var(--safe-bottom)); right: 16px; }
+      .fab-wrap { bottom: calc(16px + var(--safe-bottom)) !important; right: 12px !important; }
     }
     .header { padding: calc(14px + var(--safe-top)) 16px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .logo-wrap { text-align: center; flex: 1; min-width: 0; }
@@ -90,18 +92,9 @@
     .sheet-menu-item { display: flex; align-items: center; gap: 12px; padding: 13px 0; cursor: pointer; font-size: 15px; color: var(--texto); }
     .sheet-logout { color: var(--rojo); }
 
-    /* ===== CONTENT ===== */
-    .content { padding: 16px 20px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
-    .screen { display: none; flex-direction: column; flex: 1; }
-    .screen.active { display: flex; }
-
     /* ===== MAP ===== */
-    .home-map-section { position: relative; height: var(--map-height); min-height: 180px; max-height: 260px; background: var(--crema-dark); overflow: hidden; flex-shrink: 0; transition: height 0.5s cubic-bezier(0.4,0,0.2,1), max-height 0.5s cubic-bezier(0.4,0,0.2,1), min-height 0.5s cubic-bezier(0.4,0,0.2,1); }
-    .home-map-section.expanded { height: 58dvh; min-height: 320px; max-height: 520px; }
-    .map-empty-overlay { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border: 1px solid var(--borde); border-radius: 20px; padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--subtexto); white-space: nowrap; z-index: 12; pointer-events: none; opacity: 0; transition: opacity 0.4s ease 0.3s; }
-    .home-map-section.expanded .map-empty-overlay { opacity: 1; }
+    .home-map-section { position: relative; height: var(--map-height); min-height: 200px; max-height: 340px; background: var(--crema-dark); overflow: hidden; flex-shrink: 0; transition: height 0.5s cubic-bezier(0.4,0,0.2,1); }
     #nearbyMap { width: 100%; height: 100%; }
-    .nearby-pill { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(15,123,94,0.92); backdrop-filter: blur(8px); color: white; padding: 8px 18px; border-radius: 40px; font-size: 13px; font-weight: 600; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 10; pointer-events: none; }
     .gps-btn { position: absolute; top: 10px; right: 10px; background: white; border: none; width: 36px; height: 36px; border-radius: 18px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10; }
     .map-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--subtexto); gap: 8px; font-size: 14px; }
     .leaflet-div-icon { background: none !important; border: none !important; }
@@ -115,69 +108,73 @@
     .hist-popup-meta { font-size: 11px; color: var(--subtexto); }
     .leaflet-popup-tip-container { display: none; }
 
-    /* ===== CAFÉ POPUP ===== */
-    .cafe-popup { min-width: 200px; max-width: 240px; }
-    .cafe-popup-img { width: 100%; height: 100px; object-fit: cover; background: var(--crema-dark); display: flex; align-items: center; justify-content: center; font-size: 32px; }
-    .cafe-popup-img img { width: 100%; height: 100%; object-fit: cover; }
-    .cafe-popup-body { padding: 10px 12px 12px; }
-    .cafe-popup-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 14px; color: var(--texto); margin-bottom: 3px; line-height: 1.3; }
-    .cafe-popup-stars { font-size: 12px; color: var(--dorado); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
-    .cafe-popup-stars span { color: var(--subtexto); font-size: 11px; }
-    .cafe-popup-addr { font-size: 11px; color: var(--subtexto); margin-bottom: 8px; line-height: 1.3; }
-    .cafe-popup-cta { width: 100%; padding: 8px; background: var(--dorado); color: white; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
-    .cafe-popup-cta:active { background: #B45309; }
-    .cafe-popup-cta.logged { background: var(--verde); }
+    /* ===== CAROUSEL de MATEADAS ===== */
+    .mateadas-carousel-wrap { padding: 0 0 4px; position: relative; }
+    .mateadas-section-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; }
+    .mateadas-section-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--texto); }
+    .mateadas-count-badge { background: var(--verde-light); color: var(--verde); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .carousel-dots { display: flex; gap: 5px; align-items: center; }
+    .carousel-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--crema-dark); transition: all 0.25s; }
+    .carousel-dot.active { width: 18px; background: var(--verde); }
+    .mateadas-carousel { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 14px; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
+    .mateadas-carousel::-webkit-scrollbar { display: none; }
+    .mateada-slide { flex-shrink: 0; width: calc(100vw - 64px); max-width: 380px; background: white; border-radius: 22px; border: 1.5px solid var(--borde); padding: 16px; cursor: pointer; scroll-snap-align: start; transition: transform 0.2s, box-shadow 0.2s; animation: fadeUp 0.35s ease both; }
+    .mateada-slide:active { transform: scale(0.98); }
+    .mateada-slide.active-slide { border-color: var(--verde); box-shadow: 0 4px 20px rgba(15,123,94,0.18); }
+    .mateada-slide-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 6px; line-height: 1.3; }
+    .mateada-slide-info { display: flex; gap: 10px; font-size: 12px; color: var(--subtexto); margin-bottom: 8px; flex-wrap: wrap; }
+    .mateada-slide-footer { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .mateada-slide-countdown { margin-top: 6px; }
+    .mateada-slide-bar-track { height: 5px; background: var(--crema-dark); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .mateada-slide-bar-fill { height: 100%; border-radius: 3px; transition: width 1s linear; }
+    .slide-hora-prog { display: inline-flex; align-items: center; gap: 4px; background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .empty-carousel-card { flex-shrink: 0; width: calc(100vw - 64px); max-width: 380px; background: white; border-radius: 22px; border: 1.5px dashed var(--borde); padding: 28px 20px; text-align: center; color: var(--subtexto); }
+    .empty-carousel-card .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-carousel-card p { font-size: 14px; line-height: 1.5; }
 
-    /* ===== CUPON SHEET ===== */
-    .cupon-sheet { background: var(--crema); border-radius: 24px 24px 0 0; padding: 0 0 calc(24px + var(--safe-bottom)); width: 100%; max-width: 480px; overflow: hidden; }
-    .cupon-header { background: linear-gradient(135deg, #D97706, #B45309); padding: 24px 20px 20px; color: white; text-align: center; }
-    .cupon-header-emoji { font-size: 40px; margin-bottom: 6px; }
-    .cupon-header h3 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; margin-bottom: 4px; }
-    .cupon-header p { font-size: 13px; opacity: 0.9; }
-    .cupon-body { padding: 20px; }
-    .cupon-place-name { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--texto); margin-bottom: 4px; }
-    .cupon-place-addr { font-size: 13px; color: var(--subtexto); margin-bottom: 16px; }
-    .cupon-code-wrap { background: var(--dorado-light); border: 2px dashed var(--dorado); border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 16px; }
-    .cupon-code-label { font-size: 11px; font-weight: 600; color: var(--dorado); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-    .cupon-code { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--texto); letter-spacing: 4px; margin-bottom: 6px; }
-    .cupon-desc { font-size: 12px; color: var(--subtexto); line-height: 1.4; }
-    .cupon-validity { font-size: 11px; color: var(--subtexto); text-align: center; margin-bottom: 16px; background: var(--crema-dark); border-radius: 10px; padding: 8px; }
-    .cupon-copy-btn { width: 100%; padding: 14px; background: var(--dorado); color: white; border: none; border-radius: 60px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 8px; }
-    .cupon-close-btn { width: 100%; padding: 14px; background: white; border: 1.5px solid var(--borde); color: var(--texto); border-radius: 60px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-    .cupon-login-prompt { text-align: center; padding: 20px; }
-    .cupon-login-prompt p { font-size: 14px; color: var(--subtexto); margin-bottom: 16px; line-height: 1.5; }
-    .cupon-login-prompt strong { display: block; font-family: 'Fraunces', serif; font-size: 18px; color: var(--texto); margin-bottom: 8px; }
+    /* ===== LISTA DE ESPERA ===== */
+    .waitlist-section { padding: 4px 20px 16px; }
+    .waitlist-section-header { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; color: var(--texto); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .waitlist-cards { display: flex; flex-direction: column; gap: 10px; }
+    .waitlist-card { background: white; border-radius: 18px; border: 1.5px solid var(--borde); padding: 13px 14px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
+    .waitlist-card.invited { border-color: var(--verde); background: linear-gradient(135deg, #f0fdf8 0%, white 60%); }
+    .waitlist-card-avatar { width: 46px; height: 46px; border-radius: 23px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--crema-dark); }
+    .waitlist-card-avatar-placeholder { width: 46px; height: 46px; border-radius: 23px; background: var(--violeta); color: white; font-weight: 700; font-size: 17px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .waitlist-card-info { flex: 1; min-width: 0; }
+    .waitlist-card-name { font-weight: 700; font-size: 14px; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
+    .waitlist-card-meta { font-size: 11px; color: var(--subtexto); margin-bottom: 6px; }
+    .waitlist-card-invited-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--verde-light); color: var(--verde); font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; margin-bottom: 6px; }
+    .waitlist-bar-track { height: 4px; background: var(--crema-dark); border-radius: 2px; overflow: hidden; }
+    .waitlist-bar-fill { height: 100%; border-radius: 2px; background: var(--violeta); transition: width 60s linear; }
+    .waitlist-bar-fill.urgent { background: var(--rojo); }
+    .waitlist-time-label { font-size: 10px; color: var(--subtexto); margin-top: 3px; }
+    .waitlist-gps-badge { position: absolute; top: 10px; right: 12px; font-size: 10px; color: var(--subtexto); background: var(--crema-dark); padding: 2px 7px; border-radius: 10px; }
 
-    /* ===== CAFÉ SECTION EN HOME ===== */
-    .cafe-section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 8px; }
-    .cafe-section-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--texto); display: flex; align-items: center; gap: 6px; }
-    .cafe-section-sub { font-size: 11px; color: var(--subtexto); }
-    .cafe-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 4px 20px 12px; scrollbar-width: none; -ms-overflow-style: none; }
+    /* ===== CAFETERÍAS (solo pronto) ===== */
+    .cafe-section-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 10px; }
+    .cafe-section-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; color: var(--texto); display: flex; align-items: center; gap: 6px; }
+    .cafe-soon-badge { background: var(--dorado-light); color: var(--dorado); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; border: 1px solid #FDE68A; }
+    .cafe-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 4px 20px 16px; scrollbar-width: none; -ms-overflow-style: none; }
     .cafe-scroll::-webkit-scrollbar { display: none; }
-    .cafe-card { flex-shrink: 0; width: 160px; background: white; border-radius: 16px; border: 1px solid var(--borde); overflow: hidden; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
-    .cafe-card:active { transform: scale(0.97); }
-    .cafe-card-img { width: 100%; height: 90px; background: var(--crema-dark); display: flex; align-items: center; justify-content: center; font-size: 28px; overflow: hidden; position: relative; }
-    .cafe-card-img img { width: 100%; height: 100%; object-fit: cover; }
-    .cafe-card-img .cafe-img-placeholder { font-size: 32px; }
-    .cafe-badge-desc { position: absolute; bottom: 4px; right: 4px; background: var(--dorado); color: white; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 8px; }
+    .cafe-card { flex-shrink: 0; width: 154px; background: white; border-radius: 18px; border: 1px solid var(--borde); overflow: hidden; opacity: 0.82; position: relative; }
+    .cafe-card-img { width: 100%; height: 88px; background: var(--crema-dark); display: flex; align-items: center; justify-content: center; font-size: 28px; overflow: hidden; }
+    .cafe-card-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(25%); }
+    .cafe-pronto-overlay { position: absolute; top: 0; left: 0; right: 0; height: 88px; background: rgba(0,0,0,0.32); display: flex; align-items: center; justify-content: center; }
+    .cafe-pronto-pill { background: white; color: var(--texto); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 4px; }
     .cafe-card-body { padding: 8px 10px 10px; }
     .cafe-card-name { font-weight: 700; font-size: 13px; color: var(--texto); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cafe-card-rating { font-size: 11px; color: var(--dorado); margin-bottom: 4px; display: flex; align-items: center; gap: 3px; }
-    .cafe-card-rating span { color: var(--subtexto); font-size: 10px; }
-    .cafe-card-addr { font-size: 10px; color: var(--subtexto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
-    .cafe-card-cta { width: 100%; padding: 6px; background: var(--dorado-light); color: var(--dorado); border: none; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: center; line-height: 1.3; }
-    .cafe-card-cta.logged { background: var(--verde-light); color: var(--verde); }
+    .cafe-card-rating { font-size: 11px; color: var(--dorado); margin-bottom: 3px; }
+    .cafe-card-addr { font-size: 10px; color: var(--subtexto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ===== CARDS & MISC ===== */
+    /* ===== CARDS MISC ===== */
     .section-label { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--texto); padding: 14px 20px 8px; display: flex; justify-content: space-between; align-items: center; }
     .card { background: white; border-radius: 20px; padding: 16px; margin: 0 20px 10px; cursor: pointer; border: 1px solid var(--borde); transition: transform 0.15s, box-shadow 0.15s; animation: fadeUp 0.3s ease both; }
     .card:active { transform: scale(0.98); }
     .card.expiring { animation: fadeOut 0.6s ease forwards; pointer-events: none; }
     @keyframes fadeOut { 0% { opacity: 1; transform: scale(1); max-height: 200px; margin-bottom: 10px; } 60% { opacity: 0; transform: scale(0.95); } 100% { opacity: 0; max-height: 0; margin-bottom: 0; padding: 0; border-width: 0; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--texto); margin-bottom: 8px; }
     .card-info { display: flex; gap: 12px; font-size: 13px; color: var(--subtexto); margin: 6px 0; flex-wrap: wrap; }
-    .badge-programada { background: #FEF3C7; color: #92400E; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; border: 1px solid #FDE68A; }
     .participantes-badge { background: var(--verde-light); color: var(--verde); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .participantes-badge.lleno { background: #FEE2E2; color: var(--rojo); }
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; gap: 8px; }
@@ -193,17 +190,22 @@
     .btn { background: var(--verde); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: background 0.2s, transform 0.1s; }
     .btn:active { transform: scale(0.98); }
     .btn-secondary { background: white; border: 1.5px solid var(--borde); color: var(--texto); }
-    .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
-    .btn-back:active { transform: scale(0.98); background: #D1D5DB; }
+    .btn-back { background: var(--gris-claro); color: var(--gris); border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; }
+    .btn-back:active { transform: scale(0.98); }
     .btn.loading { opacity: 0.7; pointer-events: none; }
-    .btn-danger { background: var(--rojo); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; transition: background 0.2s, transform 0.1s; }
-    .btn-danger:active { transform: scale(0.98); }
-    .fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--verde); color: white; border: none; height: 52px; padding: 0 22px; border-radius: 26px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 300; }
+    .btn-danger { background: var(--rojo); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 600; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 8px; }
+
+    /* ===== FAB doble ===== */
+    .fab-wrap { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 20px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 300; }
+    .fab { background: var(--verde); color: white; border: none; height: 50px; padding: 0 20px; border-radius: 25px; font-size: 13px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(15,123,94,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
     .fab:active { transform: scale(0.96); }
+    .fab-waitlist { background: var(--violeta); box-shadow: 0 4px 20px rgba(124,58,237,0.4); height: 44px; padding: 0 16px; font-size: 12px; border-radius: 22px; }
+
+    /* ===== FORM / MISC ===== */
     .form-group { margin-bottom: 16px; }
     .form-input, .form-select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--borde); border-radius: 16px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--texto); transition: border-color 0.2s; }
     .form-input:focus, .form-select:focus { outline: none; border-color: var(--verde); }
-    .form-input[readonly] { background: var(--crema-dark); color: var(--subtexto); cursor: default; border-color: var(--borde); }
+    .form-input[readonly] { background: var(--crema-dark); color: var(--subtexto); cursor: default; }
     .form-label { font-size: 13px; font-weight: 600; color: var(--subtexto); margin-bottom: 7px; display: block; }
     .option-grid { display: flex; gap: 8px; }
     .option-btn { flex: 1; padding: 10px; border-radius: 40px; border: 1.5px solid var(--borde); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; transition: all 0.15s; }
@@ -218,7 +220,7 @@
     .tiempo-tab.selected { background: var(--verde-light); border-color: var(--verde); }
     .tiempo-tab.selected .tiempo-tab-label { color: var(--verde); }
     .map { height: 180px; border-radius: 16px; margin: 12px 0; overflow: hidden; border: 1px solid var(--borde); }
-    .empty { text-align: center; padding: 40px 20px; color: var(--subtexto); line-height: 1.7; margin: 0 20px; }
+    .empty { text-align: center; padding: 40px 20px; color: var(--subtexto); line-height: 1.7; }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .detail-header { background: white; border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--borde); }
     .detail-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
@@ -241,7 +243,7 @@
     .chat-send-btn { width: 100%; margin-top: 8px; padding: 10px; background: var(--verde); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
     .chat-info-msg { background: var(--crema-dark); border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--subtexto); text-align: center; }
     .no-qa { text-align: center; color: var(--subtexto); font-size: 13px; padding: 12px 0 4px; }
-    .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+    .join-card { background: #FFF8EC; border: 1px solid #F5D9A8; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
     .join-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--texto); margin-bottom: 4px; }
     .sent-screen { text-align: center; padding: 60px 20px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .sent-icon { font-size: 72px; margin-bottom: 16px; animation: pop 0.4s ease; }
@@ -249,13 +251,12 @@
     .sent-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--texto); margin-bottom: 10px; }
     .sent-text { font-size: 15px; color: var(--subtexto); line-height: 1.6; }
     .maps-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--verde); text-decoration: none; background: var(--verde-light); padding: 5px 12px; border-radius: 20px; }
-    #homeListContainer { overflow-y: auto; flex: 1; padding-bottom: calc(80px + var(--safe-bottom)); }
+    #homeListContainer { overflow-y: auto; flex: 1; padding-bottom: calc(100px + var(--safe-bottom)); }
     .map-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; }
     .map-modal-header { background: var(--verde); padding: 16px; color: white; display: flex; justify-content: space-between; align-items: center; }
     .map-modal-header button { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
     .map-modal-content { flex: 1; }
     .map-modal-footer { padding: 16px; background: white; }
-    .map-modal-hint { background: rgba(15,123,94,0.92); color: white; text-align: center; padding: 9px 16px; font-size: 13px; font-weight: 600; }
     .install-banner { display: none; align-items: center; gap: 10px; background: linear-gradient(135deg, #0F7B5E, #0a6650); color: white; padding: 12px 16px; font-size: 13px; }
     .install-banner.visible { display: flex; }
     .install-banner-text { flex: 1; line-height: 1.4; }
@@ -264,7 +265,7 @@
     .install-dismiss { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer; }
     .toast { position: fixed; bottom: calc(90px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: #1C1C1E; color: white; padding: 12px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; max-width: calc(100vw - 40px); pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9100; align-items: flex-end; justify-content: center; padding-bottom: var(--safe-bottom); }
+    .ios-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9100; align-items: flex-end; justify-content: center; }
     .ios-sheet-overlay.visible { display: flex; }
     .ios-sheet { background: #F2F2F7; border-radius: 24px 24px 0 0; padding: 20px 24px calc(28px + var(--safe-bottom)); width: 100%; max-width: 480px; animation: sheetUp 0.35s cubic-bezier(0.32,0.72,0,1); }
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -278,18 +279,35 @@
     .ios-step-text strong { display: block; font-size: 15px; }
     .ios-step-icon { font-size: 22px; flex-shrink: 0; }
     .ios-sheet-close { width: 100%; padding: 14px; background: white; border: 1px solid var(--borde); border-radius: 60px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--texto); cursor: pointer; }
-    .screen-bottom-spacer { height: calc(100px + var(--safe-bottom)); flex-shrink: 0; }
+    .screen-bottom-spacer { height: calc(110px + var(--safe-bottom)); flex-shrink: 0; }
     .tipo-tabs { display: flex; gap: 6px; background: var(--crema-dark); border-radius: 20px; padding: 4px; margin-bottom: 16px; }
     .tipo-tab { flex: 1; padding: 9px 8px; border-radius: 16px; border: none; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--subtexto); transition: all 0.2s; text-align: center; }
     .tipo-tab.selected { background: white; color: var(--verde); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
     .hora-programada-wrap { overflow: hidden; max-height: 0; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease; opacity: 0; }
     .hora-programada-wrap.visible { max-height: 120px; opacity: 1; }
     .hora-input-row { display: flex; align-items: center; gap: 12px; }
-    .hora-input-row .form-input[type="time"] { flex: 1; font-size: 20px; font-weight: 700; text-align: center; color: var(--verde); border-color: var(--verde); letter-spacing: 1px; }
+    .hora-input-row .form-input[type="time"] { flex: 1; font-size: 20px; font-weight: 700; text-align: center; color: var(--verde); border-color: var(--verde); }
     .hora-hint { font-size: 12px; color: var(--subtexto); margin-top: 6px; line-height: 1.4; }
     .hora-prog-badge { display: inline-flex; align-items: center; gap: 4px; background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
     .error-banner { background: #FEE2E2; border: 1px solid #FECACA; border-radius: 12px; padding: 12px 14px; margin: 12px 20px; font-size: 13px; color: var(--rojo); display: flex; align-items: center; gap: 8px; }
-    .retry-btn { background: var(--rojo); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-left: auto; white-space: nowrap; }
+    .retry-btn { background: var(--rojo); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-left: auto; }
+
+    /* ===== WAITLIST SCREEN ===== */
+    .waitlist-join-card { background: linear-gradient(135deg, #EDE9FE, #F5F3FF); border: 1.5px solid #C4B5FD; border-radius: 20px; padding: 20px; margin-bottom: 16px; text-align: center; }
+    .waitlist-join-card h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; color: var(--texto); margin-bottom: 6px; }
+    .waitlist-join-card p { font-size: 14px; color: var(--subtexto); line-height: 1.5; }
+    .waitlist-preview-card { background: white; border-radius: 18px; border: 1.5px solid var(--borde); padding: 16px; margin-bottom: 20px; }
+    .waitlist-preview-header { font-size: 12px; font-weight: 600; color: var(--subtexto); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .waitlist-preview-user { display: flex; align-items: center; gap: 12px; }
+    .waitlist-preview-avatar { width: 52px; height: 52px; border-radius: 26px; border: 3px solid var(--violeta-light); object-fit: cover; }
+    .waitlist-preview-avatar-placeholder { width: 52px; height: 52px; border-radius: 26px; background: var(--violeta); color: white; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .waitlist-preview-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--texto); }
+    .waitlist-preview-meta { font-size: 13px; color: var(--subtexto); margin-top: 2px; }
+    .btn-violeta { background: var(--violeta); color: white; border: none; padding: 14px 20px; border-radius: 60px; font-weight: 700; font-family: 'DM Sans', sans-serif; width: 100%; cursor: pointer; font-size: 15px; margin-top: 12px; transition: transform 0.1s; }
+    .btn-violeta:active { transform: scale(0.98); }
+    .content { padding: 16px 20px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+    .screen { display: none; flex-direction: column; flex: 1; }
+    .screen.active { display: flex; }
   </style>
 </head>
 <body>
@@ -317,14 +335,6 @@
     <div class="user-sheet-profile" id="userSheetProfile"></div>
     <div class="sheet-divider"></div>
     <div class="sheet-menu-item sheet-logout" onclick="cerrarSesion()"><span>🚪</span><span>Cerrar sesión</span></div>
-  </div>
-</div>
-
-<!-- Cupón Sheet -->
-<div class="sheet-overlay" id="cuponSheetOverlay" onclick="cerrarCuponSheet(event)">
-  <div class="cupon-sheet" id="cuponSheet">
-    <div class="sheet-handle" style="padding-top:12px;margin-bottom:0;"></div>
-    <div id="cuponContent"></div>
   </div>
 </div>
 
@@ -363,23 +373,40 @@
 
   <!-- HOME -->
   <div id="screen-home" class="screen active">
+    <!-- MAPA -->
     <div class="home-map-section" id="homeMapSection">
       <div id="nearbyMap"></div>
-      <div class="map-empty-overlay" id="mapEmptyOverlay">🕐 Mateadas anteriores en el área</div>
-      <div class="nearby-pill" id="nearbyPill" style="display:none;"></div>
+      <div class="map-placeholder" id="mapPlaceholder" style="display:none;"><span>🗺️</span><span>Activá el GPS para ver mateadas cercanas</span></div>
       <button class="gps-btn" id="gpsBtn" onclick="pedirUbicacion()" title="Mi ubicación">📍</button>
-      <div class="map-placeholder" id="mapPlaceholder"><span>🗺️</span><span>Activá el GPS para ver la mateada más cercana</span></div>
     </div>
+
     <div id="homeListContainer">
-      <div class="section-label"><span>Mateadas activas</span><span id="contadorMateadas"></span></div>
-      <div id="homeContent"><div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div></div>
-      <!-- Cafeterías section -->
+      <!-- CAROUSEL mateadas activas -->
+      <div class="mateadas-carousel-wrap" id="mateadasCarouselWrap">
+        <div class="mateadas-section-header">
+          <div class="mateadas-section-title">🧉 Mateadas activas</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="mateadas-count-badge" id="contadorMateadas" style="display:none;"></span>
+            <div class="carousel-dots" id="carouselDots"></div>
+          </div>
+        </div>
+        <div class="mateadas-carousel" id="mateadasCarousel"></div>
+      </div>
+
+      <!-- LISTA DE ESPERA -->
+      <div class="waitlist-section" id="waitlistSection" style="display:none;">
+        <div class="waitlist-section-header">
+          <span>⏳ En lista de espera</span>
+          <span style="font-size:11px;font-weight:400;color:var(--subtexto);">Radio 3 km · 24h</span>
+        </div>
+        <div class="waitlist-cards" id="waitlistCards"></div>
+      </div>
+
+      <!-- CAFETERÍAS -->
       <div id="cafeSection" style="display:none;">
         <div class="cafe-section-header">
-          <div>
-            <div class="cafe-section-title">☕ Cafeterías cerca</div>
-            <div class="cafe-section-sub">Descuentos exclusivos para usuarios</div>
-          </div>
+          <div class="cafe-section-title">☕ Cafeterías cerca</div>
+          <span class="cafe-soon-badge">🔜 Muy pronto</span>
         </div>
         <div class="cafe-scroll" id="cafeScroll"></div>
       </div>
@@ -429,6 +456,43 @@
     </div>
   </div>
 
+  <!-- WAITLIST SCREEN -->
+  <div id="screen-waitlist" class="screen">
+    <div class="content">
+      <div class="waitlist-join-card">
+        <div style="font-size:44px;margin-bottom:10px;">⏳</div>
+        <h3>Inscribite a la próxima mateada</h3>
+        <p style="margin-top:8px;">Te avisamos cuando haya una mateada a menos de <strong>3 km</strong> de donde estás ahora. Tu inscripción dura <strong>24 horas</strong>.</p>
+      </div>
+
+      <div class="waitlist-preview-card" id="waitlistPreviewCard">
+        <div class="waitlist-preview-header">🪪 Así vas a aparecer en la lista</div>
+        <div class="waitlist-preview-user" id="waitlistPreviewUser"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">🎯 ¿Qué tipo de mateada buscás? <span style="color:var(--subtexto);font-weight:400;">(opcional)</span></label>
+        <select id="waitlistTema" class="form-select">
+          <option value="">Cualquier tema 🧉</option>
+          <option>🤝 Emprendedurismo</option>
+          <option>📖 Filosofía y vida cotidiana</option>
+          <option>💻 Tecnología e IA</option>
+          <option>🎨 Arte y creatividad</option>
+          <option>📚 Literatura</option>
+          <option>🎬 Cine y series</option>
+          <option>🌱 Sustentabilidad</option>
+          <option>🧘 Bienestar y meditación</option>
+        </select>
+      </div>
+
+      <div id="waitlistLoginGate" style="display:none;"></div>
+
+      <button class="btn-violeta" id="btnWaitlist" onclick="confirmarListaEspera()">⏳ Inscribirme a la próxima mateada</button>
+      <button class="btn-back" onclick="irInicio()" style="margin-top:8px;">← Volver</button>
+      <div class="screen-bottom-spacer"></div>
+    </div>
+  </div>
+
   <!-- SENT -->
   <div id="screen-sent" class="screen">
     <div class="sent-screen">
@@ -439,7 +503,11 @@
     </div>
   </div>
 
-  <button class="fab" id="fabBtn" onclick="irACrear()"><span style="font-size:20px;">+</span> Agregar mateada</button>
+  <!-- FAB doble -->
+  <div class="fab-wrap" id="fabWrap">
+    <button class="fab" id="fabBtn" onclick="irACrear()"><span style="font-size:18px;">+</span> Agregar mateada</button>
+    <button class="fab fab-waitlist" id="fabWaitlistBtn" onclick="irAListaEspera()">⏳ Inscribirme a la próxima</button>
+  </div>
 </div>
 
 <script>
@@ -448,6 +516,8 @@
 // ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5eTH3oPCLtrIXVxJ7UKO4UZtFdg7aks-C_h8zS6CeNMOnBPIip_oUMztecRrxICLR/exec';
 const FETCH_TIMEOUT_MS = 12000;
+const WAITLIST_RADIO_KM = 3;
+const WAITLIST_TTL_MS = 24 * 60 * 60 * 1000;
 
 let usuarioActual = null;
 let mateadasActuales = [];
@@ -471,7 +541,64 @@ let enviandoPregunta = false;
 let tipoMateadaSeleccionado = 'ahora';
 let cafeterias = [];
 let cafeMarkers = [];
-let cafeSheetCafe = null;
+let carouselIndex = 0;
+
+// ============================================================
+//  LISTA DE ESPERA — localStorage
+// ============================================================
+function getListaEspera() {
+  try {
+    const d = JSON.parse(localStorage.getItem('lista_espera') || '[]');
+    const ahora = Date.now();
+    return d.filter(e => (e.timestamp + WAITLIST_TTL_MS) > ahora);
+  } catch(e) { return []; }
+}
+
+function saveListaEspera(lista) {
+  localStorage.setItem('lista_espera', JSON.stringify(lista));
+}
+
+function estaEnListaEspera(sub) {
+  return getListaEspera().some(e => e.sub === sub);
+}
+
+function agregarAListaEspera(entry) {
+  const lista = getListaEspera().filter(e => e.sub !== entry.sub);
+  lista.push(entry);
+  saveListaEspera(lista);
+}
+
+function removerDeListaEspera(sub) {
+  saveListaEspera(getListaEspera().filter(e => e.sub !== sub));
+}
+
+// Al crear mateada, busca gente en lista de espera dentro de 3km e "invita"
+function procesarInvitacionesListaEspera(mateadaLat, mateadaLng, mateadaId, mateadaTitulo) {
+  const lista = getListaEspera();
+  const invitados = lista.filter(e => {
+    if (!e.lat || !e.lng) return false;
+    return haversineKm(mateadaLat, mateadaLng, e.lat, e.lng) <= WAITLIST_RADIO_KM;
+  });
+  invitados.forEach(e => {
+    // Marcamos la invitación en su entry
+    const idx = lista.findIndex(x => x.sub === e.sub);
+    if (idx !== -1) {
+      lista[idx].invitadoA = mateadaId;
+      lista[idx].invitadoATitulo = mateadaTitulo;
+      lista[idx].invitadoTs = Date.now();
+    }
+  });
+  saveListaEspera(lista);
+  return invitados.length;
+}
+
+// ¿El usuario actual fue invitado a una mateada?
+function getMiInvitacion() {
+  if (!usuarioActual) return null;
+  const entry = getListaEspera().find(e => e.sub === usuarioActual.sub);
+  if (!entry || !entry.invitadoA) return null;
+  return entry;
+}
 
 // ============================================================
 //  FETCH CON TIMEOUT Y RETRY
@@ -494,7 +621,7 @@ async function fetchConTimeout(url, opciones = {}, timeoutMs = FETCH_TIMEOUT_MS,
 }
 
 // ============================================================
-//  HELPERS GENERALES
+//  HELPERS
 // ============================================================
 function escapeHtml(str) {
   if (!str) return '';
@@ -503,8 +630,7 @@ function escapeHtml(str) {
 
 function formatFecha(iso) {
   if (!iso) return '';
-  try { const d = new Date(iso); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
-  catch(e) { return ''; }
+  try { const d = new Date(iso); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; } catch(e) { return ''; }
 }
 
 function mostrarToast(msg, duracion = 3000) {
@@ -537,31 +663,17 @@ function formatearHoraLocal(horaISO) {
   if (!horaISO) return '';
   try {
     let fecha;
-    if (String(horaISO).includes('T')) {
-      fecha = new Date(horaISO);
-    } else if (String(horaISO).includes(':')) {
-      const [h, m] = horaISO.split(':');
-      fecha = new Date();
-      fecha.setHours(parseInt(h), parseInt(m), 0);
-    } else {
-      fecha = new Date(horaISO);
-    }
+    if (String(horaISO).includes('T')) { fecha = new Date(horaISO); }
+    else if (String(horaISO).includes(':')) { const [h, m] = horaISO.split(':'); fecha = new Date(); fecha.setHours(parseInt(h), parseInt(m), 0); }
+    else { fecha = new Date(horaISO); }
     if (isNaN(fecha.getTime())) return '';
-    let h = fecha.getHours();
-    const m = fecha.getMinutes().toString().padStart(2,'0');
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
+    let h = fecha.getHours(); const m = fecha.getMinutes().toString().padStart(2,'0'); const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
     return `${h}:${m} ${ampm}`;
   } catch(e) { return String(horaISO); }
 }
 
 function obtenerHoraActualFormateada() {
-  const d = new Date();
-  let h = d.getHours();
-  const m = d.getMinutes().toString().padStart(2,'0');
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return `${h}:${m} ${ampm}`;
+  const d = new Date(); let h = d.getHours(); const m = d.getMinutes().toString().padStart(2,'0'); const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return `${h}:${m} ${ampm}`;
 }
 
 // ============================================================
@@ -573,10 +685,7 @@ function getInicioMs(m) {
   if (m.fecha_hora) { const d = new Date(m.fecha_hora); if (!isNaN(d)) return d.getTime(); }
   if (m.hora_programada) {
     const [h, min] = m.hora_programada.split(':').map(Number);
-    if (!isNaN(h) && !isNaN(min)) {
-      const n = new Date();
-      return new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime();
-    }
+    if (!isNaN(h) && !isNaN(min)) { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, min, 0).getTime(); }
   }
   return null;
 }
@@ -602,8 +711,7 @@ function getMsRestante(m) {
       return (inicio + durMs) - Date.now();
     }
   }
-  const i = getInicioMs(m);
-  if (!i) return null;
+  const i = getInicioMs(m); if (!i) return null;
   return (i + durMs) - Date.now();
 }
 
@@ -637,10 +745,8 @@ function iniciarCountdown(m, fillId, labelId, onTerminada) {
     const ms = getMsRestante(m);
     if (ms === null) {
       fill.style.width = '100%'; fill.style.background = '#FBBF24';
-      const msHasta = getMsHastaInicio(m);
-      label.textContent = `Empieza en ${formatTiempoHastaInicio(msHasta)}`;
-      label.style.color = '#B45309';
-      return;
+      label.textContent = `Empieza en ${formatTiempoHastaInicio(getMsHastaInicio(m))}`;
+      label.style.color = '#B45309'; return;
     }
     const pct = Math.max(0, Math.min(1, ms/durMs));
     const color = pct > 0.5 ? '#0F7B5E' : pct > 0.25 ? '#D97706' : '#DC2626';
@@ -649,12 +755,9 @@ function iniciarCountdown(m, fillId, labelId, onTerminada) {
       fill.style.width = '0%'; label.textContent = 'Terminada ✓'; label.style.color = '#DC2626';
       clearInterval(countdownIntervals[m.id]);
       if (onTerminada) onTerminada(m.id);
-    } else {
-      label.textContent = formatTiempoRestante(ms); label.style.color = color;
-    }
+    } else { label.textContent = formatTiempoRestante(ms); label.style.color = color; }
   }
-  clearInterval(countdownIntervals[m.id]);
-  tick();
+  clearInterval(countdownIntervals[m.id]); tick();
   countdownIntervals[m.id] = setInterval(tick, 1000);
 }
 
@@ -662,9 +765,7 @@ function iniciarCountdown(m, fillId, labelId, onTerminada) {
 //  AUTENTICACIÓN
 // ============================================================
 const sesionGuardada = localStorage.getItem('usuario_cebate_google');
-if (sesionGuardada) {
-  try { usuarioActual = JSON.parse(sesionGuardada); limpiarPreguntasDuplicadas(); } catch(e) {}
-}
+if (sesionGuardada) { try { usuarioActual = JSON.parse(sesionGuardada); limpiarPreguntasDuplicadas(); } catch(e) {} }
 
 function handleCredentialResponse(response) {
   const data = JSON.parse(atob(response.credential.split('.')[1]));
@@ -675,7 +776,6 @@ function handleCredentialResponse(response) {
   mostrarToast(`✅ ¡Bienvenido/a, ${usuarioActual.nombre.split(' ')[0]}!`);
   const c = document.getElementById('nombreOrganizador');
   if (c) { c.value = usuarioActual.nombre.split(' ')[0]; c.readOnly = true; }
-  renderizarCafeterías(); // refrescar CTAs de cafeterías
   cargarMateadas();
 }
 
@@ -685,12 +785,8 @@ function iniciarSesionGoogle() {
 }
 
 function cerrarSesion() {
-  usuarioActual = null;
-  localStorage.removeItem('usuario_cebate_google');
-  actualizarInterfazUsuario();
-  cerrarUserSheet();
-  mostrarToast('👋 Sesión cerrada');
-  renderizarCafeterías();
+  usuarioActual = null; localStorage.removeItem('usuario_cebate_google');
+  actualizarInterfazUsuario(); cerrarUserSheet(); mostrarToast('👋 Sesión cerrada');
   cargarMateadas();
 }
 
@@ -700,11 +796,8 @@ function actualizarInterfazUsuario() {
   if (!usuarioActual) {
     loginBanner?.classList.add('visible');
     area.innerHTML = `<div id="googleButtonContainer" style="transform:scale(0.85);transform-origin:right center;"></div>`;
-    if (window.google?.accounts) {
-      google.accounts.id.renderButton(document.getElementById("googleButtonContainer"), { theme:"outline", size:"small", text:"signin_with", shape:"pill" });
-    } else {
-      area.innerHTML = `<button class="login-btn-main" onclick="iniciarSesionGoogle()">🔑 Entrar</button>`;
-    }
+    if (window.google?.accounts) google.accounts.id.renderButton(document.getElementById("googleButtonContainer"), { theme:"outline", size:"small", text:"signin_with", shape:"pill" });
+    else area.innerHTML = `<button class="login-btn-main" onclick="iniciarSesionGoogle()">🔑 Entrar</button>`;
   } else {
     loginBanner?.classList.remove('visible');
     const av = usuarioActual.avatar
@@ -726,9 +819,7 @@ function abrirUserSheet() {
 }
 
 function cerrarUserSheet(e) {
-  if (!e || e.target === document.getElementById('userSheetOverlay')) {
-    document.getElementById('userSheetOverlay')?.classList.remove('visible');
-  }
+  if (!e || e.target === document.getElementById('userSheetOverlay')) document.getElementById('userSheetOverlay')?.classList.remove('visible');
 }
 
 // ============================================================
@@ -780,8 +871,7 @@ function limpiarPreguntasDuplicadas() {
     const match = key.match(/pregunta_detalle_(.+)_(.+)$/);
     if (match) {
       const uk = `${match[1]}_${usuarioActual.sub}`;
-      if (vistas.has(uk)) localStorage.removeItem(key);
-      else vistas.add(uk);
+      if (vistas.has(uk)) localStorage.removeItem(key); else vistas.add(uk);
     }
   });
 }
@@ -846,240 +936,95 @@ async function guardarRespuesta(mateadaId, preguntaId, respuesta) {
 }
 
 // ============================================================
-//  CAFETERÍAS — OVERPASS API (OpenStreetMap) + FALLBACK
+//  CAFETERÍAS — Overpass API + Fallback (sin cupones por ahora)
 // ============================================================
-const CAFE_EMOJIS = ['☕', '🫖', '🧁', '🥐', '🍰', '🫗'];
-const CAFE_FOTOS_FALLBACK = ['https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&q=80','https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80','https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80','https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80','https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&q=80','https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=400&q=80','https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=400&q=80','https://images.unsplash.com/photo-1507914372368-b2b085b925a1?w=400&q=80'];
+const CAFE_FOTOS_FALLBACK = [
+  'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&q=80',
+  'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80',
+  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
+  'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80',
+  'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&q=80',
+  'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=400&q=80'
+];
 
-function fotoParaCafe(i) { return CAFE_FOTOS_FALLBACK[i % CAFE_FOTOS_FALLBACK.length]; }
 function ratingParaCafe(osmId) {
   const seed = Math.abs(osmId || Math.random() * 99999);
-  const base = 3.5 + (seed % 1500) / 1000;
-  return Math.min(5.0, parseFloat(base.toFixed(1)));
-}
-function reseñasParaCafe(osmId) {
-  const seed = Math.abs(osmId || Math.random() * 99999);
-  return 12 + (seed % 287);
+  return Math.min(5.0, parseFloat((3.5 + (seed % 1500) / 1000).toFixed(1)));
 }
 
-function renderEstrellasCafe(rating) {
-  const llenas = Math.floor(rating), media = (rating - llenas) >= 0.5 ? 1 : 0, vacias = 5 - llenas - media;
-  return '★'.repeat(llenas) + (media ? '½' : '') + '<span style="color:#D1D5DB">' + '★'.repeat(vacias) + '</span>';
-}
-
-function generarCodigoCupon(cafeId) {
-  const base = btoa(`${cafeId}_${getFechaHoy()}`).replace(/[^A-Z0-9]/gi,'').toUpperCase().slice(0,6);
-  return `MATE${base.slice(0,4)}`;
+function renderEstrellasCafe(r) {
+  const l = Math.floor(r); return '★'.repeat(l) + (r - l >= 0.5 ? '½' : '') + '<span style="color:#D1D5DB">★</span>'.repeat(5 - l - (r - l >= 0.5 ? 1 : 0));
 }
 
 async function cargarCafeterias() {
-  const lat = userLat || -34.6037;
-  const lng = userLng || -58.3816;
-  const radio = 1500; // 1.5 km
-
-  const query = `[out:json][timeout:10];(node["amenity"="cafe"](around:${radio},${lat},${lng});node["amenity"="coffee_shop"](around:${radio},${lat},${lng});node["shop"="coffee"](around:${radio},${lat},${lng}););out body 20;`;
-
+  const lat = userLat || -34.6037, lng = userLng || -58.3816;
+  const query = `[out:json][timeout:10];(node["amenity"="cafe"](around:1500,${lat},${lng});node["amenity"="coffee_shop"](around:1500,${lat},${lng}););out body 12;`;
   try {
     const r = await fetchConTimeout(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`, {}, 10000, 1);
     const data = await r.json();
-
     if (data.elements && data.elements.length > 0) {
-      cafeterias = data.elements.slice(0, 12).map((el, i) => ({
-        id: el.id,
-        nombre: el.tags?.name || el.tags?.brand || `Cafetería ${i+1}`,
+      cafeterias = data.elements.slice(0, 8).map((el, i) => ({
+        id: el.id, nombre: el.tags?.name || `Cafetería ${i+1}`,
         direccion: el.tags?.['addr:street'] ? `${el.tags['addr:street']} ${el.tags['addr:housenumber']||''}`.trim() : 'Ver en mapa',
-        lat: el.lat,
-        lng: el.lon,
-        rating: ratingParaCafe(el.id),
-        reseñas: reseñasParaCafe(el.id),
-        foto: fotoParaCafe(i),
-        tipo: el.tags?.amenity || 'cafe'
+        lat: el.lat, lng: el.lon,
+        rating: ratingParaCafe(el.id), foto: CAFE_FOTOS_FALLBACK[i % CAFE_FOTOS_FALLBACK.length]
       }));
-    } else {
-      cafeterias = generarCafeteriasSimuladas(lat, lng);
-    }
-  } catch(e) {
-    cafeterias = generarCafeteriasSimuladas(lat, lng);
-  }
-
-  renderizarCafeterías();
-  renderizarCafesEnMapa();
+    } else { cafeterias = generarCafeteriasSimuladas(lat, lng); }
+  } catch(e) { cafeterias = generarCafeteriasSimuladas(lat, lng); }
+  renderizarCafeterias();
 }
 
-// Fallback con datos simulados si Overpass falla
-function generarCafeteriasSimuladas(centerLat, centerLng) {
-  const nombres = ['Café del Parque','La Tostada','El Grano','Brewed','Merienda & Co.','Café Literario','Bar Baires','El Filtrado','Cafeína','La Bizcochería','Taza Libre','Cacao'];
-  const seed = Math.round(centerLat * 100 + centerLng * 100);
-  function prand(i) { const x = Math.sin(seed + i * 9301 + 49297) * 233280; return x - Math.floor(x); }
+function generarCafeteriasSimuladas(clat, clng) {
+  const nombres = ['Café del Parque','La Tostada','El Grano','Brewed','Merienda & Co.','Café Literario','Bar Baires','El Filtrado'];
+  const seed = Math.round(clat * 100 + clng * 100);
+  function p(i) { const x = Math.sin(seed + i * 9301 + 49297) * 233280; return x - Math.floor(x); }
   return nombres.map((nombre, i) => {
-    const angle = prand(i + 10) * 2 * Math.PI;
-    const dist = 0.002 + prand(i + 20) * 0.012;
-    return {
-      id: seed + i,
-      nombre,
-      direccion: `a ${(dist * 111000).toFixed(0)}m`,
-      lat: centerLat + dist * Math.cos(angle),
-      lng: centerLng + dist * Math.sin(angle),
-      rating: ratingParaCafe(seed + i),
-      reseñas: reseñasParaCafe(seed + i),
-      foto: fotoParaCafe(i),
-      tipo: 'cafe'
-    };
+    const angle = p(i+10) * 2 * Math.PI, dist = 0.002 + p(i+20) * 0.012;
+    return { id: seed+i, nombre, direccion: `a ${(dist*111000).toFixed(0)}m`, lat: clat+dist*Math.cos(angle), lng: clng+dist*Math.sin(angle), rating: ratingParaCafe(seed+i), foto: CAFE_FOTOS_FALLBACK[i%CAFE_FOTOS_FALLBACK.length] };
   });
 }
 
-function renderizarCafeterías() {
-  const section = document.getElementById('cafeSection');
-  const scroll = document.getElementById('cafeScroll');
+function renderizarCafeterias() {
+  const section = document.getElementById('cafeSection'), scroll = document.getElementById('cafeScroll');
   if (!section || !scroll || cafeterias.length === 0) return;
-
   section.style.display = 'block';
   scroll.innerHTML = cafeterias.map(c => `
-    <div class="cafe-card" onclick="abrirCuponSheet(${c.id})">
+    <div class="cafe-card">
       <div class="cafe-card-img">
-        <img src="${c.foto}" alt="${escapeHtml(c.nombre)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="cafe-img-placeholder" style="display:none;">${CAFE_EMOJIS[cafeterias.indexOf(c) % CAFE_EMOJIS.length]}</div>
-        <div class="cafe-badge-desc">10% OFF</div>
+        <img src="${c.foto}" alt="${escapeHtml(c.nombre)}" loading="lazy" onerror="this.parentElement.innerHTML='<span style=font-size:32px>☕</span>'">
+        <div class="cafe-pronto-overlay"><div class="cafe-pronto-pill">🔜 Disponible muy pronto</div></div>
       </div>
       <div class="cafe-card-body">
         <div class="cafe-card-name">${escapeHtml(c.nombre)}</div>
-        <div class="cafe-card-rating">${renderEstrellasCafe(c.rating)} <span>${c.rating} (${c.reseñas})</span></div>
+        <div class="cafe-card-rating">${renderEstrellasCafe(c.rating)} ${c.rating}</div>
         <div class="cafe-card-addr">📍 ${escapeHtml(c.direccion)}</div>
-        <button class="cafe-card-cta ${usuarioActual ? 'logged' : ''}" onclick="event.stopPropagation();abrirCuponSheet(${c.id})">
-          ${usuarioActual ? '🎟️ Ver mi cupón 10% OFF' : '🔑 ¡Logueate y disfrutá los descuentos!'}
-        </button>
       </div>
     </div>
   `).join('');
 }
 
-function renderizarCafesEnMapa() {
-  if (!mapaNearby) return;
-  cafeMarkers.forEach(mk => mapaNearby.removeLayer(mk));
-  cafeMarkers = [];
-
-  cafeterias.forEach(c => {
-    if (!c.lat || !c.lng) return;
-    const icon = L.divIcon({
-      html: `<div style="background:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(217,119,6,0.4);border:2px solid #D97706;">☕</div>`,
-      iconSize: [28,28], iconAnchor: [14,14], className: ''
-    });
-    const mk = L.marker([c.lat, c.lng], { icon }).addTo(mapaNearby);
-    mk.bindPopup(crearPopupCafe(c), { closeButton: false, maxWidth: 240 });
-    cafeMarkers.push(mk);
-  });
-}
-
-function crearPopupCafe(c) {
-  const logueado = !!usuarioActual;
-  const ctaHtml = logueado
-    ? `<button class="cafe-popup-cta logged" onclick="abrirCuponSheet(${c.id});if(window._leafletMap)window._leafletMap.closePopup();">🎟️ Obtener cupón 10% OFF</button>`
-    : `<button class="cafe-popup-cta" onclick="iniciarSesionGoogle()">🔑 ¡Logueate y disfrutá los descuentos!</button>`;
-
-  return `<div class="cafe-popup">
-    <div class="cafe-popup-img"><img src="${c.foto}" alt="${escapeHtml(c.nombre)}" onerror="this.parentElement.innerHTML='<span style=font-size:32px>☕</span>'"></div>
-    <div class="cafe-popup-body">
-      <div class="cafe-popup-name">${escapeHtml(c.nombre)}</div>
-      <div class="cafe-popup-stars">${renderEstrellasCafe(c.rating)} <span>${c.rating} · ${c.reseñas} reseñas</span></div>
-      <div class="cafe-popup-addr">📍 ${escapeHtml(c.direccion)}</div>
-      ${ctaHtml}
-    </div>
-  </div>`;
-}
-
-function abrirCuponSheet(cafeId) {
-  const c = cafeterias.find(x => x.id === cafeId || x.id === Number(cafeId));
-  if (!c) return;
-  cafeSheetCafe = c;
-
-  const overlay = document.getElementById('cuponSheetOverlay');
-  const content = document.getElementById('cuponContent');
-
-  if (!usuarioActual) {
-    content.innerHTML = `
-      <div style="padding:12px 0 0;">
-        <div class="sheet-handle"></div>
-      </div>
-      <div class="cupon-body">
-        <div class="cupon-login-prompt">
-          <div style="font-size:40px;margin-bottom:12px;">☕</div>
-          <strong>${escapeHtml(c.nombre)}</strong>
-          <p>Iniciá sesión para obtener tu cupón de <strong style="color:var(--dorado);">10% de descuento</strong> en esta cafetería.<br><br>¡Es gratis y solo toma un segundo!</p>
-          <button class="btn" onclick="iniciarSesionGoogle();cerrarCuponSheet()">🔑 Entrar con Google</button>
-          <button class="cupon-close-btn" style="margin-top:8px;" onclick="cerrarCuponSheet()">Cerrar</button>
-        </div>
-      </div>`;
-  } else {
-    const codigo = generarCodigoCupon(c.id);
-    const hoy = new Date();
-    const fin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-    const validez = `Válido hoy hasta las 23:59 · Solo presencial`;
-    content.innerHTML = `
-      <div class="cupon-header">
-        <div class="cupon-header-emoji">🎟️</div>
-        <h3>¡Tu cupón de descuento!</h3>
-        <p>10% OFF en tu próxima visita</p>
-      </div>
-      <div class="cupon-body">
-        <div class="cupon-place-name">${escapeHtml(c.nombre)}</div>
-        <div class="cupon-place-addr">📍 ${escapeHtml(c.direccion)}</div>
-        <div class="cupon-code-wrap">
-          <div class="cupon-code-label">🏷️ Tu código exclusivo</div>
-          <div class="cupon-code" id="codigoCupon">${codigo}</div>
-          <div class="cupon-desc">Mostrá este código al pagar. Aplicable en consumición de cafetería. No acumulable con otras promociones.</div>
-        </div>
-        <div class="cupon-validity">📅 ${validez}<br>👤 Cupón para: <strong>${escapeHtml(usuarioActual.nombre.split(' ')[0])}</strong></div>
-        <button class="cupon-copy-btn" onclick="copiarCodigo('${codigo}')">📋 Copiar código</button>
-        <button class="cupon-close-btn" onclick="cerrarCuponSheet()">Cerrar</button>
-      </div>`;
-  }
-  overlay.classList.add('visible');
-}
-
-function copiarCodigo(codigo) {
-  navigator.clipboard?.writeText(codigo).then(() => mostrarToast('✅ ¡Código copiado!')).catch(() => {
-    const el = document.getElementById('codigoCupon');
-    if (el) { const sel = window.getSelection(); const range = document.createRange(); range.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(range); }
-    mostrarToast('✅ Seleccioná y copiá el código');
-  });
-}
-
-function cerrarCuponSheet(e) {
-  if (!e || e.target === document.getElementById('cuponSheetOverlay')) {
-    document.getElementById('cuponSheetOverlay')?.classList.remove('visible');
-  }
-}
-
 // ============================================================
-//  MAPA CERCANO CON HISTÓRICAS
+//  MAPA CON HISTÓRICAS
 // ============================================================
-const NOMBRES_HIST = ['Sofía','Mateo','Valentina','Lucas','Camila','Nicolás','Martina','Tomás','Julieta','Agustín','Lucía','Franco','Florencia','Santiago','Pilar','Joaquín'];
-const TEMAS_HIST = ['📖 Filosofía','💻 Tecnología','🎨 Arte','🤝 Emprendedurismo','🌱 Sustentabilidad','🎬 Cine','📚 Literatura','🧘 Bienestar'];
-const RATINGS_HIST = [5.0, 4.9, 4.8, 4.7, 4.5, 4.3, 4.0, 3.8, 3.7, 3.5];
+const NOMBRES_HIST = ['Sofía','Mateo','Valentina','Lucas','Camila','Nicolás','Martina','Tomás','Julieta','Agustín'];
+const TEMAS_HIST = ['📖 Filosofía','💻 Tecnología','🎨 Arte','🤝 Emprendedurismo','🌱 Sustentabilidad','🎬 Cine'];
+const RATINGS_HIST = [5.0, 4.9, 4.8, 4.7, 4.5, 4.3, 4.0, 3.8];
 
-function generarMateadasHistoricas(centerLat, centerLng, cantidad) {
-  const seed = Math.round(centerLat * 100 + centerLng * 100);
-  function prand(i) { const x = Math.sin(seed + i * 9301 + 49297) * 233280; return x - Math.floor(x); }
-  return Array.from({ length: cantidad }, (_, i) => {
-    const angle = prand(i + 100) * 2 * Math.PI;
-    const dist = 0.005 + prand(i + 200) * 0.025;
-    return {
-      id: `hist_${i}`, lat: centerLat + dist*Math.cos(angle), lng: centerLng + dist*Math.sin(angle),
-      organizador: NOMBRES_HIST[Math.floor(prand(i+300)*NOMBRES_HIST.length)],
-      tema: TEMAS_HIST[Math.floor(prand(i+400)*TEMAS_HIST.length)],
-      rating: RATINGS_HIST[Math.floor(prand(i+500)*RATINGS_HIST.length)],
-      participantes: 3 + Math.floor(prand(i+600)*10)
-    };
+function generarMateadasHistoricas(cLat, cLng, cant) {
+  const seed = Math.round(cLat * 100 + cLng * 100);
+  function p(i) { const x = Math.sin(seed + i * 9301 + 49297) * 233280; return x - Math.floor(x); }
+  return Array.from({ length: cant }, (_, i) => {
+    const angle = p(i+100) * 2 * Math.PI, dist = 0.005 + p(i+200) * 0.025;
+    return { id:`hist_${i}`, lat: cLat+dist*Math.cos(angle), lng: cLng+dist*Math.sin(angle), organizador: NOMBRES_HIST[Math.floor(p(i+300)*NOMBRES_HIST.length)], tema: TEMAS_HIST[Math.floor(p(i+400)*TEMAS_HIST.length)], rating: RATINGS_HIST[Math.floor(p(i+500)*RATINGS_HIST.length)], participantes: 3+Math.floor(p(i+600)*10) };
   });
 }
 
-function renderEstrellas(rating) {
-  const llenas = Math.floor(rating), media = (rating - llenas) >= 0.5 ? 1 : 0, vacias = 5 - llenas - media;
-  let html = '';
-  for (let i = 0; i < llenas; i++) html += '<span style="color:#FBBF24;">★</span>';
-  if (media) html += '<span style="color:#FBBF24;">½</span>';
-  for (let i = 0; i < vacias; i++) html += '<span style="color:#D1D5DB;">★</span>';
-  return html;
+function renderEstrellas(r) {
+  const l = Math.floor(r); let h = '';
+  for (let i = 0; i < l; i++) h += '<span style="color:#FBBF24;">★</span>';
+  if (r - l >= 0.5) h += '<span style="color:#FBBF24;">½</span>';
+  for (let i = 0; i < 5 - l - (r-l>=0.5?1:0); i++) h += '<span style="color:#D1D5DB;">★</span>';
+  return h;
 }
 
 function pedirUbicacion() {
@@ -1091,14 +1036,20 @@ function pedirUbicacion() {
   );
 }
 
+// Hacer zoom a una mateada en el mapa del home
+function enfocarMateadaEnMapa(m) {
+  if (!mapaNearby || !m.latitud || !m.longitud) return;
+  mapaNearby.flyTo([m.latitud, m.longitud], 16, { animate: true, duration: 0.6 });
+}
+
 function actualizarMapaCercano() {
-  const ph = document.getElementById('mapPlaceholder'), pill = document.getElementById('nearbyPill');
+  const ph = document.getElementById('mapPlaceholder');
   const vigentes = mateadasActuales.filter(m => !estaTerminada(m) && m.latitud && m.longitud);
-  const centerLat = userLat || -34.6037, centerLng = userLng || -58.3816;
-  ph.style.display = 'none';
+  const cLat = userLat || -34.6037, cLng = userLng || -58.3816;
+  if (ph) ph.style.display = 'none';
 
   if (!mapaNearby) {
-    mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false }).setView([centerLat, centerLng], 14);
+    mapaNearby = L.map('nearbyMap', { zoomControl: false, attributionControl: false }).setView([cLat, cLng], 14);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(mapaNearby);
     window._leafletMap = mapaNearby;
   } else {
@@ -1109,17 +1060,14 @@ function actualizarMapaCercano() {
   // Históricas
   if (mapaNearby._histLayer) mapaNearby.removeLayer(mapaNearby._histLayer);
   const histGroup = L.layerGroup();
-  generarMateadasHistoricas(centerLat, centerLng, 12).forEach(h => {
-    const icon = L.divIcon({ html: `<div style="background:#B0B8C1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.15);border:2px solid white;">🧉</div>`, iconSize:[30,30], iconAnchor:[15,15], className:'' });
-    L.marker([h.lat, h.lng], { icon }).bindPopup(`<div class="hist-popup"><div class="hist-popup-title">${h.tema}</div><div class="hist-popup-stars">${renderEstrellas(h.rating)} <strong style="font-size:13px;color:#2A241A;">${h.rating.toFixed(1)}</strong></div><div class="hist-popup-meta">🧑 ${h.organizador} · 👥 ${h.participantes} personas</div><div class="hist-popup-meta" style="margin-top:3px;color:#9CA3AF;font-style:italic;">Mateada finalizada</div></div>`, { closeButton: false, maxWidth: 200 }).addTo(histGroup);
+  generarMateadasHistoricas(cLat, cLng, 10).forEach(h => {
+    const icon = L.divIcon({ html: `<div style="background:#B0B8C1;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,0.12);border:2px solid white;">🧉</div>`, iconSize:[28,28], iconAnchor:[14,14], className:'' });
+    L.marker([h.lat, h.lng], { icon }).bindPopup(`<div class="hist-popup"><div class="hist-popup-title">${h.tema}</div><div class="hist-popup-stars">${renderEstrellas(h.rating)} <strong>${h.rating.toFixed(1)}</strong></div><div class="hist-popup-meta">🧑 ${h.organizador} · 👥 ${h.participantes} personas</div><div class="hist-popup-meta" style="color:#9CA3AF;font-style:italic;margin-top:3px;">Mateada finalizada</div></div>`, { closeButton: false, maxWidth: 200 }).addTo(histGroup);
   });
   histGroup.addTo(mapaNearby);
   mapaNearby._histLayer = histGroup;
 
-  // Cafés en mapa
-  renderizarCafesEnMapa();
-
-  // Ubicación del usuario
+  // Usuario
   const bounds = [];
   if (userLat && userLng) {
     const mkU = L.marker([userLat, userLng], { icon: L.divIcon({ html: `<div style="background:#3B82F6;width:14px;height:14px;border-radius:7px;border:3px solid white;box-shadow:0 2px 6px rgba(59,130,246,0.6);"></div>`, iconSize:[14,14], iconAnchor:[7,7], className:'' }) }).addTo(mapaNearby);
@@ -1133,37 +1081,29 @@ function actualizarMapaCercano() {
     : vigentes;
 
   ordenadas.forEach((m, i) => {
-    const esCercana = (i === 0), sz = esCercana ? 38 : 26;
-    const icon = L.divIcon({ html: `<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.6)'};color:white;width:${sz}px;height:${sz}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${esCercana?'18px':'13px'};box-shadow:0 3px 10px rgba(15,123,94,0.45);">🧉</div>`, iconSize:[sz,sz], iconAnchor:[sz/2,sz/2], className:'' });
+    const esCercana = (i === 0), sz = esCercana ? 38 : 28;
+    const icon = L.divIcon({ html: `<div style="background:${esCercana?'#0F7B5E':'rgba(15,123,94,0.7)'};color:white;width:${sz}px;height:${sz}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${esCercana?'18px':'14px'};box-shadow:0 3px 10px rgba(15,123,94,0.45);">🧉</div>`, iconSize:[sz,sz], iconAnchor:[sz/2,sz/2], className:'' });
     const mk = L.marker([m.latitud, m.longitud], { icon }).addTo(mapaNearby);
     mk.on('click', () => verDetalle(m));
     nearbyMarkers.push(mk);
     bounds.push([m.latitud, m.longitud]);
   });
 
-  if (vigentes.length === 0) {
-    pill.style.display = 'none';
-    mapaNearby.setView([centerLat, centerLng], 14);
-  } else {
-    const cercana = ordenadas[0];
-    const dist = (userLat && userLng) ? ` · ${haversineKm(userLat,userLng,cercana.latitud,cercana.longitud).toFixed(1)} km` : '';
-    pill.style.display = 'block';
-    pill.textContent = `📍 ${cercana.titulo}${dist}`;
-    if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
-    else if (bounds.length > 1) mapaNearby.fitBounds(bounds, { padding:[24,24], maxZoom:14 });
-  }
+  if (bounds.length === 1) mapaNearby.setView(bounds[0], 15);
+  else if (bounds.length > 1) mapaNearby.fitBounds(bounds, { padding:[24,24], maxZoom:15 });
+  else mapaNearby.setView([cLat, cLng], 14);
 
   setTimeout(() => mapaNearby?.invalidateSize(), 220);
 }
 
 // ============================================================
-//  CARGAR MATEADAS
+//  CARGAR & RENDERIZAR MATEADAS — CAROUSEL
 // ============================================================
 async function cargarMateadas() {
   Object.values(countdownIntervals).forEach(clearInterval);
   countdownIntervals = {};
-  const container = document.getElementById('homeContent');
-  container.innerHTML = '<div class="empty"><div class="empty-icon">🧉</div>Cargando mateadas...</div>';
+  const carousel = document.getElementById('mateadasCarousel');
+  carousel.innerHTML = `<div class="empty-carousel-card"><div class="empty-icon">🧉</div><p>Cargando mateadas...</p></div>`;
 
   try {
     const r = await fetchConTimeout(`${SCRIPT_URL}?accion=obtenerMateadas&_t=${Date.now()}`, { cache: 'no-store' });
@@ -1171,128 +1111,233 @@ async function cargarMateadas() {
     const todas = (data.success && data.mateadas) ? data.mateadas : [];
     if (todas.length > 0) localStorage.setItem('cache_mateadas', JSON.stringify(todas));
     mateadasActuales = todas.filter(m => !estaTerminada(m));
-    renderizarMateadas(container);
+    renderizarCarousel();
   } catch(e) {
     const cached = localStorage.getItem('cache_mateadas');
     if (cached) {
-      try {
-        const t = JSON.parse(cached);
-        mateadasActuales = t.filter(m => !estaTerminada(m));
-        renderizarMateadas(container);
-        mostrarToast('📵 Mostrando datos en caché');
-        return;
-      } catch(_) {}
+      try { const t = JSON.parse(cached); mateadasActuales = t.filter(m => !estaTerminada(m)); renderizarCarousel(); mostrarToast('📵 Mostrando datos en caché'); return; } catch(_) {}
     }
-    container.innerHTML = `<div class="error-banner">
-      <span>❌</span>
-      <span>${navigator.onLine ? 'Error de conexión' : 'Sin conexión a internet'}</span>
-      <button class="retry-btn" onclick="recargar()">Reintentar</button>
-    </div>`;
+    document.getElementById('mateadasCarousel').innerHTML = `<div class="empty-carousel-card"><div class="empty-icon">❌</div><p>${navigator.onLine ? 'Error de conexión' : 'Sin conexión'} <button class="retry-btn" style="margin-left:8px;margin-top:8px;display:inline-block;" onclick="recargar()">Reintentar</button></p></div>`;
   }
 }
 
-function renderizarMateadas(container) {
+function renderizarCarousel() {
+  const carousel = document.getElementById('mateadasCarousel');
+  const dotsWrap = document.getElementById('carouselDots');
+  const contador = document.getElementById('contadorMateadas');
   const vigentes = mateadasActuales.filter(m => !estaTerminada(m));
-  document.getElementById('contadorMateadas').textContent = vigentes.length ? `${vigentes.length} activa${vigentes.length !== 1 ? 's' : ''}` : '';
-
-  const mapSection = document.getElementById('homeMapSection');
-  mapSection.classList.toggle('expanded', vigentes.length === 0);
-  setTimeout(() => mapaNearby?.invalidateSize(), 520);
 
   if (vigentes.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
+    carousel.innerHTML = `<div class="empty-carousel-card"><div class="empty-icon">✨</div><p>No hay mateadas activas<br>¡Sé el primero en crear una!</p></div>`;
+    dotsWrap.innerHTML = '';
+    contador.style.display = 'none';
     actualizarMapaCercano();
+    renderizarListaEspera();
     return;
   }
 
-  container.innerHTML = '';
+  contador.style.display = 'inline-flex';
+  contador.textContent = `${vigentes.length} activa${vigentes.length !== 1 ? 's' : ''}`;
+
+  // Dots
+  dotsWrap.innerHTML = vigentes.map((_, i) => `<div class="carousel-dot${i===0?' active':''}" id="dot-${i}"></div>`).join('');
+
+  carousel.innerHTML = '';
   const iniciadas = vigentes.filter(m => !esProgramada(m) || getMsHastaInicio(m) <= 0);
   const programadas = vigentes.filter(m => esProgramada(m) && getMsHastaInicio(m) > 0).sort((a,b) => getMsHastaInicio(a) - getMsHastaInicio(b));
+  const ordenadas = [...iniciadas, ...programadas];
 
-  const renderCard = (m, i, offset = 0) => {
+  // Detectar invitación del usuario actual
+  const miInvitacion = getMiInvitacion();
+
+  ordenadas.forEach((m, i) => {
     const libres = parseInt(m.lugares_libres) || 0, total = parseInt(m.lugares_totales) || 0, ocupados = total - libres;
-    const durMins = parseInt(m.duracion_minutos) || 60;
-    const fillId = `fill-${m.id}`, labelId = `label-${m.id}`;
+    const fillId = `cfill-${m.id}`, labelId = `clabel-${m.id}`;
     const esProg = esProgramada(m) && getMsHastaInicio(m) > 0;
-    const esOrg = esOrganizadorDe(m);
     const horaMostrar = esProg ? formatearHoraLocal(m.hora_programada) : (m.hora ? formatearHoraLocal(m.hora) : obtenerHoraActualFormateada());
-    const card = document.createElement('div');
-    card.className = 'card'; card.id = `card-${m.id}`; card.style.animationDelay = `${(i+offset)*60}ms`; card.onclick = () => verDetalle(m);
-    card.innerHTML = `
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;">
-        <div class="card-title" style="margin-bottom:0;">${escapeHtml(m.titulo)}</div>
-        ${esProg ? `<span class="hora-prog-badge">📅 ${horaMostrar}</span>` : ''}
+    const esInvitado = miInvitacion && String(miInvitacion.invitadoA) === String(m.id);
+    const esOrg = esOrganizadorDe(m);
+    const dist = (userLat && userLng && m.latitud && m.longitud) ? `· ${haversineKm(userLat,userLng,m.latitud,m.longitud).toFixed(1)} km` : '';
+
+    const slide = document.createElement('div');
+    slide.className = `mateada-slide${i===0?' active-slide':''}`;
+    slide.id = `slide-${m.id}`;
+    slide.style.animationDelay = `${i*60}ms`;
+    slide.innerHTML = `
+      ${esInvitado ? `<div style="background:var(--verde-light);border-radius:12px;padding:7px 12px;margin-bottom:10px;font-size:12px;font-weight:700;color:var(--verde);display:flex;align-items:center;gap:6px;">✉️ Te invitaron a esta mateada</div>` : ''}
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:5px;">
+        <div class="mateada-slide-title">${escapeHtml(m.titulo)}</div>
+        ${esProg ? `<span class="slide-hora-prog">📅 ${horaMostrar}</span>` : ''}
       </div>
-      <div class="card-info"><span>📍 ${escapeHtml(m.ubicacion)}</span><span>⏰ ${horaMostrar}</span></div>
-      <div class="card-footer">
-        <span class="participantes-badge ${libres===0?'lleno':''}">👥 ${ocupados} de ${total}</span>
+      <div class="mateada-slide-info">
+        <span>📍 ${escapeHtml(m.ubicacion)} ${dist}</span>
+        <span>⏰ ${horaMostrar}</span>
+      </div>
+      <div class="mateada-slide-footer">
+        <span class="participantes-badge ${libres===0?'lleno':''}">👥 ${ocupados}/${total}</span>
         <span class="organizador-chip">🧑 ${escapeHtml(m.organizador)}</span>
       </div>
-      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()">🗺️ Google Maps</a>
-      ${esProg ? `<div class="countdown-programada" id="cdprog-${m.id}">⏳ Empieza en ${formatTiempoHastaInicio(getMsHastaInicio(m))}</div>` : ''}
-      ${esOrg ? `<button class="btn-danger" style="margin-top:10px;padding:8px 14px;font-size:12px;width:auto;" onclick="event.stopPropagation();eliminarMateada('${m.id}')">🗑️ Eliminar mi mateada</button>` : ''}
-      <div class="countdown-wrap">
-        <div class="countdown-label"><span>⏳ ${duracionTexto(durMins)}</span><span id="${labelId}">—</span></div>
-        <div class="countdown-bar-track"><div class="countdown-bar-fill" id="${fillId}"></div></div>
-      </div>`;
-    container.appendChild(card);
-    setTimeout(() => iniciarCountdown(m, fillId, labelId, mateadaTerminada), 50);
-    if (esProg) {
-      const itv = setInterval(() => {
-        const el = document.getElementById(`cdprog-${m.id}`);
-        if (!el) { clearInterval(itv); return; }
-        const ms = getMsHastaInicio(m);
-        if (ms <= 0) { el.innerHTML = '🟢 ¡Ya empezó!'; el.style.background = 'var(--verde-light)'; el.style.color = 'var(--verde)'; clearInterval(itv); }
-        else el.innerHTML = `⏳ Empieza en ${formatTiempoHastaInicio(ms)}`;
-      }, 1000);
-    }
-  };
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.ubicacion)}" target="_blank" class="maps-link" onclick="event.stopPropagation()" style="margin-bottom:8px;">🗺️ Google Maps</a>
+      <div class="mateada-slide-countdown">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--subtexto);margin-bottom:3px;"><span>${duracionTexto(parseInt(m.duracion_minutos)||60)}</span><span id="${labelId}">—</span></div>
+        <div class="mateada-slide-bar-track"><div class="mateada-slide-bar-fill" id="${fillId}"></div></div>
+      </div>
+      ${esOrg ? `<button class="btn-danger" style="margin-top:10px;padding:8px 14px;font-size:12px;width:auto;" onclick="event.stopPropagation();eliminarMateada('${m.id}')">🗑️ Eliminar</button>` : ''}
+    `;
+    slide.addEventListener('click', () => verDetalle(m));
+    carousel.appendChild(slide);
+    setTimeout(() => iniciarCountdown(m, fillId, labelId, mateadaTerminada), 60 + i*30);
+  });
 
-  iniciadas.forEach((m, i) => renderCard(m, i, 0));
-  if (programadas.length > 0) {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label';
-    lbl.style.paddingTop = iniciadas.length > 0 ? '10px' : '0';
-    lbl.innerHTML = `<span>📅 Programadas hoy</span><span style="font-size:12px;font-weight:400;color:var(--subtexto);">${programadas.length} próxima${programadas.length!==1?'s':''}</span>`;
-    container.appendChild(lbl);
-    programadas.forEach((m, i) => renderCard(m, i, iniciadas.length));
-  }
+  // Scroll spy → actualizar dots + zoom en mapa
+  carousel.onscroll = null;
+  let scrollTimer;
+  carousel.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const slides = carousel.querySelectorAll('.mateada-slide');
+      if (!slides.length) return;
+      const scrollLeft = carousel.scrollLeft;
+      const slideWidth = slides[0].offsetWidth + 12; // gap
+      const idx = Math.round(scrollLeft / slideWidth);
+      // Dots
+      carousel.querySelectorAll('.carousel-dot').forEach((d, di) => d.classList.toggle('active', di === idx));
+      // Quitar active-slide de todos, poner en el actual
+      slides.forEach((s, si) => s.classList.toggle('active-slide', si === idx));
+      // Zoom en mapa
+      if (ordenadas[idx]) enfocarMateadaEnMapa(ordenadas[idx]);
+    }, 80);
+  });
+
+  // Enfocar la primera en el mapa
+  setTimeout(() => { if (ordenadas[0]) enfocarMateadaEnMapa(ordenadas[0]); }, 300);
+
   actualizarMapaCercano();
+  renderizarListaEspera();
 }
 
 // ============================================================
-//  ELIMINAR MATEADA (organizador)
+//  LISTA DE ESPERA — RENDER
+// ============================================================
+function renderizarListaEspera() {
+  const section = document.getElementById('waitlistSection');
+  const container = document.getElementById('waitlistCards');
+  if (!section || !container) return;
+
+  const lista = getListaEspera();
+  if (lista.length === 0) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  container.innerHTML = lista.map(e => {
+    const msRestante = (e.timestamp + WAITLIST_TTL_MS) - Date.now();
+    const pct = Math.max(0, Math.min(100, (msRestante / WAITLIST_TTL_MS) * 100));
+    const horasRestantes = Math.floor(msRestante / 3600000);
+    const minRestantes = Math.floor((msRestante % 3600000) / 60000);
+    const tiempoLabel = horasRestantes > 0 ? `${horasRestantes}h ${minRestantes}m restantes` : `${minRestantes}m restantes`;
+    const esUrgente = msRestante < 2 * 3600000;
+    const esMio = usuarioActual && e.sub === usuarioActual.sub;
+    const invitacion = e.invitadoA ? `<div class="waitlist-card-invited-badge">✉️ Invitado a una mateada</div>` : '';
+    const avatarHtml = e.avatar
+      ? `<img src="${e.avatar}" class="waitlist-card-avatar" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.style.display='none'">`
+      : `<div class="waitlist-card-avatar-placeholder">${(e.nombre||'?')[0].toUpperCase()}</div>`;
+
+    return `<div class="waitlist-card${e.invitadoA?' invited':''}">
+      ${avatarHtml}
+      <div class="waitlist-card-info">
+        <div class="waitlist-card-name">${escapeHtml(e.nombre)}${esMio ? ' <span style="font-size:10px;background:var(--verde-light);color:var(--verde);padding:1px 6px;border-radius:8px;font-weight:600;">vos</span>' : ''}</div>
+        <div class="waitlist-card-meta">📍 radio 3 km · ${e.tema || 'Cualquier tema'}</div>
+        ${invitacion}
+        <div class="waitlist-bar-track"><div class="waitlist-bar-fill${esUrgente?' urgent':''}" style="width:${pct}%;"></div></div>
+        <div class="waitlist-time-label">${tiempoLabel}</div>
+      </div>
+      ${esMio ? `<button onclick="salirListaEspera()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px;color:var(--subtexto);">✕</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function salirListaEspera() {
+  if (!usuarioActual) return;
+  removerDeListaEspera(usuarioActual.sub);
+  renderizarListaEspera();
+  mostrarToast('✅ Saliste de la lista de espera');
+}
+
+// ============================================================
+//  SCREEN LISTA DE ESPERA
+// ============================================================
+function irAListaEspera() {
+  setNavTitle('Próxima mateada cerca');
+  mostrarScreen('screen-waitlist');
+
+  // Preview card
+  const previewUser = document.getElementById('waitlistPreviewUser');
+  const loginGate = document.getElementById('waitlistLoginGate');
+  const btn = document.getElementById('btnWaitlist');
+
+  if (!usuarioActual) {
+    if (loginGate) { loginGate.style.display = 'block'; loginGate.innerHTML = `<div style="background:var(--azul-claro);border:1px solid #BFDBFE;border-radius:14px;padding:14px;font-size:14px;color:#1D4ED8;margin-bottom:16px;text-align:center;"><div style="font-size:24px;margin-bottom:8px;">🔑</div><strong>Iniciá sesión primero</strong><br><span style="font-size:13px;">Necesitás una cuenta para aparecer en la lista.</span><br><button class="btn" style="max-width:220px;margin-top:12px;" onclick="iniciarSesionGoogle()">Entrar con Google</button></div>`; }
+    if (btn) btn.style.display = 'none';
+    if (previewUser) previewUser.innerHTML = `<div class="waitlist-preview-avatar-placeholder">?</div><div><div style="font-weight:700;font-size:16px;color:var(--texto);">Iniciá sesión</div><div style="font-size:13px;color:var(--subtexto);">para aparecer aquí</div></div>`;
+    return;
+  }
+
+  if (loginGate) loginGate.style.display = 'none';
+  if (btn) btn.style.display = 'block';
+
+  const yaInscripto = estaEnListaEspera(usuarioActual.sub);
+  if (btn) {
+    if (yaInscripto) { btn.textContent = '✅ Ya estás en la lista · Salir'; btn.onclick = () => { salirListaEspera(); irInicio(); }; btn.style.background = '#6B7280'; }
+    else { btn.textContent = '⏳ Inscribirme a la próxima mateada'; btn.onclick = confirmarListaEspera; btn.style.background = 'var(--violeta)'; }
+  }
+
+  const avHtml = usuarioActual.avatar
+    ? `<img src="${usuarioActual.avatar}" class="waitlist-preview-avatar" crossorigin="anonymous" referrerpolicy="no-referrer">`
+    : `<div class="waitlist-preview-avatar-placeholder">${(usuarioActual.nombre||'U')[0].toUpperCase()}</div>`;
+  if (previewUser) previewUser.innerHTML = `${avHtml}<div><div class="waitlist-preview-name">${escapeHtml(usuarioActual.nombre.split(' ')[0])}</div><div class="waitlist-preview-meta">📍 Radio 3 km · 24 horas activo</div></div>`;
+}
+
+function confirmarListaEspera() {
+  if (!usuarioActual) { iniciarSesionGoogle(); return; }
+  const tema = document.getElementById('waitlistTema')?.value || '';
+
+  if (!userLat || !userLng) {
+    mostrarToast('📍 Activá el GPS primero para que sepamos dónde estás');
+    pedirUbicacion();
+    return;
+  }
+
+  const entry = {
+    sub: usuarioActual.sub,
+    nombre: usuarioActual.nombre.split(' ')[0],
+    avatar: usuarioActual.avatar || null,
+    email: usuarioActual.email,
+    lat: userLat,
+    lng: userLng,
+    tema,
+    timestamp: Date.now()
+  };
+
+  agregarAListaEspera(entry);
+  mostrarToast('✅ ¡Listo! Te avisamos cuando haya una mateada cerca');
+  irInicio();
+}
+
+// ============================================================
+//  ELIMINAR MATEADA
 // ============================================================
 async function eliminarMateada(mateadaId) {
   if (!usuarioActual) return;
   const m = mateadasActuales.find(x => String(x.id) === String(mateadaId));
-  if (!m) return;
-  if (!esOrganizadorDe(m)) { mostrarToast('❌ Solo el organizador puede eliminar'); return; }
-
-  if (!confirm(`¿Eliminar "${m.titulo}"? Esta acción no se puede deshacer.`)) return;
-
+  if (!m || !esOrganizadorDe(m)) { mostrarToast('❌ Solo el organizador puede eliminar'); return; }
+  if (!confirm(`¿Eliminar "${m.titulo}"?`)) return;
   mostrarToast('⏳ Eliminando...');
   try {
-    const params = new URLSearchParams({
-      accion: 'eliminarMateada',
-      mateada_id: mateadaId,
-      organizador_sub: usuarioActual.sub,
-      organizador_email: usuarioActual.email
-    });
+    const params = new URLSearchParams({ accion: 'eliminarMateada', mateada_id: mateadaId, organizador_sub: usuarioActual.sub, organizador_email: usuarioActual.email });
     const r = await fetchConTimeout(`${SCRIPT_URL}?${params}`, {}, 10000, 1);
     const data = await r.json();
-    if (data.success) {
-      mostrarToast('✅ Mateada eliminada');
-      mateadasActuales = mateadasActuales.filter(x => String(x.id) !== String(mateadaId));
-      const card = document.getElementById(`card-${mateadaId}`);
-      if (card) { card.classList.add('expiring'); setTimeout(() => card.remove(), 700); }
-      actualizarMapaCercano();
-    } else {
-      mostrarToast('❌ ' + (data.error || 'No se pudo eliminar'));
-    }
-  } catch(e) {
-    mostrarToast('❌ Error de conexión');
-  }
+    if (data.success) { mostrarToast('✅ Mateada eliminada'); mateadasActuales = mateadasActuales.filter(x => String(x.id) !== String(mateadaId)); renderizarCarousel(); actualizarMapaCercano(); }
+    else mostrarToast('❌ ' + (data.error || 'No se pudo eliminar'));
+  } catch(e) { mostrarToast('❌ Error de conexión'); }
 }
 
 // ============================================================
@@ -1309,17 +1354,10 @@ async function verDetalle(mateada) {
   const horaMostrar = esProg ? formatearHoraLocal(mateada.hora_programada) : (mateada.hora ? mateada.hora : obtenerHoraActualFormateada());
 
   let accionBtn = '';
-  if (esOrg) {
-    accionBtn = `
-      <div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div>
-      <button class="btn-danger" onclick="eliminarMateada('${mateada.id}');irInicio()">🗑️ Eliminar esta mateada</button>`;
-  } else if (yaUnido) {
-    accionBtn = `<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`;
-  } else if (libres === 0) {
-    accionBtn = `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`;
-  } else {
-    accionBtn = `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`;
-  }
+  if (esOrg) { accionBtn = `<div style="background:#FFF8EC;border:1px solid #F5D9A8;border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:#92400E;">🌟 Esta es tu mateada. Respondé las preguntas abajo.</div><button class="btn-danger" onclick="eliminarMateada('${mateada.id}');irInicio()">🗑️ Eliminar esta mateada</button>`; }
+  else if (yaUnido) { accionBtn = `<div style="background:var(--verde-light);border:1px solid var(--verde);border-radius:16px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--verde);text-align:center;font-weight:600;">✅ Ya te sumaste a esta mateada</div>`; }
+  else if (libres === 0) { accionBtn = `<button class="btn btn-secondary" style="opacity:0.6;pointer-events:none;" disabled>Sin lugares disponibles</button>`; }
+  else { accionBtn = `<button class="btn" onclick="mostrarUnirse()">🧉 Quiero sumarme</button>`; }
 
   const progBanner = esProg ? `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:14px;color:#92400E;display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📅</span><div><strong>Programada para las ${horaMostrar}</strong><br><span id="detailProgCountdown" style="font-size:13px;">Calculando...</span></div></div>` : '';
 
@@ -1378,19 +1416,9 @@ async function verDetalle(mateada) {
 }
 
 function mateadaTerminada(id) {
-  const card = document.getElementById(`card-${id}`); if (!card) return;
-  card.classList.add('expiring');
-  setTimeout(() => {
-    card.remove();
-    mateadasActuales = mateadasActuales.filter(m => m.id != id);
-    const vigentes = mateadasActuales.filter(m => !estaTerminada(m));
-    if (vigentes.length === 0) {
-      document.getElementById('homeContent').innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No hay mateadas activas<br>¡Sé el primero en crear una!</div>';
-      document.getElementById('homeMapSection').classList.add('expanded');
-      setTimeout(() => mapaNearby?.invalidateSize(), 520);
-    }
-    actualizarMapaCercano();
-  }, 700);
+  mateadasActuales = mateadasActuales.filter(m => m.id != id);
+  renderizarCarousel();
+  actualizarMapaCercano();
 }
 
 // ============================================================
@@ -1404,28 +1432,18 @@ async function renderizarChat(mateada) {
   if (qas.length === 0) html += `<div class="no-qa">Todavía no hay preguntas</div>`;
   else qas.forEach(qa => {
     html += `<div class="qa-bubble qa-bubble-question"><div class="qa-bubble-text">${escapeHtml(qa.pregunta)}</div><div class="qa-meta">🙋 ${escapeHtml(qa.nombre_preguntante)} · ${formatFecha(qa.fecha_pregunta)}</div></div>`;
-    if (qa.respuesta) {
-      html += `<div class="qa-bubble qa-bubble-answer"><div class="qa-bubble-text">${escapeHtml(qa.respuesta)}</div><div class="qa-meta">🧑 ${escapeHtml(mateada.organizador)} (organizador) · ${formatFecha(qa.fecha_respuesta)}</div></div>`;
-    } else if (esOrg && !terminada) {
-      html += `<div class="chat-input-area" id="respArea-${qa.id}"><textarea rows="2" placeholder="Escribí tu respuesta..." id="respText-${qa.id}"></textarea><button class="chat-send-btn" onclick="responderPregunta('${mateada.id}','${qa.id}')">Responder ↩</button></div>`;
-    } else if (!terminada) {
-      html += `<div class="chat-info-msg" style="margin-left:16px;margin-bottom:10px;">⏳ Esperando respuesta del organizador</div>`;
-    }
+    if (qa.respuesta) { html += `<div class="qa-bubble qa-bubble-answer"><div class="qa-bubble-text">${escapeHtml(qa.respuesta)}</div><div class="qa-meta">🧑 ${escapeHtml(mateada.organizador)} · ${formatFecha(qa.fecha_respuesta)}</div></div>`; }
+    else if (esOrg && !terminada) { html += `<div class="chat-input-area" id="respArea-${qa.id}"><textarea rows="2" placeholder="Escribí tu respuesta..." id="respText-${qa.id}"></textarea><button class="chat-send-btn" onclick="responderPregunta('${mateada.id}','${qa.id}')">Responder ↩</button></div>`; }
+    else if (!terminada) { html += `<div class="chat-info-msg" style="margin-left:16px;margin-bottom:10px;">⏳ Esperando respuesta del organizador</div>`; }
   });
   if (esOrg && !terminada) {
     const sin = qas.filter(q => !q.respuesta).length;
-    html += `<div class="chat-info-msg" style="margin-top:8px;">${qas.length===0?'📝 Como organizador, los participantes te harán preguntas aquí':sin===0?'✅ Respondiste todas las preguntas':`📝 Tenés ${sin} pregunta${sin!==1?'s':''} sin responder`}</div>`;
+    html += `<div class="chat-info-msg" style="margin-top:8px;">${qas.length===0?'📝 Los participantes te harán preguntas aquí':sin===0?'✅ Respondiste todas las preguntas':`📝 Tenés ${sin} pregunta${sin!==1?'s':''} sin responder`}</div>`;
   } else if (!esOrg && !terminada) {
-    if (!usuarioActual) {
-      html += `<div class="chat-info-msg" style="margin-top:8px;">🔑 <a href="#" onclick="iniciarSesionGoogle();return false;" style="color:var(--verde);font-weight:600;">Iniciá sesión</a> para hacer una pregunta</div>`;
-    } else if (yaHizoPreguntaDetalle(mateada.id)) {
-      html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Ya enviaste tu pregunta</div>`;
-    } else {
-      html += `<div class="chat-input-area" id="nuevaPreguntaArea"><textarea rows="2" placeholder="¿Querés preguntar algo al organizador?" id="nuevaPreguntaText" maxlength="280"></textarea><button class="chat-send-btn" onclick="enviarPreguntaDetalle('${mateada.id}')">Preguntar ✉</button></div>`;
-    }
-  } else if (terminada) {
-    html += `<div class="chat-info-msg" style="margin-top:8px;">⏰ Esta mateada ya terminó</div>`;
-  }
+    if (!usuarioActual) { html += `<div class="chat-info-msg" style="margin-top:8px;">🔑 <a href="#" onclick="iniciarSesionGoogle();return false;" style="color:var(--verde);font-weight:600;">Iniciá sesión</a> para hacer una pregunta</div>`; }
+    else if (yaHizoPreguntaDetalle(mateada.id)) { html += `<div class="chat-info-msg" style="margin-top:8px;">✅ Ya enviaste tu pregunta</div>`; }
+    else { html += `<div class="chat-input-area" id="nuevaPreguntaArea"><textarea rows="2" placeholder="¿Querés preguntar algo al organizador?" id="nuevaPreguntaText" maxlength="280"></textarea><button class="chat-send-btn" onclick="enviarPreguntaDetalle('${mateada.id}')">Preguntar ✉</button></div>`; }
+  } else if (terminada) { html += `<div class="chat-info-msg" style="margin-top:8px;">⏰ Esta mateada ya terminó</div>`; }
   html += `</div>`;
   chatDiv.innerHTML = html;
 }
@@ -1439,13 +1457,12 @@ async function enviarPreguntaDetalle(mateadaId) {
   const txt = document.getElementById('nuevaPreguntaText')?.value.trim();
   if (!txt || txt.length > 280) { mostrarToast(txt ? '📝 Máximo 280 caracteres' : '📝 Escribí tu pregunta'); return; }
   enviandoPregunta = true;
-  const btn = document.querySelector('#nuevaPreguntaArea .chat-send-btn');
-  const textarea = document.getElementById('nuevaPreguntaText');
+  const btn = document.querySelector('#nuevaPreguntaArea .chat-send-btn'), textarea = document.getElementById('nuevaPreguntaText');
   if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
   if (textarea) textarea.disabled = true;
   try {
     const ok = await guardarPregunta(mateadaId, txt, usuarioActual.nombre.split(' ')[0], usuarioActual.sub, usuarioActual.email);
-    if (ok) { agregarNotificacion('pregunta','📝 Nueva pregunta',`${usuarioActual.nombre} preguntó: "${txt.substring(0,50)}"`,mateadaId); mostrarToast('✅ ¡Pregunta enviada!'); if (textarea) textarea.value = ''; await renderizarChat(mateadaSeleccionada); }
+    if (ok) { agregarNotificacion('pregunta','📝 Nueva pregunta',`${usuarioActual.nombre} preguntó`,mateadaId); mostrarToast('✅ ¡Pregunta enviada!'); if (textarea) textarea.value = ''; await renderizarChat(mateadaSeleccionada); }
     else mostrarToast('❌ Error al enviar la pregunta');
   } catch(e) { mostrarToast('❌ Error de conexión'); }
   finally { enviandoPregunta = false; if (btn) { btn.disabled = false; btn.textContent = 'Preguntar ✉'; } if (textarea) { textarea.disabled = false; textarea.focus(); } }
@@ -1466,17 +1483,11 @@ async function responderPregunta(mateadaId, qaId) {
 function seleccionarMate(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
 function seleccionarDuracion(btn, mins) { document.getElementById('duracionGrid').querySelectorAll('.duracion-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); duracionSeleccionada = mins; }
 function seleccionarTipoMateada(btn, tipo) {
-  document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+  document.getElementById('tipoTabs').querySelectorAll('.tipo-tab').forEach(b => b.classList.remove('selected')); btn.classList.add('selected');
   tipoMateadaSeleccionado = tipo;
   const wrap = document.getElementById('horaProgramadaWrap');
-  if (tipo === 'programada') {
-    wrap.classList.add('visible');
-    const ahora = new Date(Date.now() + 30*60000);
-    document.getElementById('horaProgramada').value = `${ahora.getHours().toString().padStart(2,'0')}:${ahora.getMinutes().toString().padStart(2,'0')}`;
-  } else {
-    wrap.classList.remove('visible');
-  }
+  if (tipo === 'programada') { wrap.classList.add('visible'); const a = new Date(Date.now()+30*60000); document.getElementById('horaProgramada').value = `${a.getHours().toString().padStart(2,'0')}:${a.getMinutes().toString().padStart(2,'0')}`; }
+  else { wrap.classList.remove('visible'); }
 }
 function seleccionarTiempo(btn, mins) { document.querySelectorAll('.tiempo-tab').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); tiempoLlegadaSeleccionado = mins; tiempoLlegadaTexto = mins === 60 ? '1 hora' : `${mins} minutos`; }
 
@@ -1490,7 +1501,7 @@ async function geocodificarUbicacion(direccion) {
 
 function abrirSelectorUbicacion() {
   const modal = document.createElement('div'); modal.className = 'map-modal';
-  modal.innerHTML = `<div class="map-modal-header"><span>📍 Seleccioná la ubicación</span><button onclick="this.closest('.map-modal').remove()">✕</button></div><div class="map-modal-hint">🧉 Arrastrá el pin o tocá el mapa para ajustar</div><div id="mapaSelectorContainer" class="map-modal-content"></div><div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>`;
+  modal.innerHTML = `<div class="map-modal-header"><span>📍 Seleccioná la ubicación</span><button onclick="this.closest('.map-modal').remove()">✕</button></div><div id="mapaSelectorContainer" class="map-modal-content"></div><div class="map-modal-footer"><button class="btn" id="confirmarUbicacionBtn" style="margin:0;">✅ Usar esta ubicación</button></div>`;
   document.body.appendChild(modal);
   setTimeout(() => {
     const c = document.getElementById('mapaSelectorContainer'); if (!c) return;
@@ -1500,10 +1511,7 @@ function abrirSelectorUbicacion() {
     const mateIcon = L.divIcon({ html: `<div style="position:relative;width:44px;height:54px;"><div style="background:#0F7B5E;width:44px;height:44px;border-radius:22px 22px 22px 0;transform:rotate(-45deg);box-shadow:0 4px 16px rgba(15,123,94,0.5);border:3px solid white;position:absolute;top:0;left:0;"></div><span style="position:absolute;top:6px;left:6px;font-size:22px;z-index:2;">🧉</span></div>`, iconSize:[44,54], iconAnchor:[10,54], className:'' });
     markerSelector = L.marker([iLat, iLng], { icon: mateIcon, draggable: true }).addTo(mapaSelector);
     ubicacionSeleccionadaMapa = { lat: iLat, lng: iLng };
-    const reverseGeocode = (lat, lng) => {
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`)
-        .then(r => r.json()).then(d => { document.getElementById('ubicacionMateada').value = d.display_name?.split(',')[0] || 'Ubicación seleccionada'; }).catch(() => {});
-    };
+    const reverseGeocode = (lat, lng) => { fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`).then(r => r.json()).then(d => { document.getElementById('ubicacionMateada').value = d.display_name?.split(',')[0] || 'Ubicación seleccionada'; }).catch(() => {}); };
     markerSelector.on('dragend', (e) => { const p = e.target.getLatLng(); ubicacionSeleccionadaMapa = { lat: p.lat, lng: p.lng }; reverseGeocode(p.lat, p.lng); });
     mapaSelector.on('click', (e) => { markerSelector.setLatLng([e.latlng.lat, e.latlng.lng]); ubicacionSeleccionadaMapa = { lat: e.latlng.lat, lng: e.latlng.lng }; reverseGeocode(e.latlng.lat, e.latlng.lng); });
     document.getElementById('confirmarUbicacionBtn').onclick = () => { modal.remove(); mostrarToast('✅ Ubicación seleccionada'); };
@@ -1523,13 +1531,9 @@ async function crearMateada() {
     horaProgramadaVal = document.getElementById('horaProgramada').value;
     if (!horaProgramadaVal) { mostrarToast('⏰ Elegí la hora de inicio'); return; }
     const [h, min] = horaProgramadaVal.split(':').map(Number);
-    if (new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), h, min, 0) <= new Date()) {
-      mostrarToast('⏰ La hora tiene que ser en el futuro'); return;
-    }
+    if (new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), h, min, 0) <= new Date()) { mostrarToast('⏰ La hora tiene que ser en el futuro'); return; }
     hora = formatearHoraLocal(horaProgramadaVal); esProg = true;
-  } else {
-    hora = obtenerHoraActualFormateada();
-  }
+  } else { hora = obtenerHoraActualFormateada(); }
 
   if (!organizador) { mostrarToast('Ingresá tu nombre'); return; }
   if (!ubicacion) { mostrarToast('Ingresá la ubicación'); return; }
@@ -1556,11 +1560,12 @@ async function crearMateada() {
     const resultado = await r.json();
     if (resultado.success) {
       registrarCreacion(usuarioActual.email);
-      mostrarToast(esProg ? `✅ ¡Programada para las ${hora}!` : '✅ ¡Mateada publicada!');
+      // Invitar automáticamente a personas en lista de espera dentro de 3km
+      const numInvitados = procesarInvitacionesListaEspera(latitud, longitud, resultado.id, titulo);
+      const msg = esProg ? `✅ ¡Programada para las ${hora}!` : '✅ ¡Mateada publicada!';
+      mostrarToast(numInvitados > 0 ? `${msg} Se avisó a ${numInvitados} persona${numInvitados!==1?'s':''} en lista de espera 🎉` : msg, 4000);
       irInicio();
-    } else {
-      mostrarToast('❌ ' + (resultado.error || 'No se pudo publicar'));
-    }
+    } else { mostrarToast('❌ ' + (resultado.error || 'No se pudo publicar')); }
   } catch(e) { mostrarToast('❌ Error de conexión'); }
   finally { btn.classList.remove('loading'); btn.innerText = '🌿 Publicar mateada'; }
 }
@@ -1591,7 +1596,7 @@ async function enviarSolicitud() {
   if (joinPreguntaTxt && !yaHizoPreguntaDetalle(mateadaSeleccionada.id) && !esOrganizadorDe(mateadaSeleccionada)) {
     localStorage.setItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`, '1');
     const ok = await guardarPregunta(mateadaSeleccionada.id, joinPreguntaTxt, usuarioActual.nombre.split(' ')[0], usuarioActual.sub, usuarioActual.email);
-    if (ok) agregarNotificacion('pregunta','📝 Nueva pregunta',`${usuarioActual.nombre} preguntó: "${joinPreguntaTxt.substring(0,50)}"`,mateadaSeleccionada.id);
+    if (ok) agregarNotificacion('pregunta','📝 Nueva pregunta',`preguntó`,mateadaSeleccionada.id);
     else localStorage.removeItem(`pregunta_detalle_${mateadaSeleccionada.id}_${usuarioActual.sub}`);
   }
   const btn = document.getElementById('btnUnirse'); btn.classList.add('loading'); btn.innerText = 'Enviando...';
@@ -1612,7 +1617,8 @@ function mostrarScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const isHome = (id === 'screen-home');
-  document.getElementById('fabBtn').style.display = isHome ? 'flex' : 'none';
+  const fabWrap = document.getElementById('fabWrap');
+  if (fabWrap) fabWrap.style.display = isHome ? 'flex' : 'none';
   document.getElementById('mainHeader').style.display = isHome ? '' : 'none';
   document.getElementById('navBar').classList.toggle('visible', !isHome);
   window.scrollTo(0, 0);
@@ -1686,7 +1692,7 @@ window.onload = function() {
   ajustarSpacer();
   cargarMateadas();
   actualizarMapaCercano();
-  cargarCafeterias(); // carga inicial con coords por defecto
+  cargarCafeterias();
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (p) => { userLat = p.coords.latitude; userLng = p.coords.longitude; document.getElementById('gpsBtn').textContent = '✅'; actualizarMapaCercano(); cargarCafeterias(); },
@@ -1695,6 +1701,8 @@ window.onload = function() {
   }
   actualizarEstadoRed();
   actualizarBellBadge();
+  // Limpiar waitlist expirada al inicio
+  saveListaEspera(getListaEspera());
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1716,7 +1724,7 @@ function abrirIosSheet() { document.getElementById('iosSheetOverlay').classList.
 function cerrarIosSheet(e) { if (!e || e.target === document.getElementById('iosSheetOverlay') || !e.target) document.getElementById('iosSheetOverlay').classList.remove('visible'); }
 if (isIOS && !isInStandaloneMode && !sessionStorage.getItem('iosSheetShown')) setTimeout(() => { document.getElementById('iosSheetOverlay').classList.add('visible'); sessionStorage.setItem('iosSheetShown', '1'); }, 2500);
 
-// Android install prompt
+// Android install
 let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault(); deferredInstallPrompt = e;
